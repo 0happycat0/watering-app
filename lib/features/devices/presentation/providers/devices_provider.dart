@@ -34,4 +34,8 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
   Future<void> refresh() async {
     await getAllDevices();
   }
+
+  void setLoading() {
+    state = devices_state.Loading();
+  }
 }

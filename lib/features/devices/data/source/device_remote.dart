@@ -65,7 +65,7 @@ class DeviceRemoteDataSource {
     }
   }
 
-    Future<Either<DioException, Response>> deleteDevice({
+  Future<Either<DioException, Response>> deleteDevice({
     required Device device,
   }) async {
     try {
@@ -91,5 +91,30 @@ class DeviceRemoteDataSource {
     }
   }
 
-  
+  Future<Either<DioException, Response>> updateDevice({
+    required Device device,
+  }) async {
+    try {
+      final result = await networkService.put(
+        endpoint: ApiPath.device.deviceById(device.id),
+        data: device.toJson()
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          return Right(response);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (updateDevice) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
 }

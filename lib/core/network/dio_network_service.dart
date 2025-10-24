@@ -26,14 +26,14 @@ class DioNetworkService {
   Future<Either<DioException, Response>> get({
     required String endpoint,
     Map<String, dynamic>? queryParameters,
-    Options? options
+    Options? options,
   }) async {
     Response res;
     try {
       res = await _dio.get(
         endpoint,
         queryParameters: queryParameters,
-        options: options
+        options: options,
       );
       return Right(
         Response(
@@ -81,17 +81,19 @@ class DioNetworkService {
     }
   }
 
-Future<Either<DioException, Response>> delete({
+  Future<Either<DioException, Response>> put({
     required String endpoint,
+    Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
-    Options? options
+    Options? options,
   }) async {
     Response res;
     try {
-      res = await _dio.delete(
+      res = await _dio.put(
         endpoint,
+        data: data,
         queryParameters: queryParameters,
-        options: options
+        options: options,
       );
       return Right(
         Response(
@@ -111,4 +113,33 @@ Future<Either<DioException, Response>> delete({
     }
   }
 
+  Future<Either<DioException, Response>> delete({
+    required String endpoint,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    Response res;
+    try {
+      res = await _dio.delete(
+        endpoint,
+        queryParameters: queryParameters,
+        options: options,
+      );
+      return Right(
+        Response(
+          requestOptions: res.requestOptions,
+          statusCode: res.statusCode,
+          data: res.data['data'],
+        ),
+      );
+    } on DioException catch (e) {
+      return Left(
+        DioException(
+          requestOptions: e.requestOptions,
+          response: e.response,
+          message: e.response?.data['message'],
+        ),
+      );
+    }
+  }
 }

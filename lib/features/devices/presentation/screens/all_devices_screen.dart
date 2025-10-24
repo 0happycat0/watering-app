@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
-import 'package:watering_app/core/widgets/custom_circular_progress.dart';
+import 'package:watering_app/core/widgets/custom_snack_bar.dart';
+import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/providers/device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/devices_provider.dart';
@@ -11,10 +12,7 @@ import 'package:watering_app/features/devices/presentation/screens/device_detail
 import 'package:watering_app/features/devices/presentation/widgets/device_grid_item.dart';
 import 'package:watering_app/features/devices/presentation/providers/devices_state.dart'
     as devices_state;
-import 'package:watering_app/features/devices/presentation/providers/device_state.dart'
-    as device_state;
 import 'package:watering_app/theme/styles.dart';
-import 'package:watering_app/theme/theme.dart';
 
 class AllDevicesScreen extends ConsumerStatefulWidget {
   const AllDevicesScreen({super.key});
@@ -34,42 +32,106 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   }
 
   void _showAskDeleteDialog(Device device) {
+    final deviceNotifier = ref.read(deviceProvider.notifier);
+    final devicesNotifier = ref.read(devicesProvider.notifier);
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => Consumer(
-        builder: (context, ref, child) {
-          final deviceState = ref.watch(deviceProvider);
-          return AlertDialog(
-            title: Text('Xóa thiết bị'),
-            content: Text(
-              'Bạn có muốn xóa "${device.name}" khỏi danh sách thiết bị không?',
-            ),
-            actions: [
-              OutlinedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('Hủy'),
+      builder: (ctx) => AlertDialog(
+        title: Text('Xóa thiết bị'),
+        content: Text(
+          'Bạn có muốn xóa "${device.name}" khỏi danh sách thiết bị không?',
+        ),
+        actions: [
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Hủy'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              devicesNotifier.setLoading();
+              await deviceNotifier.deleteDevice(id: device.id);
+              if (mounted) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${device.name}"'));
+              }
+              devicesNotifier.refresh();
+            },
+            child: Text('Xóa'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditDialog(Device device) {
+    final deviceNotifier = ref.read(deviceProvider.notifier);
+    final devicesNotifier = ref.read(devicesProvider.notifier);
+
+    final nameController = TextEditingController(text: device.name);
+    final idController = TextEditingController(text: device.deviceId);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        child: Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Sửa thông tin',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              FilledButton(
-                onPressed: () async {
-                  await ref
-                      .read(deviceProvider.notifier)
-                      .deleteDevice(id: device.id);
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: deviceState is device_state.Loading
-                    ? CustomCircularProgress(
-                        color: colorScheme.primaryContainer,
-                      )
-                    : Text('Xóa'),
+              SizedBox(height: 20),
+              NormalTextFormField(
+                textController: nameController,
+                hintText: '',
+                label: 'Tên thiết bị',
+                isDense: true,
+              ),
+              SizedBox(height: 10),
+              NormalTextFormField(
+                textController: idController,
+                hintText: '',
+                label: 'Mã thiết bị',
+                isDense: true,
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Spacer(),
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Hủy'),
+                  ),
+                  SizedBox(width: 10),
+                  FilledButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      devicesNotifier.setLoading();
+                      await deviceNotifier.updateDevice(
+                        id: device.id,
+                        name: nameController.text.trim(),
+                        deviceId: idController.text.trim(),
+                      );
+                      devicesNotifier.refresh();
+                    },
+                    child: Text('Lưu'),
+                  ),
+                ],
               ),
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -77,6 +139,9 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     final devicesState = ref.watch(devicesProvider);
+
+    //deleteDeviceProvider là 1 autoDispose, nên nếu không watch sẽ không dùng được hàm delete, vì nó sẽ bị dispose trong dialog
+    ref.watch(deviceProvider);
     ref.listen(devicesProvider, (prev, next) {
       print(
         'All devices transition: ${prev.runtimeType} -> ${next.runtimeType}',
@@ -112,11 +177,11 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                     onSelectDevice: () {
                       _onSelectDevice(device);
                     },
-                    onSelectDelete: () {
+                    onSelectDelete: () async {
                       _showAskDeleteDialog(device);
                     },
                     onSelectEdit: () {
-                      //TODO: add logic
+                      _showEditDialog(device);
                     },
                   );
                 },

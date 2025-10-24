@@ -76,9 +76,9 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
       if (next is device_state.Success && prev is device_state.Loading) {
         Navigator.of(context).pop();
         Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          CustomSnackBar(text: 'Đã xóa "${widget.device.name}"')
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${widget.device.name}"'));
       }
     });
     return Scaffold(

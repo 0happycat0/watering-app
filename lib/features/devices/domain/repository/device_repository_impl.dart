@@ -47,4 +47,17 @@ class DeviceRepositoryImpl extends DeviceRepository{
       }
     );
   }
+
+  @override
+  Future<Either<DioException, Response>> updateDevice({required Device device}) async {
+    final response = await deviceRemoteDataSource.updateDevice(device: device);
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) {
+        return Right(res);
+      }
+    );
+  }
 }

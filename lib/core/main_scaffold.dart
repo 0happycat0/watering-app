@@ -79,6 +79,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     });
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomNavBar(
         currentPageIndex: _currentPageIndex,
         selectPage: _selectPage,

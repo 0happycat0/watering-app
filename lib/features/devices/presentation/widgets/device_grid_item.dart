@@ -91,7 +91,7 @@ class DeviceGridItem extends StatelessWidget {
                         children: [
                           Icon(Symbols.edit),
                           SizedBox(width: 12),
-                          Text('Sửa thiết bị'),
+                          Text('Sửa thông tin'),
                         ],
                       ),
                     ),

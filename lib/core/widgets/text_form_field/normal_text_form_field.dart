@@ -9,12 +9,14 @@ class NormalTextFormField extends StatelessWidget {
     required this.hintText,
     this.label,
     this.validator,
+    this.isDense = false,
   });
 
   final String? Function(String?)? validator;
   final TextEditingController textController;
   final String hintText;
   final String? label;
+  final bool isDense;
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,9 @@ class NormalTextFormField extends StatelessWidget {
           ),
           decoration: InputDecoration(
             hintText: hintText,
+            contentPadding: isDense
+                ? EdgeInsets.symmetric(vertical: 8, horizontal: 12)
+                : null,
             fillColor: AppColors.divider.withAlpha(150),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),

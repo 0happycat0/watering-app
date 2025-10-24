@@ -6,6 +6,7 @@ import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field
 import 'package:watering_app/features/devices/presentation/providers/device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device_state.dart'
     as device_state;
+import 'package:watering_app/features/devices/presentation/providers/devices_provider.dart';
 import 'package:watering_app/theme/styles.dart';
 
 class AddNewDevice extends ConsumerStatefulWidget {
@@ -41,9 +42,9 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
       //hien thi snack bar khi co loi
       if (next is device_state.Failure) {
         final message = next.message;
-        ScaffoldMessenger.of(context).showSnackBar(
-          CustomSnackBar(text: message)
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(CustomSnackBar(text: message));
       }
       if (next is device_state.Success && prev is device_state.Loading) {
         Navigator.of(context).pop();
@@ -95,13 +96,14 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: () {
-                            ref
+                          onPressed: () async {
+                            await ref
                                 .read(deviceProvider.notifier)
                                 .createDevice(
                                   name: _nameController.text,
                                   deviceId: _deviceIdController.text,
                                 );
+                            ref.read(devicesProvider.notifier).refresh();
                           },
                           style: AppStyles.elevatedButtonStyle(),
                           child: addDeviceState is device_state.Loading
