@@ -5,10 +5,11 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
-import 'package:watering_app/features/devices/presentation/providers/device_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/device_state.dart'
+import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
+import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/presentation/screens/control_tab.dart';
 import 'package:watering_app/theme/theme.dart';
 
 class DeviceDetailScreen extends ConsumerStatefulWidget {
@@ -81,20 +82,40 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
         ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${widget.device.name}"'));
       }
     });
-    return Scaffold(
-      appBar: CustomAppBar(
-        automaticallyImplyLeading: false,
-        title: widget.device.name,
-        leading: BackIcon(),
-        actions: [
-          IconButton(
-            onPressed: _showAskDeleteDialog,
-            icon: Icon(
-              Symbols.delete,
-              size: 28,
+    return DefaultTabController(
+      initialIndex: 0,
+      length: 3,
+      child: Scaffold(
+        appBar: CustomAppBar(
+          automaticallyImplyLeading: false,
+          title: widget.device.name,
+          leading: BackIcon(),
+          actions: [
+            IconButton(
+              onPressed: _showAskDeleteDialog,
+              icon: Icon(
+                Symbols.delete,
+                size: 28,
+              ),
             ),
+          ],
+          bottom: TabBar(
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicatorWeight: 3,
+            tabs: <Widget>[
+              Tab(text: 'Điều khiển'),
+              Tab(text: 'Theo dõi'),
+              Tab(text: 'Lên lịch'),
+            ],
           ),
-        ],
+        ),
+        body: TabBarView(
+          children: <Widget>[
+            ControlTabScreen(device: widget.device),
+            Center(child: Text("It's rainy here")),
+            Center(child: Text("It's sunny here")),
+          ],
+        ),
       ),
     );
   }

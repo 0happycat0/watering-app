@@ -7,16 +7,26 @@ class NormalTextFormField extends StatelessWidget {
     super.key,
     required this.textController,
     required this.hintText,
+    this.suffixText,
     this.label,
     this.validator,
     this.isDense = false,
+    this.padding,
+    this.textAlign = TextAlign.start,
+    this.keyboardType,
+    this.onChanged,
   });
 
   final String? Function(String?)? validator;
   final TextEditingController textController;
   final String hintText;
+  final String? suffixText;
   final String? label;
   final bool isDense;
+  final EdgeInsetsGeometry? padding;
+  final TextAlign textAlign;
+  final TextInputType? keyboardType;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +52,20 @@ class NormalTextFormField extends StatelessWidget {
           style: TextStyle(
             color: colorScheme.onSurface,
           ),
+          textAlign: textAlign,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
             contentPadding: isDense
                 ? EdgeInsets.symmetric(vertical: 8, horizontal: 12)
-                : null,
+                : padding,
             fillColor: AppColors.divider.withAlpha(150),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            suffixText: suffixText,
           ),
+          onChanged: onChanged,
         ),
       ],
     );

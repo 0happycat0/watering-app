@@ -117,4 +117,32 @@ class DeviceRemoteDataSource {
       );
     }
   }
+
+  Future<Either<DioException, Response>> toggleDevice({
+    required Device device,
+  }) async {
+    try {
+      final result = await networkService.post(
+        endpoint: ApiPath.device.toggleDevice(device.id),
+        data: device.toJson()
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          return Right(response);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (toggleDevice) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
 }

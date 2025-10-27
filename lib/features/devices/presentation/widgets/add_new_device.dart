@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
-import 'package:watering_app/features/devices/presentation/providers/device_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/device_state.dart'
+import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
+import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
     as device_state;
-import 'package:watering_app/features/devices/presentation/providers/devices_provider.dart';
+import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/theme/styles.dart';
 
 class AddNewDevice extends ConsumerStatefulWidget {

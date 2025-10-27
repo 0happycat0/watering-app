@@ -7,4 +7,5 @@ abstract class DeviceRepository {
   Future<Either<Exception, Response>> createDevice({required Device device});
   Future<Either<Exception, Response>> deleteDevice({required Device device});
   Future<Either<Exception, Response>> updateDevice({required Device device});
+  Future<Either<Exception, Response>> toggleDevice({required Device device});
 }

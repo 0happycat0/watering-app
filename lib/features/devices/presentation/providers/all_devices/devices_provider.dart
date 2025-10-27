@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/devices_state.dart'
+import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_state.dart'
     as devices_state;
 
 final devicesProvider =

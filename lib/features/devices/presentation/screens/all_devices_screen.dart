@@ -6,11 +6,11 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
-import 'package:watering_app/features/devices/presentation/providers/device_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/devices_provider.dart';
+import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
+import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
 import 'package:watering_app/features/devices/presentation/widgets/device_grid_item.dart';
-import 'package:watering_app/features/devices/presentation/providers/devices_state.dart'
+import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_state.dart'
     as devices_state;
 import 'package:watering_app/theme/styles.dart';
 
@@ -165,7 +165,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 3 / 2,
+                  childAspectRatio: 2 / 3,
                   mainAxisSpacing: 0,
                   crossAxisSpacing: 0,
                 ),
