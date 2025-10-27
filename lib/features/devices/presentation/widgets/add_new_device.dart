@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
+import 'package:watering_app/features/devices/presentation/providers/device/create_device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
     as device_state;
@@ -34,10 +35,10 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
 
   @override
   Widget build(BuildContext context) {
-    final addDeviceState = ref.watch(deviceProvider);
-    ref.listen<device_state.DeviceState>(deviceProvider, (prev, next) {
+    final addDeviceState = ref.watch(createDeviceProvider);
+    ref.listen<device_state.DeviceState>(createDeviceProvider, (prev, next) {
       print(
-        'All devices transition: ${prev.runtimeType} -> ${next.runtimeType}',
+        'create device transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
       //hien thi snack bar khi co loi
       if (next is device_state.Failure) {
@@ -98,7 +99,7 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
                         ElevatedButton(
                           onPressed: () async {
                             await ref
-                                .read(deviceProvider.notifier)
+                                .read(createDeviceProvider.notifier)
                                 .createDevice(
                                   name: _nameController.text,
                                   deviceId: _deviceIdController.text,

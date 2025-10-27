@@ -6,8 +6,10 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/presentation/providers/device/delete_device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_provider.dart';
+import 'package:watering_app/features/devices/presentation/providers/device/update_device_provider.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
 import 'package:watering_app/features/devices/presentation/widgets/device_grid_item.dart';
 import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_state.dart'
@@ -32,7 +34,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   }
 
   void _showAskDeleteDialog(Device device) {
-    final deviceNotifier = ref.read(deviceProvider.notifier);
+    final deleteDeviceNotifier = ref.read(deleteDeviceProvider.notifier);
     final devicesNotifier = ref.read(devicesProvider.notifier);
 
     showDialog(
@@ -54,7 +56,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
             onPressed: () async {
               Navigator.of(context).pop();
               devicesNotifier.setLoading();
-              await deviceNotifier.deleteDevice(id: device.id);
+              await deleteDeviceNotifier.deleteDevice(id: device.id);
               if (mounted) {
                 ScaffoldMessenger.of(
                   context,
@@ -70,7 +72,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   }
 
   void _showEditDialog(Device device) {
-    final deviceNotifier = ref.read(deviceProvider.notifier);
+    final updateDeviceNotifier = ref.read(updateDeviceProvider.notifier);
     final devicesNotifier = ref.read(devicesProvider.notifier);
 
     final nameController = TextEditingController(text: device.name);
@@ -118,7 +120,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                     onPressed: () async {
                       Navigator.of(context).pop();
                       devicesNotifier.setLoading();
-                      await deviceNotifier.updateDevice(
+                      await updateDeviceNotifier.updateDevice(
                         id: device.id,
                         name: nameController.text.trim(),
                         deviceId: idController.text.trim(),
@@ -140,8 +142,10 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   Widget build(BuildContext context) {
     final devicesState = ref.watch(devicesProvider);
 
-    //deleteDeviceProvider là 1 autoDispose, nên nếu không watch sẽ không dùng được hàm delete, vì nó sẽ bị dispose trong dialog
-    ref.watch(deviceProvider);
+    //updateDeviceProvider và deleteDeviceProvider là các autoDispose, nên nếu không watch sẽ 
+    //không dùng được hàm update và delete, vì nó sẽ bị dispose trong dialog
+    ref.watch(updateDeviceProvider);
+    ref.watch(deleteDeviceProvider);
     ref.listen(devicesProvider, (prev, next) {
       print(
         'All devices transition: ${prev.runtimeType} -> ${next.runtimeType}',

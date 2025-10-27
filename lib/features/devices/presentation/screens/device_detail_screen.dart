@@ -5,6 +5,7 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
+import 'package:watering_app/features/devices/presentation/providers/device/delete_device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
     as device_state;
@@ -29,7 +30,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
       barrierDismissible: false,
       builder: (ctx) => Consumer(
         builder: (context, ref, child) {
-          final deviceState = ref.watch(deviceProvider);
+          final deviceState = ref.watch(deleteDeviceProvider);
           return AlertDialog(
             title: Text('Xóa thiết bị'),
             content: Text(
@@ -45,7 +46,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
               FilledButton(
                 onPressed: () {
                   ref
-                      .read(deviceProvider.notifier)
+                      .read(deleteDeviceProvider.notifier)
                       .deleteDevice(id: widget.device.id);
                 },
                 child: deviceState is device_state.Loading
@@ -63,9 +64,9 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(deviceProvider, (prev, next) {
+    ref.listen(deleteDeviceProvider, (prev, next) {
       print(
-        'All devices transition: ${prev.runtimeType} -> ${next.runtimeType}',
+        'Delete device transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
       if (next is device_state.Failure) {
         final message = next.message;
