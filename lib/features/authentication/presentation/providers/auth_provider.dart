@@ -4,13 +4,6 @@ import 'package:watering_app/features/authentication/domain/repository/auth_repo
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_provider.dart';
 import 'package:watering_app/features/authentication/presentation/providers/auth_state.dart'
     as auth_state;
-// final testProvider = Provider.family<String, String>((ref, str) {
-//   if (str == '1') {
-//     return 'one';
-//   } else {
-//     return 'hello';
-//   }
-// });
 
 final authProvider = StateNotifierProvider<AuthNotifier, auth_state.AuthState>(
   (ref) {

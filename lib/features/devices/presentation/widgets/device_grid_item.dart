@@ -11,9 +11,11 @@ class DeviceGridItem extends StatelessWidget {
     required this.onSelectDevice,
     required this.onSelectEdit,
     required this.onSelectDelete,
+    this.isOnline = true,
   });
 
   final Device device;
+  final bool isOnline;
   final void Function() onSelectDevice;
   final void Function() onSelectEdit;
   final void Function() onSelectDelete;
@@ -29,44 +31,92 @@ class DeviceGridItem extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       child: InkWell(
         onTap: onSelectDevice,
+
         splashColor: colorScheme.primaryContainer,
         child: Ink(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.mainGreen[50]!,
-                AppColors.mainGreen[100]!,
+                AppColors.mainGreen[10]!,
+                AppColors.mainGreen[150]!,
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
+          // color: colorScheme.onPrimary,
           child: Stack(
             children: [
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        device.name,
-                        style: TextStyle(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.bold,
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        // color: Colors.white54,
+                        width: double.infinity,
+                        padding: EdgeInsets.all(10),
+                        margin: EdgeInsets.all(0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: isOnline
+                                  ? Icon(Symbols.android_wifi_3_bar_rounded)
+                                  : Icon(Symbols.wifi_off_rounded),
+                            ),
+                            SizedBox(height: 20),
+                            Expanded(
+                              child: Image.asset(
+                                'assets/images/plant.png',
+                                fit: BoxFit.fitHeight,
+                                color: AppColors.mainGreen[200],
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(device.deviceId),
-                    ],
-                  ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 14),
+                      child: Divider(
+                        thickness: 1,
+                        height: 10,
+                        color: colorScheme.primary.withAlpha(60),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(8, 0, 8, 8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            device.name,
+                            style: TextStyle(
+                              color: colorScheme.primary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            device.deviceId,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
               // Nút menu góc phải
               Positioned(
-                right: 0,
+                right: -4,
                 top: 0,
                 child: PopupMenuButton<String>(
-                  icon: Icon(Icons.more_vert, size: 22),
+                  icon: Icon(Symbols.more_vert, size: 22, weight: 1000),
                   splashRadius: 20,
                   color: Colors.white,
                   elevation: 4,
@@ -107,7 +157,7 @@ class DeviceGridItem extends StatelessWidget {
                       ),
                     ),
                   ],
-                  offset: const Offset(-8, 8),
+                  offset: Offset(-8, 8),
                 ),
               ),
             ],

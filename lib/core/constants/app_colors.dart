@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const Map<int, Color> mainGreen = {
+    10: Color.fromARGB(255, 222, 249, 195),
     50: Color.fromARGB(255, 202, 239, 165),
     100: Color(0xFFB2DA8A),
+    150: Color.fromARGB(255, 162, 203, 121),
     200: Color.fromARGB(255, 111, 147, 73),
     300: Color.fromARGB(255, 85, 113, 56),
     400: Color.fromARGB(255, 60, 80, 39),

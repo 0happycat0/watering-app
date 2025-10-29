@@ -4,7 +4,6 @@ class ApiPath {
   // static const String baseUrl =
   //     'https://unmoaned-dale-nonspherical.ngrok-free.dev'; //work on emulator (not physical device)
 
-
   static final auth = _AuthPath();
   static final device = _DevicePath();
 }
@@ -20,9 +19,10 @@ class _AuthPath {
 }
 
 class _DevicePath {
-   _DevicePath();
+  _DevicePath();
   final String allDevice = '/devices';
   final String createDevice = '/devices';
   String deviceById(String id) => '/devices/$id';
   String toggleDevice(String id) => '/devices/$id/watering';
+  String getHistoryWatering(String id) => '/devices/$id/watering/history';
 }

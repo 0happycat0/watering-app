@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
 
 sealed class DeviceState {
   const DeviceState();
@@ -13,7 +14,8 @@ class Loading extends DeviceState {
 }
 
 class Success extends DeviceState {
-  const Success();
+  const Success({this.listHistoryWatering});
+  final List<HistoryWatering>? listHistoryWatering;
 }
 
 class Failure extends DeviceState {

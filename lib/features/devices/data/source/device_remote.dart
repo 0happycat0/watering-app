@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
 
 class DeviceRemoteDataSource {
   final DioNetworkService networkService;
@@ -97,7 +98,7 @@ class DeviceRemoteDataSource {
     try {
       final result = await networkService.put(
         endpoint: ApiPath.device.deviceById(device.id),
-        data: device.toJson()
+        data: device.toJson(),
       );
       return result.fold(
         (exception) {
@@ -124,7 +125,7 @@ class DeviceRemoteDataSource {
     try {
       final result = await networkService.post(
         endpoint: ApiPath.device.toggleDevice(device.id),
-        data: device.toJson()
+        data: device.toJson(),
       );
       return result.fold(
         (exception) {
@@ -145,4 +146,34 @@ class DeviceRemoteDataSource {
     }
   }
 
+  Future<Either<DioException, List<HistoryWatering>>> getHistoryWatering({
+    required Device device,
+  }) async {
+    print('fetching watering history...');
+    try {
+      final result = await networkService.get(
+        endpoint: ApiPath.device.getHistoryWatering(device.id),
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          final List<dynamic> listData = response.data;
+          final List<HistoryWatering> listHistoryWatering = listData
+              .map((historyJson) => HistoryWatering.fromJson(historyJson))
+              .toList();
+          return Right(listHistoryWatering);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (getHistoryWatering) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
 }

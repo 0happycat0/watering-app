@@ -76,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       print('Auth transition: ${prev.runtimeType} -> ${next.runtimeType}');
       if (next is auth_state.LoginFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
-          CustomSnackBar(text: 'Đăng nhập thất bại. ${next.message}')
+          CustomSnackBar(text: 'Đăng nhập thất bại. ${next.message}'),
         );
       }
       if (next is auth_state.Success && prev is! auth_state.Success) {
@@ -103,7 +103,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             alignment: Alignment.topCenter,
             children: [
               Image.asset(
-                AppAssets.logo,
+                AppAssets.splash,
                 height: 300,
                 scale: 0.7,
               ),

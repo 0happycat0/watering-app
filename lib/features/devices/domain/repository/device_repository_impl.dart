@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
 import 'package:watering_app/features/devices/data/source/device_remote.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository.dart';
 
@@ -70,6 +71,19 @@ class DeviceRepositoryImpl extends DeviceRepository{
       },
       (res) {
         return Right(res);
+      }
+    );
+  }
+
+  @override
+  Future<Either<DioException, List<HistoryWatering>>> getHistoryWatering({required Device device}) async {
+    final response = await deviceRemoteDataSource.getHistoryWatering(device: device);
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (listDevices) {
+        return Right(listDevices);
       }
     );
   }

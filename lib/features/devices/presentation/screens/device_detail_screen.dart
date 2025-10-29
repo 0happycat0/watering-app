@@ -6,11 +6,10 @@ import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/delete_device_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/features/devices/data/models/device_model.dart';
-import 'package:watering_app/features/devices/presentation/screens/control_tab.dart';
+import 'package:watering_app/features/devices/presentation/screens/control_tab_screen.dart';
 import 'package:watering_app/theme/theme.dart';
 
 class DeviceDetailScreen extends ConsumerStatefulWidget {

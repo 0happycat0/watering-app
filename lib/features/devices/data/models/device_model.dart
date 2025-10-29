@@ -26,7 +26,7 @@ class Device extends Equatable {
         topicSensor: json['topicSensor'] ?? '',
         topicWatering: json['topicWatering'] ?? '',
         action: json['action'] ?? '',
-        duration: json['duration'] ?? 0,
+        duration:(json['duration'] ?? 0) ~/ 60,
       );
 
   Map<String, dynamic> toJson() {
@@ -37,7 +37,7 @@ class Device extends Equatable {
       'topicSensor': topicSensor,
       'topicWatering': topicWatering,
       'action': action,
-      'duration': duration
+      'duration': duration * 60
     };
   }
 

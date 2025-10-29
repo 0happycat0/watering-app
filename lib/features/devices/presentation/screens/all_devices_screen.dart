@@ -7,7 +7,6 @@ import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/delete_device_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/features/devices/presentation/providers/device/update_device_provider.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
@@ -142,7 +141,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   Widget build(BuildContext context) {
     final devicesState = ref.watch(devicesProvider);
 
-    //updateDeviceProvider và deleteDeviceProvider là các autoDispose, nên nếu không watch sẽ 
+    //updateDeviceProvider và deleteDeviceProvider là các autoDispose, nên nếu không watch sẽ
     //không dùng được hàm update và delete, vì nó sẽ bị dispose trong dialog
     ref.watch(updateDeviceProvider);
     ref.watch(deleteDeviceProvider);
@@ -154,12 +153,21 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Tất cả thiết bị'),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
         child: () {
           if (devicesState is devices_state.Loading) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           } else if (devicesState is devices_state.Success) {
             final devices = devicesState.devicesList;
+            // final List<Device> devices = [
+            //   Device(name: 'thiet bi 1', deviceId: 'esp-01'),
+            //   Device(name: 'thiet bi 1', deviceId: 'esp-01'),
+            //   Device(name: 'thiet bi 1', deviceId: 'esp-01'),
+            //   Device(name: 'thiet bi 1', deviceId: 'esp-01'),
+            //   Device(name: 'thiet bi 1', deviceId: 'esp-01'),
+            //   Device(name: 'thiet bi 1', deviceId: 'esp-01'),
+            //   Device(name: 'thiet bi 1', deviceId: 'esp-01'),
+            // ];
 
             return RefreshIndicator(
               displacement: 30,
@@ -167,9 +175,9 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 await ref.read(devicesProvider.notifier).refresh();
               },
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 2 / 3,
+                  childAspectRatio: 3 / 4,
                   mainAxisSpacing: 0,
                   crossAxisSpacing: 0,
                 ),
@@ -208,7 +216,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
               ),
             );
           } else {
-            return const Center(child: Text("Trạng thái không xác định"));
+            return Center(child: Text("Trạng thái không xác định"));
           }
         }(),
       ),

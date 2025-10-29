@@ -70,6 +70,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     ref.listen(requestLogoutProvider, (prev, next) {
+      print('Request logout transition: $prev -> $next');
       if (next == true) {
         ref.read(authProvider.notifier).logout();
         //reset
@@ -77,7 +78,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         _showRequestLogInAgainDialog();
       }
     });
-
+    
     return Scaffold(
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomNavBar(
