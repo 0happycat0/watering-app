@@ -28,7 +28,7 @@ class ControlTabScreen extends ConsumerStatefulWidget {
 class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   final _durationController = TextEditingController(text: '10');
 
-  int _rowPerPage = 5;
+  // final _rowPerPage = 5;
   bool _isWatering = false;
 
   void _onDurationTextChanged(String text) {
@@ -177,7 +177,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                     height: 20,
                     child: _isWatering
                         ? Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            padding: EdgeInsets.symmetric(horizontal: 14),
                             child: Text(
                               'Đang bơm...',
                               textAlign: TextAlign.left,

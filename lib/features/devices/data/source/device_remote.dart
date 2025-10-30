@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:watering_app/core/constants/api_path.dart';
+import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
 
 class DeviceRemoteDataSource {
@@ -168,6 +170,58 @@ class DeviceRemoteDataSource {
       );
     } catch (e) {
       print('Loi khac (getHistoryWatering) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
+  Future<Either<DioException, List<HistorySensor>>> getHistorySensor({
+    required Device device,
+    int? page,
+    int? size,
+    HistorySensorSortField? sortField,
+    bool? isAscending,
+  }) async {
+    print('fetching watering history...');
+    try {
+      final queryParameters = <String, dynamic>{};
+
+      if (page != null) {
+        queryParameters[ApiStrings.page] = page;
+      }
+      if (size != null) {
+        queryParameters[ApiStrings.size] = size;
+      }
+      if (sortField != null && isAscending != null) {
+        final String fieldName = sortField.name;
+        final String direction = isAscending
+            ? ApiStrings.arrange.ascending
+            : ApiStrings.arrange.descending;
+        queryParameters[ApiStrings.sort] = '$fieldName,$direction';
+      }
+
+      final result = await networkService.get(
+        endpoint: ApiPath.device.getHistorySensor(device.id),
+        queryParameters: queryParameters,
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          final List<dynamic> listData = response.data;
+          final List<HistorySensor> listHistorySensor = listData
+              .map((historyJson) => HistorySensor.fromJson(historyJson))
+              .toList();
+          return Right(listHistorySensor);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (getHistorySensor) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

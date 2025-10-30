@@ -11,11 +11,9 @@ class DeviceGridItem extends StatelessWidget {
     required this.onSelectDevice,
     required this.onSelectEdit,
     required this.onSelectDelete,
-    this.isOnline = true,
   });
 
   final Device device;
-  final bool isOnline;
   final void Function() onSelectDevice;
   final void Function() onSelectEdit;
   final void Function() onSelectDelete;
@@ -62,7 +60,7 @@ class DeviceGridItem extends StatelessWidget {
                           children: [
                             Align(
                               alignment: Alignment.centerLeft,
-                              child: isOnline
+                              child: device.online
                                   ? Icon(Symbols.android_wifi_3_bar_rounded)
                                   : Icon(Symbols.wifi_off_rounded),
                             ),

@@ -8,6 +8,7 @@ class Device extends Equatable {
   final String topicWatering;
   final String action;
   final int duration;
+  final bool online;
 
   const Device({
     this.id = '',
@@ -17,17 +18,19 @@ class Device extends Equatable {
     this.topicWatering = '',
     this.action = '',
     this.duration = 0,
+    this.online = true,
   });
 
   factory Device.fromJson(Map<String, dynamic> json) => Device(
-        id: json['id'] ?? '',
-        deviceId: json['deviceId'] ?? '',
-        name: json['name'] ?? '',
-        topicSensor: json['topicSensor'] ?? '',
-        topicWatering: json['topicWatering'] ?? '',
-        action: json['action'] ?? '',
-        duration:(json['duration'] ?? 0) ~/ 60,
-      );
+    id: json['id'] ?? '',
+    deviceId: json['deviceId'] ?? '',
+    name: json['name'] ?? '',
+    topicSensor: json['topicSensor'] ?? '',
+    topicWatering: json['topicWatering'] ?? '',
+    action: json['action'] ?? '',
+    duration: (json['duration'] ?? 0) ~/ 60,
+    online: json['online'] ?? true,
+  );
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -37,10 +40,20 @@ class Device extends Equatable {
       'topicSensor': topicSensor,
       'topicWatering': topicWatering,
       'action': action,
-      'duration': duration * 60
+      'duration': duration * 60,
+      'online': online,
     };
   }
 
   @override
-  List<Object?> get props => [id, deviceId, name, topicSensor, topicWatering, action, duration];
+  List<Object?> get props => [
+    id,
+    deviceId,
+    name,
+    topicSensor,
+    topicWatering,
+    action,
+    duration,
+    online,
+  ];
 }

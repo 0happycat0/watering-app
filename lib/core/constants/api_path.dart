@@ -25,4 +25,5 @@ class _DevicePath {
   String deviceById(String id) => '/devices/$id';
   String toggleDevice(String id) => '/devices/$id/watering';
   String getHistoryWatering(String id) => '/devices/$id/watering/history';
+  String getHistorySensor(String id) => '/devices/$id/sensor/history';
 }

@@ -9,6 +9,7 @@ import 'package:watering_app/features/devices/presentation/providers/device/dele
 import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/presentation/screens/analytics_tab_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/control_tab_screen.dart';
 import 'package:watering_app/theme/theme.dart';
 
@@ -102,6 +103,8 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
           bottom: TabBar(
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorWeight: 3,
+            labelStyle: TextStyle(fontWeight: FontWeight.bold),
+            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
             tabs: <Widget>[
               Tab(text: 'Điều khiển'),
               Tab(text: 'Theo dõi'),
@@ -112,7 +115,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
         body: TabBarView(
           children: <Widget>[
             ControlTabScreen(device: widget.device),
-            Center(child: Text("It's rainy here")),
+            AnalyticsTabScreen(device: widget.device),
             Center(child: Text("It's sunny here")),
           ],
         ),

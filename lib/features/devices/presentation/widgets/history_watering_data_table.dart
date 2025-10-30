@@ -12,17 +12,44 @@ class HistoryWateringDataSource extends DataTableSource {
   DataRow? getRow(int index) {
     final historyWatering = historyWateringList[index];
     final String formattedDate;
+    final String formattedTime;
     if (historyWatering.startTime != null) {
       formattedDate = DateFormat(
-        'dd-MM-yyyy',
+        'dd/MM/yyyy',
       ).format(historyWatering.startTime!);
+      formattedTime = DateFormat('HH:mm').format(historyWatering.startTime!);
     } else {
       formattedDate = 'N/A';
+      formattedTime = '';
     }
 
     return DataRow2(
       cells: <DataCell>[
-        DataCell(Center(child: Text(formattedDate))),
+        DataCell(
+          Center(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    formattedDate,
+                    style: TextStyle(
+                      fontSize: 12, 
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    formattedTime,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         DataCell(Center(child: Text(historyWatering.duration.toString()))),
       ],
     );
