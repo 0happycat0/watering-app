@@ -6,8 +6,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/get_history_sensor_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
+import 'package:watering_app/features/devices/providers/device/get_history_provider.dart';
+import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/theme/theme.dart';
 

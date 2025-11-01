@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
+import 'package:watering_app/features/devices/data/models/schedule_model.dart';
 import 'package:watering_app/features/devices/data/source/device_remote.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository.dart';
 
@@ -122,6 +123,46 @@ class DeviceRepositoryImpl extends DeviceRepository {
       },
       (listHistory) {
         return Right(listHistory);
+      },
+    );
+  }
+
+  @override
+  Future<Either<DioException, List<Schedule>>> getListSchedule({
+    required Device device,
+    int? page,
+    int? size,
+  }) async {
+    final response = await deviceRemoteDataSource.getListSchedule(
+      device: device,
+      page: page,
+      size: size,
+    );
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (listSchedule) {
+        return Right(listSchedule);
+      },
+    );
+  }
+
+  @override
+  Future<Either<DioException, Response>> toggleSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    final response = await deviceRemoteDataSource.toggleSchedule(
+      device: device,
+      schedule: schedule,
+    );
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) {
+        return Right(res);
       },
     );
   }

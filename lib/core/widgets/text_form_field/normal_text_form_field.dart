@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/theme/theme.dart';
 
@@ -8,25 +9,33 @@ class NormalTextFormField extends StatelessWidget {
     required this.textController,
     required this.hintText,
     this.suffixText,
+    this.suffixIcon,
     this.label,
     this.validator,
     this.isDense = false,
     this.padding,
+    this.readOnly = false,
     this.textAlign = TextAlign.start,
     this.keyboardType,
+    this.inputFormatters,
     this.onChanged,
+    this.onTap,
   });
 
   final String? Function(String?)? validator;
   final TextEditingController textController;
   final String hintText;
   final String? suffixText;
+  final Icon? suffixIcon;
   final String? label;
   final bool isDense;
   final EdgeInsetsGeometry? padding;
+  final bool readOnly;
   final TextAlign textAlign;
   final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
   final void Function(String)? onChanged;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +62,9 @@ class NormalTextFormField extends StatelessWidget {
             color: colorScheme.onSurface,
           ),
           textAlign: textAlign,
+          readOnly: readOnly,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
             contentPadding: isDense
@@ -64,8 +75,10 @@ class NormalTextFormField extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             suffixText: suffixText,
+            suffixIcon: suffixIcon,
           ),
           onChanged: onChanged,
+          onTap: onTap,
         ),
       ],
     );

@@ -7,10 +7,10 @@ import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
+import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
-import 'package:watering_app/features/devices/presentation/providers/device/get_history_watering_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/toggle_device_provider.dart';
+import 'package:watering_app/features/devices/providers/device/get_history_provider.dart';
+import 'package:watering_app/features/devices/providers/device/toggle_device_provider.dart';
 import 'package:watering_app/features/devices/presentation/widgets/history_watering_data_table.dart';
 import 'package:watering_app/theme/styles.dart';
 import 'package:watering_app/theme/theme.dart';
@@ -91,6 +91,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   @override
   Widget build(BuildContext context) {
     final id = widget.device.id;
+
     final historyWateringState = ref.watch(getHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;
 
@@ -310,7 +311,14 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                             ),
                           ),
                         )
-                      : Center(child: Text('Lỗi khi tải lịch sử tưới')),
+                      : Expanded(
+                          child: Center(
+                            child: Text(
+                              'Lỗi khi tải lịch sử tưới',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ),
                 ],
               ),
             ),

@@ -6,6 +6,7 @@ import 'package:watering_app/core/network/dio_network_service.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
+import 'package:watering_app/features/devices/data/models/schedule_model.dart';
 
 class DeviceRemoteDataSource {
   final DioNetworkService networkService;
@@ -186,7 +187,7 @@ class DeviceRemoteDataSource {
     HistorySensorSortField? sortField,
     bool? isAscending,
   }) async {
-    print('fetching watering history...');
+    print('fetching sensor history...');
     try {
       final queryParameters = <String, dynamic>{};
 
@@ -222,6 +223,78 @@ class DeviceRemoteDataSource {
       );
     } catch (e) {
       print('Loi khac (getHistorySensor) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
+  Future<Either<DioException, List<Schedule>>> getListSchedule({
+    required Device device,
+    int? page,
+    int? size,
+  }) async {
+    print('fetching list schedule...');
+    try {
+      final queryParameters = <String, dynamic>{};
+
+      if (page != null) {
+        queryParameters[ApiStrings.page] = page;
+      }
+      if (size != null) {
+        queryParameters[ApiStrings.size] = size;
+      }
+
+      final result = await networkService.get(
+        endpoint: ApiPath.device.getListSchedule(device.id),
+        queryParameters: queryParameters,
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          final List<dynamic> listData = response.data;
+          final List<Schedule> listSchedule = listData
+              .map((historyJson) => Schedule.fromJson(historyJson))
+              .toList();
+          return Right(listSchedule);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (getListSchedule) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
+  Future<Either<DioException, Response>> toggleSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    print('fetching list schedule...');
+    try {
+      final result = await networkService.post(
+        endpoint: ApiPath.device.toggleSchedule(device.id, schedule.id),
+        data: {ApiStrings.scheduleId: schedule.status},
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          return Right(response);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (toggleSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

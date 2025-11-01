@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
+import 'package:watering_app/features/devices/data/models/schedule_model.dart';
 
 sealed class DeviceState {
   const DeviceState();
@@ -15,9 +16,14 @@ class Loading extends DeviceState {
 }
 
 class Success extends DeviceState {
-  const Success({this.listHistoryWatering, this.listHistorySensor});
+  const Success({
+    this.listHistoryWatering,
+    this.listHistorySensor,
+    this.listSchedule,
+  });
   final List<HistoryWatering>? listHistoryWatering;
   final List<HistorySensor>? listHistorySensor;
+  final List<Schedule>? listSchedule;
 }
 
 class Failure extends DeviceState {

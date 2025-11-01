@@ -5,8 +5,9 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/delete_device_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/device/device_state.dart'
+import 'package:watering_app/features/devices/presentation/screens/schedule_tab_screen.dart';
+import 'package:watering_app/features/devices/providers/device/device_provider.dart';
+import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/screens/analytics_tab_screen.dart';
@@ -64,6 +65,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final device = widget.device;
     ref.listen(deleteDeviceProvider, (prev, next) {
       print(
         'Delete device transition: ${prev.runtimeType} -> ${next.runtimeType}',
@@ -83,6 +85,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
         ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${widget.device.name}"'));
       }
     });
+
     return DefaultTabController(
       initialIndex: 0,
       length: 3,
@@ -114,9 +117,9 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
         ),
         body: TabBarView(
           children: <Widget>[
-            ControlTabScreen(device: widget.device),
-            AnalyticsTabScreen(device: widget.device),
-            Center(child: Text("It's sunny here")),
+            ControlTabScreen(device: device),
+            AnalyticsTabScreen(device: device),
+            ScheduleTabScreen(device: device),
           ],
         ),
       ),

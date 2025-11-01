@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:watering_app/core/constants/shared_preference_key.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/features/authentication/data/source/auth_local.dart';
 import 'package:watering_app/features/authentication/data/source/auth_remote.dart';

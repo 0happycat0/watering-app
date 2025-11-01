@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/widgets/bottom_nav_bar.dart';
 import 'package:watering_app/core/widgets/custom_fab.dart';
-import 'package:watering_app/features/authentication/presentation/providers/auth_provider.dart';
+import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/all_devices_screen.dart';
 import 'package:watering_app/features/devices/presentation/widgets/add_new_device.dart';
@@ -78,7 +79,12 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         _showRequestLogInAgainDialog();
       }
     });
-    
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+      ),
+    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomNavBar(

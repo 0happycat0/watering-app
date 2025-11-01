@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_impl.dart';
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_provider.dart';
-import 'package:watering_app/features/authentication/presentation/providers/auth_state.dart'
+import 'package:watering_app/features/authentication/providers/auth_state.dart'
     as auth_state;
 
 final authProvider = StateNotifierProvider<AuthNotifier, auth_state.AuthState>(

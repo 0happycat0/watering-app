@@ -10,6 +10,8 @@ class ApiStrings {
   static const String size = 'size';
   static const String sort = 'sort';
 
+  static const String scheduleId = 'scheduleId';
+
   static final arrange = _Arrange();
 }
 

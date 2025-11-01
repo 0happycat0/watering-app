@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
-import 'package:watering_app/features/authentication/presentation/providers/auth_provider.dart';
+import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 
 class AuthInterceptor extends Interceptor {
   final Dio _dio;

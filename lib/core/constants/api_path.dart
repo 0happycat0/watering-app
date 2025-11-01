@@ -1,8 +1,12 @@
 class ApiPath {
   //FIXME: baseUrl
-  static const String baseUrl = 'https://be-smart-watering-production.up.railway.app';
+  static const String baseUrl =
+      'https://be-smart-watering-production.up.railway.app';
   // static const String baseUrl =
   //     'https://unmoaned-dale-nonspherical.ngrok-free.dev'; //work on emulator (not physical device)
+
+  static const String websocketUrl =
+      'https://be-smart-watering-production.up.railway.app/streaming';
 
   static final auth = _AuthPath();
   static final device = _DevicePath();
@@ -26,4 +30,13 @@ class _DevicePath {
   String toggleDevice(String id) => '/devices/$id/watering';
   String getHistoryWatering(String id) => '/devices/$id/watering/history';
   String getHistorySensor(String id) => '/devices/$id/sensor/history';
+
+  //only use with websocket service
+  String getRealtimeSensor(String deviceId) => '/sensor/$deviceId';
+  String getRealtimeWatering(String deviceId) => '/watering/$deviceId';
+
+  //schedule
+  String getListSchedule(String id) => '/devices/$id/schedule';
+  String toggleSchedule(String id, String scheduleId) =>
+      '/devices/$id/schedule/$scheduleId/trigger';
 }

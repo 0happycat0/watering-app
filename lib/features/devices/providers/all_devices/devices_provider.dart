@@ -1,11 +1,14 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';
-import 'package:watering_app/features/devices/presentation/providers/all_devices/devices_state.dart'
+import 'package:watering_app/features/devices/providers/all_devices/devices_state.dart'
     as devices_state;
 
 final devicesProvider =
-    StateNotifierProvider.autoDispose<DevicesNotifier, devices_state.DevicesState>(
+    StateNotifierProvider.autoDispose<
+      DevicesNotifier,
+      devices_state.DevicesState
+    >(
       (ref) {
         final deviceRepository = ref.watch(deviceRepositoryProvider);
         return DevicesNotifier(deviceRepository);
@@ -30,6 +33,7 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
       },
     );
   }
+
 
   Future<void> refresh() async {
     await getAllDevices();
