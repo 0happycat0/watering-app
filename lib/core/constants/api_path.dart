@@ -39,4 +39,7 @@ class _DevicePath {
   String getListSchedule(String id) => '/devices/$id/schedule';
   String toggleSchedule(String id, String scheduleId) =>
       '/devices/$id/schedule/$scheduleId/trigger';
+  String createSchedule(String id) => '/devices/$id/schedule';
+  String updateSchedule(String id, String scheduleId) => '/devices/$id/schedule/$scheduleId';
+  String deleteSchedule(String id, String scheduleId) => '/devices/$id/schedule/$scheduleId';
 }

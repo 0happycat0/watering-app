@@ -18,6 +18,6 @@ class AppColors {
     400: Color.fromARGB(255, 130, 128, 65),
     500: Color.fromARGB(255, 99, 98, 49),
   };
-  static const Color primarySurface = Color(0xFFB2DA8A);
+  static const Color primarySurface = Color.fromARGB(255, 229, 243, 214);
   static const Color divider = Color.fromARGB(255, 235, 235, 235);
 }

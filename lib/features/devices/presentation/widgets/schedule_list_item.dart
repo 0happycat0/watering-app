@@ -77,10 +77,6 @@ class ScheduleListItem extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: AppColors.mainGreen[100]!.withAlpha(200),
-          width: 1,
-        ),
       ),
       color: colorScheme.surface,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

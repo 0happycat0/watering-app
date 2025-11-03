@@ -47,7 +47,7 @@ class DeviceRemoteDataSource {
   }) async {
     try {
       final result = await networkService.post(
-        endpoint: ApiPath.device.allDevice,
+        endpoint: ApiPath.device.createDevice,
         data: device.toJson(),
       );
       return result.fold(
@@ -279,11 +279,10 @@ class DeviceRemoteDataSource {
     required Device device,
     required Schedule schedule,
   }) async {
-    print('fetching list schedule...');
     try {
       final result = await networkService.post(
         endpoint: ApiPath.device.toggleSchedule(device.id, schedule.id),
-        data: {ApiStrings.scheduleId: schedule.status},
+        data: {ApiStrings.status: schedule.status},
       );
       return result.fold(
         (exception) {
@@ -295,6 +294,89 @@ class DeviceRemoteDataSource {
       );
     } catch (e) {
       print('Loi khac (toggleSchedule) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
+  Future<Either<DioException, Response>> createSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    try {
+      final result = await networkService.post(
+        endpoint: ApiPath.device.createSchedule(device.id),
+        data: schedule.toJson(),
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          return Right(response);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (createSchedule) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
+  Future<Either<DioException, Response>> updateSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    try {
+      final result = await networkService.put(
+        endpoint: ApiPath.device.updateSchedule(device.id, schedule.id),
+        data: schedule.toJson(),
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          return Right(response);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (updateSchedule) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
+  Future<Either<DioException, Response>> deleteSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    try {
+      final result = await networkService.delete(
+        endpoint: ApiPath.device.deleteSchedule(device.id, schedule.id),
+      );
+      return result.fold(
+        (exception) {
+          return Left(exception);
+        },
+        (response) {
+          return Right(response);
+        },
+      );
+    } catch (e) {
+      print('Loi khac (updateSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

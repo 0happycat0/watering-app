@@ -5,12 +5,13 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_assets.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
+import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/features/devices/providers/device/get_history_provider.dart';
-import 'package:watering_app/features/devices/providers/device/toggle_device_provider.dart';
 import 'package:watering_app/features/devices/presentation/widgets/history_watering_data_table.dart';
 import 'package:watering_app/theme/styles.dart';
 import 'package:watering_app/theme/theme.dart';
@@ -29,7 +30,6 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   final _durationController = TextEditingController(text: '10');
 
   // final _rowPerPage = 5;
-  bool _isWatering = false;
 
   void _onDurationTextChanged(String text) {
     setState(() {
@@ -60,19 +60,24 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   }
 
   void _toggleDevice(String id, String action, int duration) async {
-    setState(() {
-      _isWatering = !_isWatering;
-    });
+    final success = await ref
+        .read(toggleDeviceProvider.notifier)
+        .toggleDevice(
+          device: Device(id: id, action: action, duration: duration),
+        );
 
-    await ref.read(
-      toggleDeviceProvider(
-        Device(id: id, action: action, duration: duration),
-      ).future,
-    );
-    if (!_isWatering) {
-      await ref
-          .read(getHistoryWateringProvider.notifier)
-          .getHistoryWatering(id: widget.device.id);
+    if (success) {
+      if (action == 'STOP') {
+        await ref
+            .read(getHistoryWateringProvider.notifier)
+            .getHistoryWatering(id: widget.device.id);
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          CustomSnackBar(text: 'Bơm không thành công! Vui lòng thử lại.'),
+        );
+      }
     }
   }
 
@@ -92,6 +97,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   Widget build(BuildContext context) {
     final id = widget.device.id;
 
+    final isWatering = ref.watch(toggleDeviceProvider);
     final historyWateringState = ref.watch(getHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;
 
@@ -106,7 +112,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
 
     return Container(
       height: double.infinity,
-      color: AppColors.mainGreen[50]!,
+      color: AppColors.primarySurface,
       child: Column(
         children: [
           //pump section
@@ -176,7 +182,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                   ),
                   SizedBox(
                     height: 20,
-                    child: _isWatering
+                    child: isWatering
                         ? Padding(
                             padding: EdgeInsets.symmetric(horizontal: 14),
                             child: Text(
@@ -189,7 +195,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                   Center(
                     child: SizedBox(
                       width: 150,
-                      child: _isWatering
+                      child: isWatering
                           ? ElevatedButton(
                               onPressed: () {
                                 _toggleDevice(id, 'STOP', 0);

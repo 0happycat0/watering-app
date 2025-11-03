@@ -41,7 +41,7 @@ class Failure extends DeviceState {
       case 'Internal Server Error':
         return 'Lỗi máy chủ. Vui lòng thử lại';
       default:
-        return 'Không thể thêm thiết bị, vui lòng thử lại';
+        return 'Có lỗi xảy ra, vui lòng thử lại';
     }
   }
 }

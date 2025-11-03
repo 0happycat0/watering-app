@@ -9,6 +9,7 @@ import 'package:watering_app/features/devices/presentation/widgets/schedule_list
 import 'package:watering_app/features/devices/providers/device/schedule_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
+import 'package:watering_app/theme/styles.dart';
 
 class ScheduleTabScreen extends ConsumerStatefulWidget {
   const ScheduleTabScreen({super.key, required this.device});
@@ -76,8 +77,64 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
       ),
       backgroundColor: Colors.white,
       builder: (ctx) {
-        return EditScheduleSheet(schedule: schedule);
+        return EditScheduleSheet(id: widget.device.id, schedule: schedule);
       },
+    );
+  }
+
+  void _toggleSchedule(bool newState, Schedule schedule) async {
+    final success = await ref
+        .read(getListScheduleProvider.notifier)
+        .toggleSchedule(
+          id: widget.device.id,
+          scheduleToToggle: schedule,
+          newStatus: newState,
+        );
+    if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        CustomSnackBar(text: 'Đặt lịch thất bại.'),
+      );
+    }
+  }
+
+  void _showAskDeleteDialog(Schedule schedule) {
+    final deleteScheduleNotifier = ref.read(deleteScheduleProvider.notifier);
+    final listScheduleNotifier = ref.read(getListScheduleProvider.notifier);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text('Xóa lịch'),
+        content: Text(
+          'Bạn có muốn xóa lịch này không?',
+        ),
+        actions: [
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Hủy'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              listScheduleNotifier.setLoading();
+              await deleteScheduleNotifier.deleteSchedule(
+                id: widget.device.id,
+                scheduleId: schedule.id,
+              );
+              if (mounted) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(CustomSnackBar(text: 'Đã xóa lịch'));
+              }
+              listScheduleNotifier.refresh(id: widget.device.id);
+            },
+            child: Text('Xóa'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -95,6 +152,9 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
   Widget build(BuildContext context) {
     final id = widget.device.id;
     final scheduleState = ref.watch(getListScheduleProvider);
+
+    ref.watch(deleteScheduleProvider);
+
     ref.listen(getListScheduleProvider, (prev, next) {
       print(
         'Schedule list transition: ${prev.runtimeType} -> ${next.runtimeType}',
@@ -110,42 +170,39 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
       alignment: Alignment.bottomCenter,
       children: [
         Container(
-          color: AppColors.mainGreen[50]!,
+          color: AppColors.primarySurface,
           child: scheduleState is device_state.Loading
               ? Center(
                   child: CircularProgressIndicator(),
                 )
               : scheduleState is device_state.Success
               ? (listSchedule.isNotEmpty)
-                    ? ListView.builder(
-                        padding: EdgeInsets.only(top: 10, bottom: 100),
-                        itemCount: listSchedule.length,
-                        itemBuilder: (ctx, index) {
-                          final schedule = listSchedule[index];
-                          return ScheduleListItem(
-                            schedule: schedule,
-                            onToggle: (bool newState) async {
-                              final success = await ref
-                                  .read(getListScheduleProvider.notifier)
-                                  .toggleSchedule(
-                                    deviceId: widget.device.id,
-                                    scheduleToToggle: schedule,
-                                    newStatus: newState,
-                                  );
-                              if (!success && context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  CustomSnackBar(text: 'Đặt lịch thất bại.'),
-                                );
-                              }
-                            },
-                            onSelectEdit: () {
-                              _showScheduleSheet(schedule);
-                            },
-                            onSelectDelete: () {
-                              print('Delete schedule ${schedule.id}');
-                            },
-                          );
+                    ? RefreshIndicator(
+                        displacement: 30,
+                        onRefresh: () async {
+                          await ref
+                              .read(getListScheduleProvider.notifier)
+                              .refresh(id: id);
                         },
+                        child: ListView.builder(
+                          padding: EdgeInsets.only(top: 10, bottom: 100),
+                          itemCount: listSchedule.length,
+                          itemBuilder: (ctx, index) {
+                            final schedule = listSchedule[index];
+                            return ScheduleListItem(
+                              schedule: schedule,
+                              onToggle: (bool newState) async {
+                                _toggleSchedule(newState, schedule);
+                              },
+                              onSelectEdit: () {
+                                _showScheduleSheet(schedule);
+                              },
+                              onSelectDelete: () {
+                                _showAskDeleteDialog(schedule);
+                              },
+                            );
+                          },
+                        ),
                       )
                     : Center(
                         child: Text(
@@ -153,12 +210,28 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                           style: TextStyle(fontSize: 16),
                         ),
                       )
-              : Center(
-                  child: Text(
-                    'Lỗi khi tải lịch tưới',
-                    style: TextStyle(fontSize: 16),
+              : scheduleState is device_state.Failure
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        scheduleState.message,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          ref
+                              .read(getListScheduleProvider.notifier)
+                              .refresh(id: id);
+                        },
+                        style: AppStyles.textButtonStyle,
+                        child: Text('Thử lại'),
+                      ),
+                    ],
                   ),
-                ),
+                )
+              : Center(child: Text('Có lỗi xảy ra')),
         ),
         Container(
           decoration: BoxDecoration(

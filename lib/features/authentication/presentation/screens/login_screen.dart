@@ -66,8 +66,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  // String test = 'test';
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -96,7 +94,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           constraints: BoxConstraints(minHeight: screenHeight),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primarySurface, AppColors.mainGreen[200]!],
+              colors: [AppColors.mainGreen[50]!, AppColors.mainGreen[200]!],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

@@ -2,13 +2,17 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';
-import 'package:watering_app/features/devices/providers/device/device_state.dart' as device_state;
+import 'package:watering_app/features/devices/providers/device/device_state.dart'
+    as device_state;
 
 //create device
 final createDeviceProvider =
-    StateNotifierProvider.autoDispose<CreateDeviceNotifier, device_state.DeviceState>(
-  (ref) => CreateDeviceNotifier(ref.watch(deviceRepositoryProvider)),
-);
+    StateNotifierProvider.autoDispose<
+      CreateDeviceNotifier,
+      device_state.DeviceState
+    >(
+      (ref) => CreateDeviceNotifier(ref.watch(deviceRepositoryProvider)),
+    );
 
 class CreateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
   CreateDeviceNotifier(this.deviceRepository) : super(device_state.Initial());
@@ -32,9 +36,12 @@ class CreateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
 //--------------------------------------------------------------------------------------------------
 //update device
 final updateDeviceProvider =
-    StateNotifierProvider.autoDispose<UpdateDeviceNotifier, device_state.DeviceState>(
-  (ref) => UpdateDeviceNotifier(ref.watch(deviceRepositoryProvider)),
-);
+    StateNotifierProvider.autoDispose<
+      UpdateDeviceNotifier,
+      device_state.DeviceState
+    >(
+      (ref) => UpdateDeviceNotifier(ref.watch(deviceRepositoryProvider)),
+    );
 
 class UpdateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
   UpdateDeviceNotifier(this.deviceRepository) : super(device_state.Initial());
@@ -65,9 +72,12 @@ class UpdateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
 //--------------------------------------------------------------------------------------------------
 //delete device
 final deleteDeviceProvider =
-    StateNotifierProvider.autoDispose<DeleteDeviceNotifier, device_state.DeviceState>(
-  (ref) => DeleteDeviceNotifier(ref.watch(deviceRepositoryProvider)),
-);
+    StateNotifierProvider.autoDispose<
+      DeleteDeviceNotifier,
+      device_state.DeviceState
+    >(
+      (ref) => DeleteDeviceNotifier(ref.watch(deviceRepositoryProvider)),
+    );
 
 class DeleteDeviceNotifier extends StateNotifier<device_state.DeviceState> {
   DeleteDeviceNotifier(this.deviceRepository) : super(device_state.Initial());
@@ -91,3 +101,39 @@ class DeleteDeviceNotifier extends StateNotifier<device_state.DeviceState> {
   }
 }
 
+//--------------------------------------------------------------------------------------------------
+//toggle device (true: đang bơm, false: không bơm)
+final toggleDeviceProvider = StateNotifierProvider<ToggleDeviceNotifier, bool>(
+  (ref) => ToggleDeviceNotifier(ref.watch(deviceRepositoryProvider)),
+);
+
+class ToggleDeviceNotifier extends StateNotifier<bool> {
+  ToggleDeviceNotifier(this.deviceRepository) : super(false);
+  final DeviceRepositoryImpl deviceRepository;
+
+  Future<bool> toggleDevice({
+    required Device device,
+  }) async {
+    final originalState = state;
+
+    if (device.action == 'START') {
+      state = true;
+    } else if (device.action == 'STOP') {
+      state = false;
+    }
+
+    final response = await deviceRepository.toggleDevice(
+      device: device,
+    );
+
+    return response.fold(
+      (exception) {
+        state = originalState;
+        return false;
+      },
+      (_) {
+        return true;
+      },
+    );
+  }
+}

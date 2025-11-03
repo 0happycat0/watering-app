@@ -3,7 +3,7 @@ class ApiStrings {
   static const String refreshToken = 'refreshToken';
   static const String tokenExpired = 'Token has expired';
   static const String invalidToken = 'Invalid token';
-  
+
   static const String message = 'message';
 
   static const String page = 'page';
@@ -11,6 +11,7 @@ class ApiStrings {
   static const String sort = 'sort';
 
   static const String scheduleId = 'scheduleId';
+  static const String status = 'status';
 
   static final arrange = _Arrange();
 }

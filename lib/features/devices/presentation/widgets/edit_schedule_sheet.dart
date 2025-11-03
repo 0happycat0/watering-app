@@ -3,17 +3,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/widgets/custom_circular_progress.dart';
+import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
 import 'package:watering_app/features/devices/data/models/schedule_model.dart';
+import 'package:watering_app/features/devices/providers/device/device_state.dart'
+    as device_state;
+import 'package:watering_app/features/devices/providers/device/schedule_provider.dart';
 import 'package:watering_app/theme/theme.dart';
 
 class EditScheduleSheet extends ConsumerStatefulWidget {
   const EditScheduleSheet({
     super.key,
+    required this.id,
     this.schedule, // Null: Chế độ Thêm, Not-Null: Chế độ Sửa
   });
 
+  final String id;
   final Schedule? schedule;
 
   @override
@@ -25,8 +32,8 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
   TimeOfDay? _selectedTime;
   final _durationController = TextEditingController();
   Set<DaysOfWeek> _selectedDays = {};
+  late RepeatType _selectedRepeatType;
 
-  // Map từ UI label sang Enum (giống ScheduleListItem)
   static const Map<String, DaysOfWeek> dayMap = {
     'T2': DaysOfWeek.MON,
     'T3': DaysOfWeek.TUE,
@@ -45,16 +52,16 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     _isEditMode = widget.schedule != null;
 
     if (_isEditMode) {
-      // Chế độ SỬA: Lấy dữ liệu từ schedule
       final schedule = widget.schedule!;
       _selectedTime = _parseTime(schedule.startTime);
       _durationController.text = schedule.duration.toString();
       _selectedDays = schedule.daysOfWeek?.toSet() ?? {};
+      _selectedRepeatType = schedule.repeatType;
     } else {
-      // Chế độ THÊM: Đặt giá trị mặc định
-      _selectedTime = const TimeOfDay(hour: 7, minute: 0);
+      _selectedTime = TimeOfDay.now();
       _durationController.text = '15';
       _selectedDays = {};
+      _selectedRepeatType = RepeatType.ONE_TIME;
     }
 
     // Listener để đồng bộ state của quick chip và text field
@@ -65,19 +72,12 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     });
   }
 
-  @override
-  void dispose() {
-    _durationController.dispose();
-    super.dispose();
-  }
-
-  // Chuyển "07:00" thành TimeOfDay(hour: 7, minute: 0)
   TimeOfDay _parseTime(String timeStr) {
     try {
       final parts = timeStr.split(':');
       return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
     } catch (e) {
-      return const TimeOfDay(hour: 7, minute: 0); // Fallback
+      return const TimeOfDay(hour: 7, minute: 0);
     }
   }
 
@@ -111,12 +111,26 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     }
   }
 
-  // Hàm khi nhấn Lưu
-  void _onSave() {
-    // Tạm thời chỉ in ra, sau này sẽ gọi provider
+  String _getRepeatTypeText(RepeatType type) {
+    switch (type) {
+      case RepeatType.ONE_TIME:
+        return 'Một lần';
+      case RepeatType.DAYS:
+        return 'Tuỳ chọn';
+      case RepeatType.EVERYDAY:
+        return 'Mỗi ngày';
+      default:
+        return '';
+    }
+  }
+
+  void _onSave() async {
+    final schedule = widget.schedule;
     final timeStr =
-        '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
+        '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}:00';
     final duration = int.tryParse(_durationController.text) ?? 0;
+    final repeatType = _selectedRepeatType;
+    final selectedDays = _selectedDays.toList();
 
     print('--- ĐANG LƯU LỊCH ---');
     print('Mode: ${_isEditMode ? 'Sửa' : 'Thêm'}');
@@ -124,145 +138,249 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     print('Duration: $duration phút');
     print('Days: $_selectedDays');
     if (_isEditMode) {
-      print('ID (Sửa): ${widget.schedule!.id}');
+      print('ID (Sửa): ${schedule!.id}');
+      await ref
+          .read(updateScheduleProvider.notifier)
+          .updateSchedule(
+            id: widget.id,
+            scheduleId: schedule.id,
+            startTime: timeStr,
+            duration: duration,
+            repeatType: repeatType,
+            daysOfWeek: selectedDays,
+          );
+    } else {
+      await ref
+          .read(createScheduleProvider.notifier)
+          .createSchedule(
+            id: widget.id,
+            startTime: timeStr,
+            duration: duration,
+            repeatType: repeatType,
+            daysOfWeek: selectedDays,
+          );
     }
+    ref.read(getListScheduleProvider.notifier).refresh(id: widget.id);
+  }
 
-    // TODO: ref.read(provider.notifier).saveSchedule(...);
-
-    Navigator.pop(context);
+  @override
+  void dispose() {
+    _durationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    late device_state.DeviceState deviceState;
 
-    return AnimatedPadding(
-      duration: Duration(milliseconds: 50),
-      curve: Curves.decelerate,
-      padding: EdgeInsets.fromLTRB(
-        20,
-        0,
-        20,
-        30 + MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _isEditMode ? 'Cập Nhật Lịch Tưới' : 'Tạo Lịch Tưới Mới',
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.mainGreen[200],
-            ),
-          ),
-          const SizedBox(height: 24),
+    if (_isEditMode) {
+      deviceState = ref.watch(updateScheduleProvider);
+      ref.listen(updateScheduleProvider, (prev, next) {
+        print(
+          'Update schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
+        );
+        if (next is device_state.Failure) {
+          final message = next.message;
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(CustomSnackBar(text: message));
+        }
+        if (next is device_state.Success && prev is device_state.Loading) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(
+            CustomSnackBar(text: 'Cập nhật thành công'),
+          );
+          Navigator.pop(context);
+        }
+      });
+    } else {
+      deviceState = ref.watch(createScheduleProvider);
+      ref.listen(createScheduleProvider, (prev, next) {
+        print(
+          'Create schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
+        );
+        if (next is device_state.Failure) {
+          final message = next.message;
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(CustomSnackBar(text: message));
+        }
+        if (next is device_state.Success && prev is device_state.Loading) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(
+            CustomSnackBar(text: 'Đã thêm lịch'),
+          );
+          Navigator.pop(context);
+        }
+      });
+    }
 
-          // 1. Chọn giờ tưới
-          _buildSectionTitle('Chọn giờ tưới', textTheme),
-          NormalTextFormField(
-            textController: TextEditingController(
-              text: _formatTime(_selectedTime!),
-            ),
-            hintText: '',
-            readOnly: true,
-            onTap: _pickTime,
-            suffixIcon: Icon(Symbols.schedule, color: colorScheme.primary),
-          ),
-          const SizedBox(height: 20),
-
-          // 2. Thời lượng tưới
-          _buildSectionTitle('Thời lượng tưới (phút)', textTheme),
-          Row(
-            children: [
-              Expanded(
-                child: NormalTextFormField(
-                  textController: _durationController,
-                  hintText: '',
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  suffixIcon: Icon(Symbols.timer, color: colorScheme.primary),
-                ),
+    return SingleChildScrollView(
+      child: AnimatedPadding(
+        duration: Duration(milliseconds: 50),
+        curve: Curves.decelerate,
+        padding: EdgeInsets.fromLTRB(
+          20,
+          0,
+          20,
+          30 + MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _isEditMode ? 'Cập Nhật Lịch Tưới' : 'Tạo Lịch Tưới Mới',
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.mainGreen[200],
               ),
-              const SizedBox(width: 10),
-              // Các nút chọn nhanh
-              ..._quickDurations.map((duration) {
-                final isSelected =
-                    _durationController.text == duration.toString();
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: _DurationChip(
-                    label: '$duration',
-                    isSelected: isSelected,
-                    onTap: () {
-                      _durationController.text = '$duration';
-                      // Tắt focus khỏi text field
-                      FocusScope.of(context).unfocus();
-                    },
-                  ),
-                );
-              }),
-            ],
-          ),
-          const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 24),
 
-          _buildSectionTitle('Chọn các ngày lặp lại', textTheme),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+            _buildSectionTitle('Chọn giờ tưới', textTheme),
+            NormalTextFormField(
+              textController: TextEditingController(
+                text: _formatTime(_selectedTime!),
+              ),
+              hintText: '',
+              readOnly: true,
+              onTap: _pickTime,
+              suffixIcon: Icon(Symbols.schedule, color: colorScheme.primary),
+            ),
+            const SizedBox(height: 20),
+
+            _buildSectionTitle('Thời lượng tưới (phút)', textTheme),
+            Row(
+              children: [
+                Expanded(
+                  child: NormalTextFormField(
+                    textController: _durationController,
+                    hintText: '',
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    suffixIcon: Icon(Symbols.timer, color: colorScheme.primary),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ..._quickDurations.map((duration) {
+                  final isSelected =
+                      _durationController.text == duration.toString();
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: _DurationChip(
+                      label: '$duration',
+                      isSelected: isSelected,
+                      onTap: () {
+                        _durationController.text = '$duration';
+                        FocusScope.of(context).unfocus();
+                      },
+                    ),
+                  );
+                }),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            _buildSectionTitle('Kiểu lặp lại', textTheme),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: _dayLabels.map((label) {
-                final dayEnum = dayMap[label]!;
-                final isSelected = _selectedDays.contains(dayEnum);
-                return _DayToggleChip(
-                  label: label,
-                  isSelected: isSelected,
-                  onTap: () {
-                    setState(() {
-                      if (isSelected) {
-                        _selectedDays.remove(dayEnum);
-                      } else {
-                        _selectedDays.add(dayEnum);
-                      }
-                    });
-                  },
+              children: RepeatType.values.map((type) {
+                final isSelected = _selectedRepeatType == type;
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: _DurationChip(
+                      label: _getRepeatTypeText(type),
+                      isSelected: isSelected,
+                      onTap: () {
+                        setState(() {
+                          _selectedRepeatType = type;
+                        });
+                      },
+                    ),
+                  ),
                 );
               }).toList(),
             ),
-          ),
-          const SizedBox(height: 30),
+            const SizedBox(height: 20),
 
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  icon: const Icon(Symbols.close),
-                  label: const Text('Hủy'),
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: colorScheme.onSurfaceVariant,
-                    side: BorderSide(color: colorScheme.outline),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_selectedRepeatType == RepeatType.DAYS) ...[
+                    _buildSectionTitle('Chọn các ngày lặp lại', textTheme),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: _dayLabels.map((label) {
+                        final dayEnum = dayMap[label]!;
+                        final isSelected = _selectedDays.contains(dayEnum);
+                        return _DayToggleChip(
+                          label: label,
+                          isSelected: isSelected,
+                          onTap: () {
+                            setState(() {
+                              if (isSelected) {
+                                _selectedDays.remove(dayEnum);
+                              } else {
+                                _selectedDays.add(dayEnum);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Symbols.close),
+                    label: const Text('Hủy'),
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      splashFactory: NoSplash.splashFactory,
+                      foregroundColor: colorScheme.onSurfaceVariant,
+                      side: BorderSide(color: colorScheme.outline),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  icon: const Icon(Symbols.check),
-                  label: const Text('Lưu Lịch'),
-                  onPressed: _onSave,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.mainGreen[200],
-                    foregroundColor: colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    icon: deviceState is device_state.Loading
+                        ? null
+                        : const Icon(Symbols.check),
+                    label: deviceState is device_state.Loading
+                        ? CustomCircularProgress()
+                        : const Text('Lưu Lịch'),
+                    onPressed: _onSave,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.mainGreen[200],
+                      foregroundColor: colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

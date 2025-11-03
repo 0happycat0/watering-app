@@ -30,4 +30,16 @@ abstract class DeviceRepository {
     required Device device,
     required Schedule schedule,
   });
+  Future<Either<Exception, Response>> createSchedule({
+    required Device device,
+    required Schedule schedule,
+  });
+  Future<Either<Exception, Response>> updateSchedule({
+    required Device device,
+    required Schedule schedule,
+  });
+  Future<Either<Exception, Response>> deleteSchedule({
+    required Device device,
+    required Schedule schedule,
+  });
 }

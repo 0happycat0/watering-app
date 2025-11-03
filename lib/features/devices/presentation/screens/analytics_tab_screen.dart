@@ -25,7 +25,20 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
   late TrackballBehavior _tempTrackballBehavior;
   late TrackballBehavior _soilTrackballBehavior;
   late TrackballBehavior _airTrackballBehavior;
-  late ZoomPanBehavior _zoomPanBehavior;
+  late ZoomPanBehavior _tempZoomPanBehavior;
+  late ZoomPanBehavior _soilZoomPanBehavior;
+  late ZoomPanBehavior _airZoomPanBehavior;
+
+  ChartAxisLabel _formatAxisLabel(AxisLabelRenderDetails args) {
+    // Lấy giá trị DateTime từ args
+    final DateTime date = DateTime.fromMillisecondsSinceEpoch(
+      args.value.toInt(),
+    );
+    // Định dạng lại với dấu xuống dòng
+    final String formattedText = DateFormat('HH:mm\ndd/MM').format(date);
+    // Trả về AxisLabel mới
+    return ChartAxisLabel(formattedText, args.textStyle);
+  }
 
   @override
   void initState() {
@@ -34,22 +47,40 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
     _tempTrackballBehavior = TrackballBehavior(
       enable: true,
       activationMode: ActivationMode.singleTap,
-      tooltipSettings: InteractiveTooltip(format: 'point.x: point.y°C'),
+      tooltipSettings: InteractiveTooltip(
+        format: 'point.x: point.y°C',
+        canShowMarker: false,
+      ),
     );
-
     _soilTrackballBehavior = TrackballBehavior(
       enable: true,
       activationMode: ActivationMode.singleTap,
-      tooltipSettings: InteractiveTooltip(format: 'point.x: point.y%'),
+      tooltipSettings: InteractiveTooltip(
+        format: 'point.x: point.y%',
+        canShowMarker: false,
+      ),
+      tooltipAlignment: ChartAlignment.center,
     );
-
     _airTrackballBehavior = TrackballBehavior(
       enable: true,
       activationMode: ActivationMode.singleTap,
-      tooltipSettings: InteractiveTooltip(format: 'point.x: point.y%'),
+      tooltipSettings: InteractiveTooltip(
+        format: 'point.x: point.y%',
+        canShowMarker: false,
+      ),
     );
 
-    _zoomPanBehavior = ZoomPanBehavior(
+    _tempZoomPanBehavior = ZoomPanBehavior(
+      enablePanning: true,
+      enablePinching: true,
+      zoomMode: ZoomMode.x,
+    );
+    _soilZoomPanBehavior = ZoomPanBehavior(
+      enablePanning: true,
+      enablePinching: true,
+      zoomMode: ZoomMode.x,
+    );
+    _airZoomPanBehavior = ZoomPanBehavior(
       enablePanning: true,
       enablePinching: true,
       zoomMode: ZoomMode.x,
@@ -84,7 +115,7 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
 
     return Container(
       height: double.infinity,
-      color: AppColors.mainGreen[50]!,
+      color: AppColors.primarySurface,
       // child: ElevatedButton(
       //   onPressed: () {
       //     ref.read(getHistorySensorProvider.notifier).getHistorySensor(id: id);
@@ -119,12 +150,13 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                           ? Center(child: CircularProgressIndicator())
                           : historySensorState is device_state.Success
                           ? SfCartesianChart(
-                              zoomPanBehavior: _zoomPanBehavior,
+                              zoomPanBehavior: _tempZoomPanBehavior,
                               primaryXAxis: DateTimeAxis(
-                                dateFormat: DateFormat('dd/MM-HH:mm'),
+                                dateFormat: DateFormat('HH:mm - dd/MM'),
+                                axisLabelFormatter: _formatAxisLabel,
                                 majorGridLines: MajorGridLines(width: 0),
                                 // majorTickLines: MajorTickLines(width: 1),
-                                labelRotation: -30,
+                                labelRotation: 0,
                                 edgeLabelPlacement: EdgeLabelPlacement.shift,
                                 // minimum: minDate,
                                 // maximum: maxDate,
@@ -139,7 +171,7 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                               trackballBehavior: _tempTrackballBehavior,
                               series:
                                   <CartesianSeries<HistorySensor, DateTime?>>[
-                                    SplineSeries<HistorySensor, DateTime?>(
+                                    LineSeries<HistorySensor, DateTime?>(
                                       dataSource: historySensorList,
                                       color: Colors.red,
                                       xValueMapper:
@@ -187,11 +219,12 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                           ? Center(child: CircularProgressIndicator())
                           : historySensorState is device_state.Success
                           ? SfCartesianChart(
-                              zoomPanBehavior: _zoomPanBehavior,
+                              zoomPanBehavior: _soilZoomPanBehavior,
                               primaryXAxis: DateTimeAxis(
-                                dateFormat: DateFormat('dd/MM-HH:mm'),
+                                dateFormat: DateFormat('HH:mm - dd/MM'),
+                                axisLabelFormatter: _formatAxisLabel,
                                 majorGridLines: MajorGridLines(width: 0),
-                                labelRotation: -30,
+                                labelRotation: 0,
                                 edgeLabelPlacement: EdgeLabelPlacement.shift,
                               ),
                               primaryYAxis: NumericAxis(
@@ -249,11 +282,12 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                           ? Center(child: CircularProgressIndicator())
                           : historySensorState is device_state.Success
                           ? SfCartesianChart(
-                              zoomPanBehavior: _zoomPanBehavior,
+                              zoomPanBehavior: _airZoomPanBehavior,
                               primaryXAxis: DateTimeAxis(
-                                dateFormat: DateFormat('dd/MM-HH:mm'),
+                                dateFormat: DateFormat('HH:mm - dd/MM'),
+                                axisLabelFormatter: _formatAxisLabel,
                                 majorGridLines: MajorGridLines(width: 0),
-                                labelRotation: -30,
+                                labelRotation: 0,
                                 edgeLabelPlacement: EdgeLabelPlacement.shift,
                               ),
                               primaryYAxis: NumericAxis(

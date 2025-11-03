@@ -6,6 +6,7 @@ import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
 import 'package:watering_app/features/devices/presentation/screens/schedule_tab_screen.dart';
+import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
@@ -45,10 +46,11 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
                 child: Text('Hủy'),
               ),
               FilledButton(
-                onPressed: () {
-                  ref
+                onPressed: () async {
+                  await ref
                       .read(deleteDeviceProvider.notifier)
                       .deleteDevice(id: widget.device.id);
+                  ref.read(devicesProvider.notifier).refresh();
                 },
                 child: deviceState is device_state.Loading
                     ? CustomCircularProgress(
@@ -79,7 +81,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
       }
       if (next is device_state.Success && prev is device_state.Loading) {
         Navigator.of(context).pop();
-        Navigator.of(context).pop(true);
+        Navigator.of(context).pop();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${widget.device.name}"'));

@@ -107,7 +107,7 @@ class DioNetworkService {
         DioException(
           requestOptions: e.requestOptions,
           response: e.response,
-          message: e.response?.data['message'],
+          message: e.response?.data['message'] ?? e.response?.data['error'],
         ),
       );
     }

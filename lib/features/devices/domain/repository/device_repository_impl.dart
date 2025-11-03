@@ -166,4 +166,62 @@ class DeviceRepositoryImpl extends DeviceRepository {
       },
     );
   }
+
+  @override
+  Future<Either<DioException, Response>> createSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    final response = await deviceRemoteDataSource.createSchedule(
+      device: device,
+      schedule: schedule,
+    );
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) {
+        return Right(res);
+      },
+    );
+  }
+
+  @override
+  Future<Either<DioException, Response>> updateSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    final response = await deviceRemoteDataSource.updateSchedule(
+      device: device,
+      schedule: schedule,
+    );
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) {
+        return Right(res);
+      },
+    );
+  }
+
+  @override
+  Future<Either<DioException, Response>> deleteSchedule({
+    required Device device,
+    required Schedule schedule,
+  }) async {
+    final response = await deviceRemoteDataSource.deleteSchedule(
+      device: device,
+      schedule: schedule,
+    );
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) {
+        return Right(res);
+      },
+    );
+  }
+  
 }
