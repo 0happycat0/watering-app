@@ -13,6 +13,7 @@ import 'package:watering_app/features/devices/providers/device/device_state.dart
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/screens/analytics_tab_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/control_tab_screen.dart';
+import 'package:watering_app/features/devices/providers/device/realtime_device_provider.dart';
 import 'package:watering_app/theme/theme.dart';
 
 class DeviceDetailScreen extends ConsumerStatefulWidget {
@@ -68,6 +69,10 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final device = widget.device;
+    final realtimeDeviceSensor = ref.watch(
+      deviceSensorProvider(device.deviceId),
+    );
+
     ref.listen(deleteDeviceProvider, (prev, next) {
       print(
         'Delete device transition: ${prev.runtimeType} -> ${next.runtimeType}',
@@ -120,7 +125,10 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
         body: TabBarView(
           children: <Widget>[
             ControlTabScreen(device: device),
-            AnalyticsTabScreen(device: device),
+            AnalyticsTabScreen(
+              device: device,
+              realtimeDeviceSensor: realtimeDeviceSensor,
+            ),
             ScheduleTabScreen(device: device),
           ],
         ),

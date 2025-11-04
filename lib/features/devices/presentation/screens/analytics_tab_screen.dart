@@ -6,15 +6,21 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
+import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provideer.dart';
 import 'package:watering_app/features/devices/providers/device/get_history_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/theme/theme.dart';
 
 class AnalyticsTabScreen extends ConsumerStatefulWidget {
-  const AnalyticsTabScreen({super.key, required this.device});
+  const AnalyticsTabScreen({
+    super.key,
+    required this.device,
+    required this.realtimeDeviceSensor,
+  });
 
   final Device device;
+  final HistorySensor? realtimeDeviceSensor;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -34,9 +40,7 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
     final DateTime date = DateTime.fromMillisecondsSinceEpoch(
       args.value.toInt(),
     );
-    // Định dạng lại với dấu xuống dòng
     final String formattedText = DateFormat('HH:mm\ndd/MM').format(date);
-    // Trả về AxisLabel mới
     return ChartAxisLabel(formattedText, args.textStyle);
   }
 
@@ -96,6 +100,11 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
   @override
   Widget build(BuildContext context) {
     final historySensorState = ref.watch(getHistorySensorProvider);
+    final realtimeDeviceSensor = widget.realtimeDeviceSensor;
+    final Map<String, HistorySensor> sensorMap = ref.watch(
+      devicesSensorProvider,
+    );
+    final HistorySensor? sensorData = sensorMap[widget.device.deviceId];
 
     // DateTime? minDate;
     // DateTime? maxDate;
@@ -127,6 +136,7 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
         child: Column(
           spacing: 8,
           children: [
+            //---- nhiệt độ ----
             Expanded(
               child: Card(
                 margin: EdgeInsets.all(0),
@@ -136,12 +146,32 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 8, left: 8),
+                      padding: EdgeInsets.only(top: 8, left: 8, right: 8),
                       child: Row(
                         children: [
                           Icon(Symbols.thermostat),
                           SizedBox(width: 4),
                           Text('Nhiệt độ (°C)'),
+                          Spacer(),
+                          Text('Hiện tại: '),
+                          Flexible(
+                            flex: 0,
+                            child: (realtimeDeviceSensor != null)
+                                ? Text(
+                                    '${realtimeDeviceSensor.temp.toStringAsFixed(1)}°C',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : (sensorData != null)
+                                ? Text(
+                                    '${sensorData.temp.toStringAsFixed(1)}°C',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : Text('--'),
+                          ),
                         ],
                       ),
                     ),
@@ -183,9 +213,14 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                                       name: 'Nhiệt độ',
                                       dataLabelSettings: DataLabelSettings(
                                         isVisible: true,
+                                        labelIntersectAction:
+                                            LabelIntersectAction.hide,
                                       ),
                                       markerSettings: MarkerSettings(
                                         isVisible: true,
+                                        height: 3,
+                                        width: 3,
+                                        color: Colors.red,
                                       ),
                                     ),
                                   ],
@@ -196,6 +231,8 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                 ),
               ),
             ),
+
+            //---- độ ẩm đất ----
             Expanded(
               child: Card(
                 margin: EdgeInsets.all(0),
@@ -205,12 +242,32 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 8, left: 8),
+                      padding: EdgeInsets.only(top: 8, left: 8, right: 8),
                       child: Row(
                         children: [
                           Icon(Symbols.water_drop),
                           SizedBox(width: 4),
                           Text('Độ ẩm đất (%)'),
+                          Spacer(),
+                          Text('Hiện tại: '),
+                          Flexible(
+                            flex: 0,
+                            child: (realtimeDeviceSensor != null)
+                                ? Text(
+                                    '${realtimeDeviceSensor.soil.toStringAsFixed(1)}%',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : (sensorData != null)
+                                ? Text(
+                                    '${sensorData.soil.toStringAsFixed(1)}%',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : Text('--'),
+                          ),
                         ],
                       ),
                     ),
@@ -246,9 +303,14 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                                       name: 'Độ ẩm đất',
                                       dataLabelSettings: DataLabelSettings(
                                         isVisible: true,
+                                        labelIntersectAction:
+                                            LabelIntersectAction.hide,
                                       ),
                                       markerSettings: MarkerSettings(
                                         isVisible: true,
+                                        height: 3,
+                                        width: 3,
+                                        color: Colors.brown,
                                       ),
                                     ),
                                   ],
@@ -259,6 +321,8 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                 ),
               ),
             ),
+
+            //---- độ ẩm không khí ----
             Expanded(
               child: Card(
                 margin: EdgeInsets.all(0),
@@ -268,12 +332,32 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 8, left: 8),
+                      padding: EdgeInsets.only(top: 8, left: 8, right: 8),
                       child: Row(
                         children: [
                           Icon(Symbols.water),
                           SizedBox(width: 4),
                           Text('Độ ẩm không khí (%)'),
+                          Spacer(),
+                          Text('Hiện tại: '),
+                          Flexible(
+                            flex: 0,
+                            child: (realtimeDeviceSensor != null)
+                                ? Text(
+                                    '${realtimeDeviceSensor.air.toStringAsFixed(1)}%',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : (sensorData != null)
+                                ? Text(
+                                    '${sensorData.air.toStringAsFixed(1)}%',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  )
+                                : Text('--'),
+                          ),
                         ],
                       ),
                     ),
@@ -309,9 +393,14 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                                       name: 'Độ ẩm không khí',
                                       dataLabelSettings: DataLabelSettings(
                                         isVisible: true,
+                                        labelIntersectAction:
+                                            LabelIntersectAction.hide,
                                       ),
                                       markerSettings: MarkerSettings(
                                         isVisible: true,
+                                        height: 3,
+                                        width: 3,
+                                        color: Colors.cyan,
                                       ),
                                     ),
                                   ],

@@ -27,6 +27,7 @@ class ScheduleListItem extends StatelessWidget {
         return 'Các ngày đã chọn';
       case RepeatType.ONE_TIME:
         return 'Một lần';
+      // ignore: unreachable_switch_default
       default:
         return '';
     }

@@ -6,6 +6,7 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provideer.dart';
 import 'package:watering_app/features/devices/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
@@ -139,7 +140,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     final devicesState = ref.watch(devicesProvider);
-
+    ref.watch(devicesSensorProvider);
     //updateDeviceProvider và deleteDeviceProvider là các autoDispose, nên nếu không watch sẽ
     //không dùng được hàm update và delete, vì nó sẽ bị dispose trong dialog
     ref.watch(updateDeviceProvider);
@@ -150,6 +151,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
       );
     });
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(title: 'Tất cả thiết bị'),
       body: Padding(
         padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -173,29 +175,35 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
               onRefresh: () async {
                 await ref.read(devicesProvider.notifier).refresh();
               },
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3 / 4,
-                  mainAxisSpacing: 0,
-                  crossAxisSpacing: 0,
+              child: Scrollbar(
+                interactive: true,
+                thickness: 5,
+                radius: Radius.circular(10),
+                child: GridView.builder(
+                  primary: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 2 / 3,
+                    mainAxisSpacing: 0,
+                    crossAxisSpacing: 0,
+                  ),
+                  itemCount: devices.length,
+                  itemBuilder: (context, index) {
+                    final device = devices[index];
+                    return DeviceGridItem(
+                      device: device,
+                      onSelectDevice: () {
+                        _onSelectDevice(device);
+                      },
+                      onSelectDelete: () async {
+                        _showAskDeleteDialog(device);
+                      },
+                      onSelectEdit: () {
+                        _showEditDialog(device);
+                      },
+                    );
+                  },
                 ),
-                itemCount: devices.length,
-                itemBuilder: (context, index) {
-                  final device = devices[index];
-                  return DeviceGridItem(
-                    device: device,
-                    onSelectDevice: () {
-                      _onSelectDevice(device);
-                    },
-                    onSelectDelete: () async {
-                      _showAskDeleteDialog(device);
-                    },
-                    onSelectEdit: () {
-                      _showEditDialog(device);
-                    },
-                  );
-                },
               ),
             );
           } else if (devicesState is devices_state.Failure) {

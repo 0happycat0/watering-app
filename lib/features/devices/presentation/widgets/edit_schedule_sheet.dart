@@ -119,6 +119,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
         return 'Tuỳ chọn';
       case RepeatType.EVERYDAY:
         return 'Mỗi ngày';
+      // ignore: unreachable_switch_default
       default:
         return '';
     }

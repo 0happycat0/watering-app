@@ -96,7 +96,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   @override
   Widget build(BuildContext context) {
     final id = widget.device.id;
-
+    //TODO: sử dụng dữ liệu realtime để update trạng thái bơm
     final isWatering = ref.watch(toggleDeviceProvider);
     final historyWateringState = ref.watch(getHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;

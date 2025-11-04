@@ -9,6 +9,7 @@ class Device extends Equatable {
   final String action;
   final int duration;
   final bool online;
+  final bool watering;
 
   const Device({
     this.id = '',
@@ -19,6 +20,7 @@ class Device extends Equatable {
     this.action = '',
     this.duration = 0,
     this.online = true,
+    this.watering = false,
   });
 
   factory Device.fromJson(Map<String, dynamic> json) => Device(
@@ -30,6 +32,7 @@ class Device extends Equatable {
     action: json['action'] ?? '',
     duration: (json['duration'] ?? 0) ~/ 60,
     online: json['online'] ?? true,
+    watering: json['watering'] ?? false,
   );
 
   Map<String, dynamic> toJson() {
@@ -42,6 +45,7 @@ class Device extends Equatable {
       'action': action,
       'duration': duration * 60,
       'online': online,
+      'watering': watering,
     };
   }
 
@@ -55,5 +59,6 @@ class Device extends Equatable {
     action,
     duration,
     online,
+    watering,
   ];
 }

@@ -29,15 +29,15 @@ class CustomFab extends StatelessWidget {
         fabSize: ExpandableFabSize.regular,
         elevation: 4,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(20),
+          borderRadius: BorderRadiusGeometry.circular(200),
           side: BorderSide(
             color: AppColors.mainYellow[300]!,
             strokeAlign: BorderSide.strokeAlignOutside,
             width: 1,
           ),
         ),
-        foregroundColor: AppColors.mainYellow[500],
-        backgroundColor: AppColors.mainYellow[50],
+        foregroundColor: AppColors.primaryYellow[500],
+        backgroundColor: AppColors.primaryYellow[100],
         child: Icon(
           Symbols.add,
           size: 32,

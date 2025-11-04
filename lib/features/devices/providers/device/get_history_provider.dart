@@ -67,6 +67,8 @@ class GetHistoryWateringNotifier
   GetHistoryWateringNotifier(this.deviceRepository)
     : super(device_state.Initial());
   final DeviceRepositoryImpl deviceRepository;
+  
+  //TODO: isloading
 
   Future<void> getHistoryWatering({required String id}) async {
     state = device_state.Loading();
