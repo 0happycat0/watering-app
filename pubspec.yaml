@@ -87,6 +87,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/pump.png
     - assets/images/plant.png
+    - assets/images/watering_plant.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

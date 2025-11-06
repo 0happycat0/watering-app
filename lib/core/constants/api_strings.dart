@@ -6,6 +6,7 @@ class ApiStrings {
 
   static const String message = 'message';
 
+  static const String name = 'name';
   static const String page = 'page';
   static const String size = 'size';
   static const String sort = 'sort';

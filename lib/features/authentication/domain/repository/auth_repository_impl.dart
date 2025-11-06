@@ -38,10 +38,10 @@ class AuthRepositoryImpl extends AuthRepository {
     final local = AuthLocalDataSource(prefs);
     final accessToken = local.accessToken;
 
-    //logout: gọi api, xóa local, disconnect Stomp
+    //logout: gọi api, xóa local, dispose Stomp
     await authRemoteDataSource.logoutUser(user: User(accessToken: accessToken));
     await local.logout();
-    StompService().disconnect();
+    StompService().dispose();
   }
 
   @override

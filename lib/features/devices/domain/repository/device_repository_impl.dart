@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
@@ -13,8 +14,20 @@ class DeviceRepositoryImpl extends DeviceRepository {
   DeviceRepositoryImpl(this.deviceRemoteDataSource);
 
   @override
-  Future<Either<DioException, List<Device>>> getAllDevices() async {
-    final response = await deviceRemoteDataSource.getAllDevices();
+  Future<Either<DioException, List<Device>>> getAllDevices({
+    String? name,
+    int? page,
+    int? size,
+    AllDevicesSortField? sortField,
+    bool? isAscending,
+  }) async {
+    final response = await deviceRemoteDataSource.getAllDevices(
+      name: name,
+      page: page,
+      size: size,
+      sortField: sortField,
+      isAscending: isAscending,
+    );
     return response.fold(
       (exception) {
         return Left(exception);
@@ -223,5 +236,4 @@ class DeviceRepositoryImpl extends DeviceRepository {
       },
     );
   }
-  
 }

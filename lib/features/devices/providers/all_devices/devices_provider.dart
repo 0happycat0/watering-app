@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_state.dart'
@@ -16,14 +17,24 @@ final devicesProvider =
     );
 
 class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
-  DevicesNotifier(this.deviceRepository) : super(devices_state.Initial()) {
-    getAllDevices();
-  }
+  DevicesNotifier(this.deviceRepository) : super(devices_state.Initial());
   final DeviceRepositoryImpl deviceRepository;
 
-  Future<void> getAllDevices() async {
+  Future<void> getAllDevices({
+    String? name,
+    int? page,
+    int? size,
+    AllDevicesSortField? sortField,
+    bool? isAscending,
+  }) async {
     state = devices_state.Loading();
-    final response = await deviceRepository.getAllDevices();
+    final response = await deviceRepository.getAllDevices(
+      name: name,
+      page: page,
+      size: size,
+      sortField: sortField,
+      isAscending: isAscending,
+    );
     state = response.fold(
       (exception) {
         return devices_state.Failure(exception);
@@ -33,7 +44,6 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
       },
     );
   }
-
 
   Future<void> refresh() async {
     await getAllDevices();

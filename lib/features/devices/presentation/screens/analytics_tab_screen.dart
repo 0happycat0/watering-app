@@ -6,7 +6,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
-import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provideer.dart';
+import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provider.dart';
 import 'package:watering_app/features/devices/providers/device/get_history_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
@@ -16,11 +16,11 @@ class AnalyticsTabScreen extends ConsumerStatefulWidget {
   const AnalyticsTabScreen({
     super.key,
     required this.device,
-    required this.realtimeDeviceSensor,
+    // required this.realtimeDeviceSensor,
   });
 
   final Device device;
-  final HistorySensor? realtimeDeviceSensor;
+  // final HistorySensor? realtimeDeviceSensor;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -91,6 +91,7 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
     );
 
     Future.microtask(() async {
+      if(!mounted) return;
       await ref
           .read(getHistorySensorProvider.notifier)
           .getHistorySensor(id: widget.device.id);
@@ -100,7 +101,7 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
   @override
   Widget build(BuildContext context) {
     final historySensorState = ref.watch(getHistorySensorProvider);
-    final realtimeDeviceSensor = widget.realtimeDeviceSensor;
+    // final realtimeDeviceSensor = widget.realtimeDeviceSensor;
     final Map<String, HistorySensor> sensorMap = ref.watch(
       devicesSensorProvider,
     );
@@ -156,14 +157,16 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                           Text('Hiện tại: '),
                           Flexible(
                             flex: 0,
-                            child: (realtimeDeviceSensor != null)
-                                ? Text(
-                                    '${realtimeDeviceSensor.temp.toStringAsFixed(1)}°C',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                : (sensorData != null)
+                            child:
+                                // (realtimeDeviceSensor != null)
+                                //     ? Text(
+                                //         '${realtimeDeviceSensor.temp.toStringAsFixed(1)}°C',
+                                //         style: TextStyle(
+                                //           fontWeight: FontWeight.bold,
+                                //         ),
+                                //       )
+                                //     :
+                                (sensorData != null)
                                 ? Text(
                                     '${sensorData.temp.toStringAsFixed(1)}°C',
                                     style: TextStyle(
@@ -252,14 +255,16 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                           Text('Hiện tại: '),
                           Flexible(
                             flex: 0,
-                            child: (realtimeDeviceSensor != null)
-                                ? Text(
-                                    '${realtimeDeviceSensor.soil.toStringAsFixed(1)}%',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                : (sensorData != null)
+                            child:
+                                // (realtimeDeviceSensor != null)
+                                //     ? Text(
+                                //         '${realtimeDeviceSensor.soil.toStringAsFixed(1)}%',
+                                //         style: TextStyle(
+                                //           fontWeight: FontWeight.bold,
+                                //         ),
+                                //       )
+                                //     :
+                                (sensorData != null)
                                 ? Text(
                                     '${sensorData.soil.toStringAsFixed(1)}%',
                                     style: TextStyle(
@@ -342,14 +347,17 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
                           Text('Hiện tại: '),
                           Flexible(
                             flex: 0,
-                            child: (realtimeDeviceSensor != null)
-                                ? Text(
-                                    '${realtimeDeviceSensor.air.toStringAsFixed(1)}%',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  )
-                                : (sensorData != null)
+                            child:
+                                //TODO: review this
+                                // (realtimeDeviceSensor != null)
+                                //     ? Text(
+                                //         '${realtimeDeviceSensor.air.toStringAsFixed(1)}%',
+                                //         style: TextStyle(
+                                //           fontWeight: FontWeight.bold,
+                                //         ),
+                                //       )
+                                //     :
+                                (sensorData != null)
                                 ? Text(
                                     '${sensorData.air.toStringAsFixed(1)}%',
                                     style: TextStyle(

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
-import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
@@ -68,8 +68,6 @@ class GetHistoryWateringNotifier
     : super(device_state.Initial());
   final DeviceRepositoryImpl deviceRepository;
   
-  //TODO: isloading
-
   Future<void> getHistoryWatering({required String id}) async {
     state = device_state.Loading();
 

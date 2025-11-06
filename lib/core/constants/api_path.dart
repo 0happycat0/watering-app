@@ -1,5 +1,4 @@
 class ApiPath {
-  //FIXME: baseUrl
   static const String baseUrl =
       'https://be-smart-watering-production.up.railway.app';
   // static const String baseUrl =

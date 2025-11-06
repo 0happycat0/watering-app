@@ -1,7 +1,4 @@
 import 'package:equatable/equatable.dart';
-
-enum HistorySensorSortField { timestamp, soil, air }
-
 class HistorySensor extends Equatable {
   final double temp;
   final double air;

@@ -3,4 +3,5 @@ class AppAssets {
   static const String splash = 'assets/images/splash.png';
   static const String pump = 'assets/images/pump.png';
   static const String plant = 'assets/images/plant.png';
+  static const String wateringPlant = 'assets/images/watering_plant.png';
 }

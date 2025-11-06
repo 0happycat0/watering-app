@@ -97,15 +97,18 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: () async {
-                            await ref
-                                .read(createDeviceProvider.notifier)
-                                .createDevice(
-                                  name: _nameController.text,
-                                  deviceId: _deviceIdController.text,
-                                );
-                            ref.read(devicesProvider.notifier).refresh();
-                          },
+                          onPressed: addDeviceState is device_state.Loading
+                              ? null
+                              : () async {
+                                  if (!mounted) return;
+                                  await ref
+                                      .read(createDeviceProvider.notifier)
+                                      .createDevice(
+                                        name: _nameController.text,
+                                        deviceId: _deviceIdController.text,
+                                      );
+                                  ref.read(devicesProvider.notifier).refresh();
+                                },
                           style: AppStyles.elevatedButtonStyle(),
                           child: addDeviceState is device_state.Loading
                               ? CustomCircularProgress()

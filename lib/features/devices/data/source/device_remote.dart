@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
+import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
@@ -13,11 +14,35 @@ class DeviceRemoteDataSource {
 
   DeviceRemoteDataSource(this.networkService);
 
-  Future<Either<DioException, List<Device>>> getAllDevices() async {
+  Future<Either<DioException, List<Device>>> getAllDevices({
+    String? name,
+    int? page,
+    int? size,
+    AllDevicesSortField? sortField,
+    bool? isAscending,
+  }) async {
     print('fetching device data...');
     try {
+      final queryParameters = <String, dynamic>{};
+      if (name != null) {
+        queryParameters[ApiStrings.name] = name;
+      }
+      if (page != null) {
+        queryParameters[ApiStrings.page] = page;
+      }
+      if (size != null) {
+        queryParameters[ApiStrings.size] = size;
+      }
+      if (sortField != null && isAscending != null) {
+        final String fieldName = sortField.name;
+        final String direction = isAscending
+            ? ApiStrings.arrange.ascending
+            : ApiStrings.arrange.descending;
+        queryParameters[ApiStrings.sort] = '$fieldName,$direction';
+      }
       final result = await networkService.get(
         endpoint: ApiPath.device.allDevice,
+        queryParameters: queryParameters,
       );
       return result.fold(
         (exception) {

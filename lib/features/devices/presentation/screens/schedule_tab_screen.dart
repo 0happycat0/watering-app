@@ -142,6 +142,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
   void initState() {
     super.initState();
     Future.microtask(() async {
+      if(!mounted) return;
       await ref
           .read(getListScheduleProvider.notifier)
           .getListSchedule(id: widget.device.id);
