@@ -108,6 +108,7 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
                                         deviceId: _deviceIdController.text,
                                       );
                                   ref.read(devicesProvider.notifier).refresh();
+                                  ref.read(shouldResetSortAndSearchProvider.notifier).state = true;
                                 },
                           style: AppStyles.elevatedButtonStyle(),
                           child: addDeviceState is device_state.Loading

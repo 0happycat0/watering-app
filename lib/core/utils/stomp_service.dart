@@ -86,6 +86,7 @@ class StompService {
         final newAccessToken = response.data['data'][ApiStrings.accessToken];
         await prefs.setString(SharedPreferenceKey.accessToken, newAccessToken);
         print('[WebSocket] ✅ Token refreshed successfully');
+        print('[WebSocket] new access token: $newAccessToken');
         return true;
       }
 
@@ -193,17 +194,17 @@ class StompService {
     _stompClient?.deactivate();
     _stompClient = null;
 
-    print('[WebSocket] Token/Auth error detected. Refreshing token...');
-    // Notify listeners cần refresh token
-    _tokenRefreshController.add(null);
+    // print('[WebSocket] Token/Auth error detected. Refreshing token...');
+    // // Notify listeners cần refresh token
+    // _tokenRefreshController.add(null);
 
-    // Cố gắng refresh token trước khi reconnect
-    final refreshed = await _refreshToken();
+    // // Cố gắng refresh token trước khi reconnect
+    // final refreshed = await _refreshToken();
 
-    if (refreshed) {
-      // Reset reconnect attempts để retry nhanh với token mới
-      _reconnectAttempts = 0;
-    }
+    // if (refreshed) {
+    //   // Reset reconnect attempts để retry nhanh với token mới
+    //   _reconnectAttempts = 0;
+    // }
 
     _scheduleReconnect();
   }

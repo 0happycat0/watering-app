@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';

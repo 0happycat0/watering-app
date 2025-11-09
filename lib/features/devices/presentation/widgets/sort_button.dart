@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 
-enum SortOption {
-  defaultSort('default', 'Mặc định'),
-  name('name', 'Theo tên'),
-  date('date', 'Ngày cập nhật'),
-  watering('watering', 'Đang bơm'),
-  online('online', 'Đang online');
-
-  final String value;
-  final String label;
-
-  const SortOption(this.value, this.label);
-
-  static SortOption fromValue(String value) {
-    return SortOption.values.firstWhere(
-      (option) => option.value == value,
-      orElse: () => SortOption.defaultSort,
-    );
+extension AllDevicesSortFieldLabel on AllDevicesSortField {
+  String get label {
+    switch (this) {
+      case AllDevicesSortField.defaultSort:
+        return 'Mặc định';
+      case AllDevicesSortField.name:
+        return 'Theo tên';
+      case AllDevicesSortField.updatedAt:
+        return 'Ngày cập nhật';
+      case AllDevicesSortField.isWatering:
+        return 'Đang bơm';
+      case AllDevicesSortField.isOnline:
+        return 'Đang online';
+    }
   }
 }
 
@@ -27,14 +25,14 @@ class DeviceSortButton extends StatelessWidget {
     super.key,
     required this.currentSort,
     required this.isAscending,
-    this.onSortSelected,
+    required this.onSortSelected,
     this.onMenuOpened,
     this.onMenuClosed,
   });
 
-  final SortOption currentSort;
+  final AllDevicesSortField currentSort;
   final bool isAscending;
-  final ValueChanged<SortOption>? onSortSelected;
+  final ValueChanged<AllDevicesSortField> onSortSelected;
   final VoidCallback? onMenuOpened;
   final VoidCallback? onMenuClosed;
 
@@ -55,11 +53,13 @@ class DeviceSortButton extends StatelessWidget {
       offset: const Offset(0, 48),
       onOpened: onMenuOpened,
       onCanceled: onMenuClosed,
-      onSelected: (String value) {
+      onSelected: (String sortName) {
         onMenuClosed?.call();
-        if (value != 'header' && value != 'footer') {
-          final selectedOption = SortOption.fromValue(value);
-          onSortSelected?.call(selectedOption);
+        if (sortName != 'header' && sortName != 'footer') {
+          final selectedOption = AllDevicesSortField.values.firstWhere(
+            (sort) => sort.name == sortName,
+          );
+          onSortSelected(selectedOption);
         }
       },
       // Widget kích hoạt menu
@@ -83,7 +83,7 @@ class DeviceSortButton extends StatelessWidget {
               size: 26,
             ),
             // Badge hiển thị hướng sắp xếp
-            if (currentSort != SortOption.defaultSort)
+            if (currentSort != AllDevicesSortField.defaultSort)
               Positioned(
                 top: 2,
                 right: 2,
@@ -126,16 +126,16 @@ class DeviceSortButton extends StatelessWidget {
         const PopupMenuDivider(height: 8),
 
         // Menu items
-        ...SortOption.values.map((option) {
-          final isSelected = currentSort == option;
+        ...AllDevicesSortField.values.map((sort) {
+          final isSelected = currentSort == sort;
           return PopupMenuItem<String>(
-            value: option.value,
+            value: sort.name,
             height: itemHeight,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  option.label,
+                  sort.label,
                   style: TextStyle(
                     fontSize: 14,
                     color: isSelected ? Colors.green.shade700 : Colors.black87,

@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_state.dart'
@@ -23,7 +23,7 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
   Future<void> getAllDevices({
     String? name,
     int? page,
-    int? size,
+    int size = 100,
     AllDevicesSortField? sortField,
     bool? isAscending,
   }) async {
@@ -40,7 +40,7 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
         return devices_state.Failure(exception);
       },
       (devicesList) {
-        return devices_state.Success(devicesList);
+        return devices_state.Success(devicesList, searchQuery: name);
       },
     );
   }
@@ -53,3 +53,7 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
     state = devices_state.Loading();
   }
 }
+
+final shouldResetSortAndSearchProvider = StateProvider.autoDispose<bool>(
+  (ref) => false,
+);

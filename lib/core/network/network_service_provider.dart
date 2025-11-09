@@ -36,6 +36,8 @@ final baseOptionsProvider = Provider<BaseOptions>((ref) {
       'accept': 'application/json',
       'content-type': 'application/json',
     },
+    // connectTimeout: Duration(milliseconds: 6000),
+    // sendTimeout: Duration(milliseconds: 6000),
+    // receiveTimeout: Duration(milliseconds: 6000),
   );
 });
-

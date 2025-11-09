@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
-import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/schedule_model.dart';
 
 class ScheduleListItem extends StatelessWidget {

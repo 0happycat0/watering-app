@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/widgets/search_bar.dart';
 import 'package:watering_app/features/devices/presentation/widgets/sort_button.dart';
@@ -30,15 +34,10 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   final _searchFocusNode = FocusNode();
 
   //TODO: implement sort feature
-  SortOption _currentSort = SortOption.defaultSort;
-  bool _isAscending = true;
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _searchFocusNode.dispose();
-    super.dispose();
-  }
+  AllDevicesSortField? _currentSort = AllDevicesSortField.defaultSort;
+  String _currentSearchQuery = '';
+  bool? _isAscending = true;
+  Timer? _debounceTimer;
 
   void _unfocusSearch() {
     if (_searchFocusNode.hasFocus) {
@@ -46,20 +45,60 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     }
   }
 
-  void _onSortSelected(SortOption option) {
+  void _onSearchChanged(String query) {
+    //hủy timer đang chạy
+    if (_debounceTimer?.isActive ?? false) {
+      _debounceTimer!.cancel();
+    }
+
+    //sử dụng timer để delay gọi api khi gõ liên tục
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      ref
+          .read(devicesProvider.notifier)
+          .getAllDevices(
+            name: query,
+            sortField: _currentSort == AllDevicesSortField.defaultSort
+                ? null
+                : _currentSort,
+            isAscending: _currentSort == AllDevicesSortField.defaultSort
+                ? null
+                : _isAscending,
+          );
+      _currentSearchQuery = query;
+    });
+  }
+
+  void _onSearchSubmitted(String query) {
+    ref
+        .read(devicesProvider.notifier)
+        .getAllDevices(
+          name: query,
+          sortField: _currentSort,
+          isAscending: _isAscending,
+        );
+  }
+
+  void _onSortSelected(AllDevicesSortField sortField) {
     setState(() {
-      if (_currentSort == option) {
-        // Nhấn lại cùng option → đảo thứ tự
-        _isAscending = !_isAscending;
+      if (_currentSort == sortField && _isAscending != null) {
+        _isAscending = !_isAscending!;
       } else {
-        // Chọn option mới → reset về ascending
-        _currentSort = option;
+        _currentSort = sortField == AllDevicesSortField.defaultSort
+            ? null
+            : sortField;
         _isAscending = true;
       }
     });
 
-    // TODO: Implement sort logic
-    print('Sort by: ${option.label}, ascending: $_isAscending');
+    print('Sort by: ${sortField.label}, ascending: $_isAscending');
+    ref
+        .read(devicesProvider.notifier)
+        .getAllDevices(
+          name: _currentSearchQuery,
+          sortField: _currentSort,
+          isAscending: _isAscending,
+        );
   }
 
   void _onSelectDevice(Device device) {
@@ -98,8 +137,14 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${device.name}"'));
+                ref
+                    .read(devicesProvider.notifier)
+                    .getAllDevices(
+                      name: _currentSearchQuery,
+                      sortField: _currentSort,
+                      isAscending: _isAscending,
+                    );
               }
-              devicesNotifier.refresh();
             },
             child: Text('Xóa'),
           ),
@@ -162,7 +207,12 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                         name: nameController.text.trim(),
                         deviceId: idController.text.trim(),
                       );
-                      devicesNotifier.refresh();
+                      if (!mounted) return;
+                      devicesNotifier.getAllDevices(
+                        name: _currentSearchQuery,
+                        sortField: _currentSort,
+                        isAscending: _isAscending,
+                      );
                     },
                     child: Text('Lưu'),
                   ),
@@ -175,8 +225,11 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     );
   }
 
-  void _onSearchChanged(String query) {
-    print('Tìm kiếm với "$query"');
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -191,6 +244,14 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   @override
   Widget build(BuildContext context) {
     final devicesState = ref.watch(devicesProvider);
+
+    //reset sort sau khi thêm thiết bị
+    ref.listen(shouldResetSortAndSearchProvider, (prev, next) {
+      if (next == true) {
+        _currentSort = AllDevicesSortField.defaultSort;
+        ref.read(shouldResetSortAndSearchProvider.notifier).state = false;
+      }
+    });
     //updateDeviceProvider và deleteDeviceProvider là các autoDispose, nên nếu không watch sẽ
     //không dùng được hàm update và delete, vì nó sẽ bị dispose trong dialog
     ref.watch(updateDeviceProvider);
@@ -204,7 +265,17 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
       print(
         'All devices transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
+      print(
+        'isResetSort = ${ref.read(shouldResetSortAndSearchProvider.notifier).state}',
+      );
     });
+
+    // print('_currentSort = $_currentSort');
+    if (_currentSort == AllDevicesSortField.defaultSort) {
+      _currentSort = null;
+      _isAscending = null;
+    }
+
     return GestureDetector(
       onTap: _unfocusSearch,
       child: Scaffold(
@@ -220,17 +291,21 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 spacing: 8,
                 children: [
+                  //Search bar
                   Expanded(
                     child: DeviceSearchBar(
                       controller: _searchController,
                       focusNode: _searchFocusNode,
                       onChanged: _onSearchChanged,
+                      onSubmitted: _onSearchSubmitted,
                     ),
                   ),
                   // Nút Sort
                   DeviceSortButton(
-                    currentSort: _currentSort,
-                    isAscending: _isAscending,
+                    currentSort: _currentSort == null
+                        ? AllDevicesSortField.defaultSort
+                        : _currentSort!,
+                    isAscending: _isAscending == null ? true : _isAscending!,
                     onSortSelected: _onSortSelected,
                     onMenuOpened: _unfocusSearch,
                     onMenuClosed: _unfocusSearch,
@@ -240,19 +315,59 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
             ),
           ),
         ),
+
         body: Padding(
           padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: () {
-            if (devicesState is devices_state.Loading) {
+            if (devicesState is devices_state.Loading ||
+                devicesState is devices_state.Initial) {
               return Center(child: CircularProgressIndicator());
             } else if (devicesState is devices_state.Success) {
               final devices = devicesState.devicesList;
+
+              //hiển thị khi chưa có thiết bị hoặc không tìm thấy thiết bị
+              if (devices.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        devicesState.isSearchResultEmpty
+                            ? Symbols.search_off
+                            : Symbols.variable_remove,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        devicesState.isSearchResultEmpty
+                            ? 'Không tìm thấy thiết bị "${devicesState.searchQuery}"'
+                            : 'Chưa có thiết bị nào',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      if (devicesState.isSearchResultEmpty)
+                        TextButton(
+                          onPressed: () {
+                            _searchController.clear();
+                            ref.read(devicesProvider.notifier).getAllDevices();
+                          },
+                          child: Text('Xóa tìm kiếm'),
+                        ),
+                    ],
+                  ),
+                );
+              }
 
               return RefreshIndicator(
                 displacement: 40,
                 edgeOffset: 0,
                 onRefresh: () async {
-                  await ref.read(devicesProvider.notifier).refresh();
+                  await ref
+                      .read(devicesProvider.notifier)
+                      .getAllDevices(
+                        sortField: _currentSort,
+                        isAscending: _isAscending,
+                      );
                 },
                 child: Scrollbar(
                   interactive: true,

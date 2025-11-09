@@ -6,7 +6,7 @@ import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
-import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/schedule_model.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;

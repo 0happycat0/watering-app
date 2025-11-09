@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
-import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
@@ -41,7 +41,9 @@ class DeviceRemoteDataSource {
         queryParameters[ApiStrings.sort] = '$fieldName,$direction';
       }
       final result = await networkService.get(
-        endpoint: ApiPath.device.allDevice,
+        endpoint: (name != null)
+            ? ApiPath.device.searchDevices
+            : ApiPath.device.allDevices,
         queryParameters: queryParameters,
       );
       return result.fold(

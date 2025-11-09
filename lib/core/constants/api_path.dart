@@ -20,7 +20,8 @@ class _AuthPath {
 
 class _DevicePath {
   _DevicePath();
-  final String allDevice = '/devices';
+  final String allDevices = '/devices';
+  final String searchDevices = '/devices/search';
   final String createDevice = '/devices';
   String deviceById(String id) => '/devices/$id';
   String toggleDevice(String id) => '/devices/$id/watering';
@@ -32,6 +33,8 @@ class _DevicePath {
   String toggleSchedule(String id, String scheduleId) =>
       '/devices/$id/schedule/$scheduleId/trigger';
   String createSchedule(String id) => '/devices/$id/schedule';
-  String updateSchedule(String id, String scheduleId) => '/devices/$id/schedule/$scheduleId';
-  String deleteSchedule(String id, String scheduleId) => '/devices/$id/schedule/$scheduleId';
+  String updateSchedule(String id, String scheduleId) =>
+      '/devices/$id/schedule/$scheduleId';
+  String deleteSchedule(String id, String scheduleId) =>
+      '/devices/$id/schedule/$scheduleId';
 }

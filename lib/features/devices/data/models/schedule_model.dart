@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:watering_app/features/devices/data/enums/schedule_enums.dart';
+import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 
 class Schedule extends Equatable {
   final String id;
