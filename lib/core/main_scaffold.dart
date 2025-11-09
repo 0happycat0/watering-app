@@ -9,6 +9,7 @@ import 'package:watering_app/features/authentication/providers/auth_provider.dar
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/all_devices_screen.dart';
 import 'package:watering_app/features/devices/presentation/widgets/add_new_device.dart';
+import 'package:watering_app/features/groups/presentation/widgets/add_new_group.dart';
 import 'package:watering_app/theme/styles.dart';
 
 class MainScaffold extends ConsumerStatefulWidget {
@@ -35,6 +36,19 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       clipBehavior: Clip.antiAlias,
       builder: (ctx) {
         return AddNewDevice();
+      },
+    );
+  }
+
+  void _showAddGroupDialog() {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      barrierColor: AppColors.mainGreen[300]?.withValues(alpha: 0.5),
+      clipBehavior: Clip.antiAlias,
+      builder: (ctx) {
+        return AddNewGroup();
       },
     );
   }
@@ -97,7 +111,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       floatingActionButton: (_currentPageIndex == 1 || _currentPageIndex == 2)
           ? CustomFab(
               onAddDevicePressed: _showAddDeviceDialog,
-              onAddGroupPressed: () {},
+              onAddGroupPressed: _showAddGroupDialog,
             )
           : null,
       body: <Widget>[

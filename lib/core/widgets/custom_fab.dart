@@ -79,6 +79,7 @@ class CustomFab extends StatelessWidget {
             heroTag: null,
             onPressed: () {
               final state = _key.currentState;
+              onAddGroupPressed();
               if (state != null) {
                 state.toggle();
               }

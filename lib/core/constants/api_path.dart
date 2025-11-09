@@ -6,6 +6,7 @@ class ApiPath {
 
   static final auth = _AuthPath();
   static final device = _DevicePath();
+  static final group = _GroupPath();
 }
 
 class _AuthPath {
@@ -23,6 +24,7 @@ class _DevicePath {
   final String allDevices = '/devices';
   final String searchDevices = '/devices/search';
   final String createDevice = '/devices';
+  final String freeDevices = '/devices/free';
   String deviceById(String id) => '/devices/$id';
   String toggleDevice(String id) => '/devices/$id/watering';
   String getHistoryWatering(String id) => '/devices/$id/watering/history';
@@ -37,4 +39,12 @@ class _DevicePath {
       '/devices/$id/schedule/$scheduleId';
   String deleteSchedule(String id, String scheduleId) =>
       '/devices/$id/schedule/$scheduleId';
+}
+
+class _GroupPath {
+  _GroupPath();
+  final String allGroups = '/groups';
+  final String createGroup = '/groups';
+  final String searchGroups = '/groups/search';
+  String groupById(String id) => '/groups/$id';
 }
