@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/widgets/bottom_nav_bar.dart';
 import 'package:watering_app/core/widgets/custom_fab.dart';
-import 'package:watering_app/features/authentication/presentation/providers/auth_provider.dart';
+import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/all_devices_screen.dart';
 import 'package:watering_app/features/devices/presentation/widgets/add_new_device.dart';
+import 'package:watering_app/features/groups/presentation/screens/all_groups_screen.dart';
+import 'package:watering_app/features/groups/presentation/widgets/add_or_edit_group.dart';
 import 'package:watering_app/theme/styles.dart';
 
 class MainScaffold extends ConsumerStatefulWidget {
@@ -34,6 +37,19 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       clipBehavior: Clip.antiAlias,
       builder: (ctx) {
         return AddNewDevice();
+      },
+    );
+  }
+
+  void _showAddGroupDialog() {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      barrierColor: AppColors.mainGreen[300]?.withValues(alpha: 0.5),
+      clipBehavior: Clip.antiAlias,
+      builder: (ctx) {
+        return AddOrEditGroup();
       },
     );
   }
@@ -70,6 +86,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     ref.listen(requestLogoutProvider, (prev, next) {
+      print('Request logout transition: $prev -> $next');
       if (next == true) {
         ref.read(authProvider.notifier).logout();
         //reset
@@ -77,8 +94,14 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         _showRequestLogInAgainDialog();
       }
     });
-
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: Colors.transparent,
+      ),
+    );
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: BottomNavBar(
         currentPageIndex: _currentPageIndex,
         selectPage: _selectPage,
@@ -89,7 +112,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       floatingActionButton: (_currentPageIndex == 1 || _currentPageIndex == 2)
           ? CustomFab(
               onAddDevicePressed: _showAddDeviceDialog,
-              onAddGroupPressed: () {},
+              onAddGroupPressed: _showAddGroupDialog,
             )
           : null,
       body: <Widget>[
@@ -111,7 +134,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
           ],
         ),
         AllDevicesScreen(),
-        Text('page2'),
+        AllGroupsScreen(),
         Text('page3'),
       ][_currentPageIndex],
     );

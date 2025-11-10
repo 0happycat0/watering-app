@@ -1,4 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
+import 'package:watering_app/core/data/models/history_watering_model.dart';
+import 'package:watering_app/core/data/models/schedule_model.dart';
 
 sealed class DeviceState {
   const DeviceState();
@@ -13,7 +16,14 @@ class Loading extends DeviceState {
 }
 
 class Success extends DeviceState {
-  const Success();
+  const Success({
+    this.listHistoryWatering,
+    this.listHistorySensor,
+    this.listSchedule,
+  });
+  final List<HistoryWatering>? listHistoryWatering;
+  final List<HistorySensor>? listHistorySensor;
+  final List<Schedule>? listSchedule;
 }
 
 class Failure extends DeviceState {
@@ -31,7 +41,7 @@ class Failure extends DeviceState {
       case 'Internal Server Error':
         return 'Lỗi máy chủ. Vui lòng thử lại';
       default:
-        return 'Không thể thêm thiết bị, vui lòng thử lại';
+        return 'Có lỗi xảy ra, vui lòng thử lại';
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:watering_app/core/constants/shared_preference_key.dart';
+import 'package:watering_app/core/utils/stomp_service.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/features/authentication/data/source/auth_local.dart';
 import 'package:watering_app/features/authentication/data/source/auth_remote.dart';
@@ -38,8 +38,10 @@ class AuthRepositoryImpl extends AuthRepository {
     final local = AuthLocalDataSource(prefs);
     final accessToken = local.accessToken;
 
+    //logout: gọi api, xóa local, dispose Stomp
     await authRemoteDataSource.logoutUser(user: User(accessToken: accessToken));
     await local.logout();
+    StompService().dispose();
   }
 
   @override

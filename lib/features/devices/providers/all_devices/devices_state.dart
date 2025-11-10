@@ -14,8 +14,16 @@ class Loading extends DevicesState {
 }
 
 class Success extends DevicesState {
-  const Success(this.devicesList);
+  Success(this.devicesList, {this.searchQuery});
+
   final List<Device> devicesList;
+  final String? searchQuery;
+
+  //biến để kiểm tra danh sách trống do tìm kiếm hay do chưa có thiết bị
+  bool get isEmpty => devicesList.isEmpty;
+  bool get isSearching => searchQuery != null && searchQuery!.isNotEmpty;
+  bool get isSearchResultEmpty => isSearching && isEmpty;
+  bool get isNoDevices => !isSearching && isEmpty;
 }
 
 class Failure extends DevicesState {

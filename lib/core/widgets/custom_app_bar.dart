@@ -23,7 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.elevation = 0,
     this.scrolledUnderElevation = 2,
-    this.automaticallyImplyLeading = true
+    this.automaticallyImplyLeading = true,
   });
 
   @override
@@ -49,12 +49,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           bottomRight: Radius.circular(radius),
         ),
       ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: AppColors.mainGreen[200],
-          fontSize: 24,
-          fontWeight: FontWeight.w600,
+      title: Tooltip(
+        message: title,
+        child: Text(
+          title,
+          style: TextStyle(
+            color: AppColors.mainGreen[200],
+            fontSize: 24,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
