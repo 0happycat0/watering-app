@@ -1,72 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:material_symbols_icons/symbols.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
-import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/groups/data/models/group_model.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/core/widgets/edit_schedule_sheet.dart';
 import 'package:watering_app/core/widgets/schedule_list_item.dart';
-import 'package:watering_app/features/devices/providers/device/schedule_provider.dart';
-import 'package:watering_app/features/devices/providers/device/device_state.dart'
-    as device_state;
+import 'package:watering_app/features/groups/providers/group/schedule_provider.dart';
+import 'package:watering_app/features/groups/providers/group/group_state.dart'
+    as group_state;
 import 'package:watering_app/theme/styles.dart';
 
-class ScheduleTabScreen extends ConsumerStatefulWidget {
-  const ScheduleTabScreen({super.key, required this.device});
+class GroupScheduleTabScreen extends ConsumerStatefulWidget {
+  const GroupScheduleTabScreen({super.key, required this.group});
 
-  final Device device;
+  final Group group;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _ScheduleTabScreenState();
+      _GroupScheduleTabScreenState();
 }
 
-class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
-  // final mockData = [
-  //   Schedule(
-  //     id: '1',
-  //     startTime: '07:00',
-  //     duration: 15, // 15 phút
-  //     repeatType: RepeatType.DAYS,
-  //     status: true,
-  //     daysOfWeek: [
-  //       DaysOfWeek.MON, // T2
-  //       DaysOfWeek.TUE, // T3
-  //       DaysOfWeek.WED, // T4
-  //       DaysOfWeek.THU, // T5
-  //       DaysOfWeek.FRI, // T6
-  //     ],
-  //   ),
-  //   Schedule(
-  //     id: '2',
-  //     startTime: '18:30',
-  //     duration: 5, // 5 phút
-  //     repeatType: RepeatType.EVERYDAY,
-  //     status: false,
-  //     daysOfWeek: null, // Sẽ không có ngày nào sáng
-  //   ),
-  //   Schedule(
-  //     id: '3',
-  //     startTime: '12:00',
-  //     duration: 10, // 10 phút
-  //     repeatType: RepeatType.DAYS,
-  //     status: true,
-  //     daysOfWeek: [
-  //       DaysOfWeek.SAT, // T7
-  //       DaysOfWeek.SUN, // CN
-  //     ],
-  //   ),
-  //   Schedule(
-  //     id: '4',
-  //     startTime: '09:15',
-  //     duration: 2, // 2 phút
-  //     repeatType: RepeatType.ONE_TIME,
-  //     status: true,
-  //     daysOfWeek: [], // Mảng rỗng
-  //   ),
-  // ];
-
+class _GroupScheduleTabScreenState
+    extends ConsumerState<GroupScheduleTabScreen> {
   void _showScheduleSheet(Schedule? schedule) {
     showModalBottomSheet(
       context: context,
@@ -78,16 +35,20 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
       ),
       backgroundColor: Colors.white,
       builder: (ctx) {
-        return EditScheduleSheet(id: widget.device.id, schedule: schedule);
+        return EditScheduleSheet(
+          id: widget.group.id,
+          schedule: schedule,
+          isGroup: true, // Đánh dấu là group
+        );
       },
     );
   }
 
   void _toggleSchedule(bool newState, Schedule schedule) async {
     final success = await ref
-        .read(getListScheduleProvider.notifier)
+        .read(getGroupListScheduleProvider.notifier)
         .toggleSchedule(
-          id: widget.device.id,
+          id: widget.group.id,
           scheduleToToggle: schedule,
           newStatus: newState,
         );
@@ -99,8 +60,12 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
   }
 
   void _showAskDeleteDialog(Schedule schedule) {
-    final deleteScheduleNotifier = ref.read(deleteScheduleProvider.notifier);
-    final listScheduleNotifier = ref.read(getListScheduleProvider.notifier);
+    final deleteScheduleNotifier = ref.read(
+      deleteGroupScheduleProvider.notifier,
+    );
+    final listScheduleNotifier = ref.read(
+      getGroupListScheduleProvider.notifier,
+    );
 
     showDialog(
       context: context,
@@ -122,7 +87,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
               Navigator.of(context).pop();
               listScheduleNotifier.setLoading();
               await deleteScheduleNotifier.deleteSchedule(
-                id: widget.device.id,
+                id: widget.group.id,
                 scheduleId: schedule.id,
               );
               if (mounted) {
@@ -130,7 +95,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                   context,
                 ).showSnackBar(CustomSnackBar(text: 'Đã xóa lịch'));
               }
-              listScheduleNotifier.refresh(id: widget.device.id);
+              listScheduleNotifier.refresh(id: widget.group.id);
             },
             child: Text('Xóa'),
           ),
@@ -145,28 +110,28 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
     Future.microtask(() async {
       if (!mounted) return;
       await ref
-          .read(getListScheduleProvider.notifier)
-          .getListSchedule(id: widget.device.id);
+          .read(getGroupListScheduleProvider.notifier)
+          .getListSchedule(id: widget.group.id);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final id = widget.device.id;
-    final scheduleState = ref.watch(getListScheduleProvider);
+    final id = widget.group.id;
+    final scheduleState = ref.watch(getGroupListScheduleProvider);
 
-    ref.watch(createScheduleProvider);
-    ref.watch(updateScheduleProvider);
-    ref.watch(deleteScheduleProvider);
+    ref.watch(createGroupScheduleProvider);
+    ref.watch(updateGroupScheduleProvider);
+    ref.watch(deleteGroupScheduleProvider);
 
-    ref.listen(getListScheduleProvider, (prev, next) {
+    ref.listen(getGroupListScheduleProvider, (prev, next) {
       print(
         'Schedule list transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
     });
     late List<Schedule> listSchedule;
 
-    if (scheduleState is device_state.Success) {
+    if (scheduleState is group_state.Success) {
       listSchedule = scheduleState.listSchedule ?? [];
     }
 
@@ -175,17 +140,17 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
       children: [
         Container(
           color: AppColors.primarySurface,
-          child: scheduleState is device_state.Loading
+          child: scheduleState is group_state.Loading
               ? Center(
                   child: CircularProgressIndicator(),
                 )
-              : scheduleState is device_state.Success
+              : scheduleState is group_state.Success
               ? (listSchedule.isNotEmpty)
                     ? RefreshIndicator(
                         displacement: 30,
                         onRefresh: () async {
                           await ref
-                              .read(getListScheduleProvider.notifier)
+                              .read(getGroupListScheduleProvider.notifier)
                               .refresh(id: id);
                         },
                         child: ListView.builder(
@@ -225,7 +190,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                           ],
                         ),
                       )
-              : scheduleState is device_state.Failure
+              : scheduleState is group_state.Failure
               ? Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -237,7 +202,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                       TextButton(
                         onPressed: () {
                           ref
-                              .read(getListScheduleProvider.notifier)
+                              .read(getGroupListScheduleProvider.notifier)
                               .refresh(id: id);
                         },
                         style: AppStyles.textButtonStyle,

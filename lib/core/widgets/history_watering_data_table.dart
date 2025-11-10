@@ -1,7 +1,7 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
+import 'package:watering_app/core/data/models/history_watering_model.dart';
 
 class HistoryWateringDataSource extends DataTableSource {
   HistoryWateringDataSource({required this.historyWateringList});

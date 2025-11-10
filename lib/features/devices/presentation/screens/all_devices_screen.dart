@@ -10,8 +10,8 @@ import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
-import 'package:watering_app/features/devices/presentation/widgets/search_bar.dart';
-import 'package:watering_app/features/devices/presentation/widgets/sort_button.dart';
+import 'package:watering_app/core/widgets/search_bar.dart';
+import 'package:watering_app/core/widgets/sort_button.dart';
 import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
@@ -33,9 +33,8 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
 
-  //TODO: implement sort feature
   AllDevicesSortField? _currentSort = AllDevicesSortField.defaultSort;
-  String _currentSearchQuery = '';
+  String? _currentSearchQuery = '';
   bool? _isAscending = true;
   Timer? _debounceTimer;
 
@@ -50,6 +49,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     if (_debounceTimer?.isActive ?? false) {
       _debounceTimer!.cancel();
     }
+    print('DEBUG: query = $query');
 
     //sử dụng timer để delay gọi api khi gõ liên tục
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
@@ -57,7 +57,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
       ref
           .read(devicesProvider.notifier)
           .getAllDevices(
-            name: query,
+            name: query == '' ? null : query,
             sortField: _currentSort == AllDevicesSortField.defaultSort
                 ? null
                 : _currentSort,
@@ -249,6 +249,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     ref.listen(shouldResetSortAndSearchProvider, (prev, next) {
       if (next == true) {
         _currentSort = AllDevicesSortField.defaultSort;
+        _currentSearchQuery = '';
         ref.read(shouldResetSortAndSearchProvider.notifier).state = false;
       }
     });
@@ -275,6 +276,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
       _currentSort = null;
       _isAscending = null;
     }
+    if (_currentSearchQuery == '') _currentSearchQuery = null;
 
     return GestureDetector(
       onTap: _unfocusSearch,
@@ -293,7 +295,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 children: [
                   //Search bar
                   Expanded(
-                    child: DeviceSearchBar(
+                    child: CustomSearchBar(
                       controller: _searchController,
                       focusNode: _searchFocusNode,
                       onChanged: _onSearchChanged,
@@ -349,7 +351,13 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                         TextButton(
                           onPressed: () {
                             _searchController.clear();
-                            ref.read(devicesProvider.notifier).getAllDevices();
+                            _currentSearchQuery = '';
+                            ref
+                                .read(devicesProvider.notifier)
+                                .getAllDevices(
+                                  sortField: _currentSort,
+                                  isAscending: _isAscending,
+                                );
                           },
                           child: Text('Xóa tìm kiếm'),
                         ),
@@ -365,6 +373,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                   await ref
                       .read(devicesProvider.notifier)
                       .getAllDevices(
+                        name: _currentSearchQuery,
                         sortField: _currentSort,
                         isAscending: _isAscending,
                       );

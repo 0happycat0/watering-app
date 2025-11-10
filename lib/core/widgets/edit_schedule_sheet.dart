@@ -7,10 +7,13 @@ import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
-import 'package:watering_app/features/devices/data/models/schedule_model.dart';
+import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
+import 'package:watering_app/features/groups/providers/group/group_state.dart'
+    as group_state;
 import 'package:watering_app/features/devices/providers/device/schedule_provider.dart';
+import 'package:watering_app/features/groups/providers/group/schedule_provider.dart';
 import 'package:watering_app/theme/theme.dart';
 
 class EditScheduleSheet extends ConsumerStatefulWidget {
@@ -18,10 +21,12 @@ class EditScheduleSheet extends ConsumerStatefulWidget {
     super.key,
     required this.id,
     this.schedule, // Null: Chế độ Thêm, Not-Null: Chế độ Sửa
+    this.isGroup = false,
   });
 
   final String id;
   final Schedule? schedule;
+  final bool isGroup;
 
   @override
   ConsumerState<EditScheduleSheet> createState() => _ScheduleEditSheetState();
@@ -135,33 +140,63 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
 
     print('--- ĐANG LƯU LỊCH ---');
     print('Mode: ${_isEditMode ? 'Sửa' : 'Thêm'}');
+    print('Type: ${widget.isGroup ? 'Group' : 'Device'}');
     print('Time: $timeStr');
     print('Duration: $duration phút');
     print('Days: $_selectedDays');
-    if (_isEditMode) {
-      print('ID (Sửa): ${schedule!.id}');
-      await ref
-          .read(updateScheduleProvider.notifier)
-          .updateSchedule(
-            id: widget.id,
-            scheduleId: schedule.id,
-            startTime: timeStr,
-            duration: duration,
-            repeatType: repeatType,
-            daysOfWeek: selectedDays,
-          );
+    if (widget.isGroup) {
+      // Group schedule
+      if (_isEditMode) {
+        print('ID (Sửa): ${schedule!.id}');
+        await ref
+            .read(updateGroupScheduleProvider.notifier)
+            .updateSchedule(
+              id: widget.id,
+              scheduleId: schedule.id,
+              startTime: timeStr,
+              duration: duration,
+              repeatType: repeatType,
+              daysOfWeek: selectedDays,
+            );
+      } else {
+        await ref
+            .read(createGroupScheduleProvider.notifier)
+            .createSchedule(
+              id: widget.id,
+              startTime: timeStr,
+              duration: duration,
+              repeatType: repeatType,
+              daysOfWeek: selectedDays,
+            );
+      }
+      ref.read(getGroupListScheduleProvider.notifier).refresh(id: widget.id);
     } else {
-      await ref
-          .read(createScheduleProvider.notifier)
-          .createSchedule(
-            id: widget.id,
-            startTime: timeStr,
-            duration: duration,
-            repeatType: repeatType,
-            daysOfWeek: selectedDays,
-          );
+      // Device schedule
+      if (_isEditMode) {
+        print('ID (Sửa): ${schedule!.id}');
+        await ref
+            .read(updateScheduleProvider.notifier)
+            .updateSchedule(
+              id: widget.id,
+              scheduleId: schedule.id,
+              startTime: timeStr,
+              duration: duration,
+              repeatType: repeatType,
+              daysOfWeek: selectedDays,
+            );
+      } else {
+        await ref
+            .read(createScheduleProvider.notifier)
+            .createSchedule(
+              id: widget.id,
+              startTime: timeStr,
+              duration: duration,
+              repeatType: repeatType,
+              daysOfWeek: selectedDays,
+            );
+      }
+      ref.read(getListScheduleProvider.notifier).refresh(id: widget.id);
     }
-    ref.read(getListScheduleProvider.notifier).refresh(id: widget.id);
   }
 
   @override
@@ -174,52 +209,106 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    late device_state.DeviceState deviceState;
+    late bool isLoading;
 
-    if (_isEditMode) {
-      deviceState = ref.watch(updateScheduleProvider);
-      ref.listen(updateScheduleProvider, (prev, next) {
-        print(
-          'Update schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
-        );
-        if (next is device_state.Failure) {
-          final message = next.message;
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(CustomSnackBar(text: message));
-        }
-        if (next is device_state.Success && prev is device_state.Loading) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(
-            CustomSnackBar(text: 'Cập nhật thành công'),
+    if (widget.isGroup) {
+      // Group schedule
+      if (_isEditMode) {
+        final groupState = ref.watch(updateGroupScheduleProvider);
+        isLoading = groupState is group_state.Loading;
+        ref.listen(updateGroupScheduleProvider, (prev, next) {
+          print(
+            'Update group schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
-          Navigator.pop(context);
-        }
-      });
+          if (next is group_state.Failure) {
+            final message = next.message;
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(CustomSnackBar(text: message));
+          }
+          if (next is group_state.Success && prev is group_state.Loading) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(
+              CustomSnackBar(text: 'Cập nhật thành công'),
+            );
+            Navigator.pop(context);
+          }
+        });
+      } else {
+        final groupState = ref.watch(createGroupScheduleProvider);
+        isLoading = groupState is group_state.Loading;
+        ref.listen(createGroupScheduleProvider, (prev, next) {
+          print(
+            'Create group schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
+          );
+          if (next is group_state.Failure) {
+            final message = next.message;
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(CustomSnackBar(text: message));
+          }
+          if (next is group_state.Success && prev is group_state.Loading) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(
+              CustomSnackBar(text: 'Đã thêm lịch'),
+            );
+            Navigator.pop(context);
+          }
+        });
+      }
     } else {
-      deviceState = ref.watch(createScheduleProvider);
-      ref.listen(createScheduleProvider, (prev, next) {
-        print(
-          'Create schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
-        );
-        if (next is device_state.Failure) {
-          final message = next.message;
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(CustomSnackBar(text: message));
-        }
-        if (next is device_state.Success && prev is device_state.Loading) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(
-            CustomSnackBar(text: 'Đã thêm lịch'),
+      // Device schedule
+      if (_isEditMode) {
+        final deviceState = ref.watch(updateScheduleProvider);
+        isLoading = deviceState is device_state.Loading;
+        ref.listen(updateScheduleProvider, (prev, next) {
+          print(
+            'Update schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
-          Navigator.pop(context);
-        }
-      });
+          if (next is device_state.Failure) {
+            final message = next.message;
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(CustomSnackBar(text: message));
+          }
+          if (next is device_state.Success && prev is device_state.Loading) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(
+              CustomSnackBar(text: 'Cập nhật thành công'),
+            );
+            Navigator.pop(context);
+          }
+        });
+      } else {
+        final deviceState = ref.watch(createScheduleProvider);
+        isLoading = deviceState is device_state.Loading;
+        ref.listen(createScheduleProvider, (prev, next) {
+          print(
+            'Create schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
+          );
+          if (next is device_state.Failure) {
+            final message = next.message;
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(CustomSnackBar(text: message));
+          }
+          if (next is device_state.Success && prev is device_state.Loading) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(
+              CustomSnackBar(text: 'Đã thêm lịch'),
+            );
+            Navigator.pop(context);
+          }
+        });
+      }
     }
 
     return SingleChildScrollView(
@@ -364,10 +453,10 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: deviceState is device_state.Loading
+                    icon: isLoading
                         ? null
                         : const Icon(Symbols.check),
-                    label: deviceState is device_state.Loading
+                    label: isLoading
                         ? CustomCircularProgress()
                         : const Text('Lưu Lịch'),
                     onPressed: _onSave,

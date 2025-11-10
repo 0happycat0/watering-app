@@ -5,11 +5,15 @@ class Group extends Equatable {
   final String id;
   final String name;
   final List<Device> listDevices;
+  final String action;
+  final int duration; 
 
   const Group({
     this.id = '',
     this.name = '',
     this.listDevices = const [],
+    this.action = '',
+    this.duration = 0,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) => Group(
@@ -20,6 +24,8 @@ class Group extends Equatable {
             .map((deviceJson) => Device.fromJson(deviceJson))
             .toList()
         : [],
+    action: json['action'] ?? '',
+    duration: (json['duration'] ?? 0) ~/ 60,
   );
 
   Map<String, dynamic> toJson() {
@@ -27,6 +33,8 @@ class Group extends Equatable {
       'id': id,
       'name': name,
       'devices': listDevices.map((device) => device.toJson()).toList(),
+      'action': action,
+      'duration': duration * 60,
     };
   }
 
@@ -35,6 +43,8 @@ class Group extends Equatable {
     id,
     name,
     listDevices,
+    action,
+    duration,
   ];
 }
 

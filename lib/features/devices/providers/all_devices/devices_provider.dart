@@ -54,6 +54,6 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
   }
 }
 
-final shouldResetSortAndSearchProvider = StateProvider.autoDispose<bool>(
+final shouldResetSortAndSearchProvider = StateProvider<bool>(
   (ref) => false,
 );

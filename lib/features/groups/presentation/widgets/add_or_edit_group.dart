@@ -2,30 +2,104 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
+import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/groups/data/models/group_model.dart';
 import 'package:watering_app/features/groups/providers/all_groups/groups_provider.dart';
+import 'package:watering_app/features/groups/providers/group/group_provider.dart';
+import 'package:watering_app/features/groups/providers/group/group_state.dart'
+    as group_state;
 import 'package:watering_app/features/devices/providers/all_devices/devices_state.dart'
     as devices_state;
 import 'package:watering_app/theme/styles.dart';
 
-class AddNewGroup extends ConsumerStatefulWidget {
-  const AddNewGroup({super.key});
+class AddOrEditGroup extends ConsumerStatefulWidget {
+  const AddOrEditGroup({super.key, this.groupToEdit});
+
+  final Group? groupToEdit; //null: thêm, != null: sửa
 
   @override
-  ConsumerState<AddNewGroup> createState() => _AddNewGroupState();
+  ConsumerState<AddOrEditGroup> createState() => _AddOrEditGroupState();
 }
 
-class _AddNewGroupState extends ConsumerState<AddNewGroup> {
+class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
   final _nameController = TextEditingController();
   // Sử dụng Set để lưu các ID của thiết bị được chọn
   final Set<String> _selectedIds = {};
+  bool _isGroupDataLoaded = false; //ngăn UI load lại khi bỏ chọn
+  late final bool _isEditMode;
+
+  void _handleStateChange(
+    group_state.GroupState? prev,
+    group_state.GroupState next,
+    String action,
+  ) {
+    print(
+      '$action group transition: ${prev.runtimeType} -> ${next.runtimeType}',
+    );
+
+    // Hiển thị snack bar khi có lỗi
+    if (next is group_state.Failure) {
+      final message = next.message;
+      ScaffoldMessenger.of(context).showSnackBar(
+        CustomSnackBar(text: message),
+      );
+    }
+
+    // Đóng dialog khi thành công
+    if (next is group_state.Success && prev is group_state.Loading) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  void _handleSubmit() async {
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        CustomSnackBar(
+          text: 'Vui lòng nhập tên nhóm',
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+
+    if (_isEditMode) {
+      await ref
+          .read(updateGroupProvider.notifier)
+          .updateGroup(
+            id: widget.groupToEdit!.id,
+            name: _nameController.text.trim(),
+            listIdOfDevices: _selectedIds.toList(),
+          );
+    } else {
+      await ref
+          .read(createGroupProvider.notifier)
+          .createGroup(
+            name: _nameController.text.trim(),
+            listIdOfDevices: _selectedIds.toList(),
+          );
+    }
+
+    // Reset search
+    ref.read(shouldResetGroupSearchProvider.notifier).state = true;
+  }
 
   @override
   void initState() {
     super.initState();
+    _isEditMode = widget.groupToEdit != null;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(freeDevicesProvider.notifier).getAllGroups();
+      if (_isEditMode) {
+        _nameController.text = widget.groupToEdit!.name;
+        ref
+            .read(groupByIdProvider.notifier)
+            .getGroupById(id: widget.groupToEdit!.id);
+        ref.read(freeDevicesProvider.notifier).getAllGroups();
+      } else {
+        ref.read(freeDevicesProvider.notifier).getAllGroups();
+      }
     });
   }
 
@@ -38,6 +112,36 @@ class _AddNewGroupState extends ConsumerState<AddNewGroup> {
   @override
   Widget build(BuildContext context) {
     final freeDevicesState = ref.watch(freeDevicesProvider);
+    final groupState = ref.watch(groupByIdProvider);
+
+    final createGroupState = ref.watch(createGroupProvider);
+    final updateGroupState = ref.watch(updateGroupProvider);
+
+    final isLoading =
+        createGroupState is group_state.Loading ||
+        updateGroupState is group_state.Loading;
+
+    ref.listen<group_state.GroupState>(createGroupProvider, (prev, next) {
+      _handleStateChange(prev, next, 'create');
+    });
+
+    ref.listen<group_state.GroupState>(updateGroupProvider, (prev, next) {
+      _handleStateChange(prev, next, 'update');
+    });
+
+    if (_isEditMode) {
+      ref.listen<group_state.GroupState>(groupByIdProvider, (prev, next) {
+        if (next is group_state.Success && !_isGroupDataLoaded) {
+          final groupDevices = next.listDevices ?? [];
+          setState(() {
+            _selectedIds.clear();
+            _selectedIds.addAll(groupDevices.map((d) => d.id));
+            _isGroupDataLoaded = true;
+          });
+        }
+      });
+    }
+
     final view = MediaQuery.of(context);
     final keyboardSpace = view.viewInsets.bottom;
 
@@ -58,7 +162,7 @@ class _AddNewGroupState extends ConsumerState<AddNewGroup> {
                   children: [
                     Center(
                       child: Text(
-                        'Thêm nhóm thiết bị',
+                        _isEditMode ? 'Sửa nhóm' : 'Thêm nhóm thiết bị',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
@@ -76,10 +180,12 @@ class _AddNewGroupState extends ConsumerState<AddNewGroup> {
                   ],
                 ),
                 Center(
-                  child: Text(
-                    'Tạo tên nhóm và chọn thiết bị để thêm vào nhóm',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                  child: _isEditMode
+                      ? null
+                      : Text(
+                          'Tạo tên nhóm và chọn thiết bị để thêm vào nhóm',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
                 ),
                 const SizedBox(height: 24),
 
@@ -96,10 +202,19 @@ class _AddNewGroupState extends ConsumerState<AddNewGroup> {
                 const SizedBox(height: 8),
 
                 Expanded(
-                  child: SingleChildScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    child: _buildDeviceList(context, freeDevicesState),
+                  child: Scrollbar(
+                    interactive: true,
+                    thickness: 5,
+                    radius: Radius.circular(10),
+                    child: SingleChildScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: _buildDeviceList(
+                        context,
+                        freeDevicesState,
+                        groupState,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -118,13 +233,14 @@ class _AddNewGroupState extends ConsumerState<AddNewGroup> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          print('Group Name: ${_nameController.text}');
-                          print('Selected IDs: $_selectedIds');
-                          Navigator.of(context).pop();
-                        },
+                        onPressed: isLoading ? null : _handleSubmit,
                         style: AppStyles.elevatedButtonStyle(),
-                        child: const Text('Tạo nhóm'),
+                        child: isLoading
+                            ? CustomCircularProgress()
+                            : Text(
+                                _isEditMode ? 'Lưu' : 'Tạo nhóm',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
                       ),
                     ),
                   ],
@@ -137,36 +253,76 @@ class _AddNewGroupState extends ConsumerState<AddNewGroup> {
     );
   }
 
+  Widget _buildLoading() => const Center(
+    child: Padding(
+      padding: EdgeInsets.all(16.0),
+      child: CustomCircularProgress(),
+    ),
+  );
+
+  Widget _buildError(String? message) => Center(
+    child: Text(message ?? 'Có lỗi xảy ra'),
+  );
+
   Widget _buildDeviceList(
     BuildContext context,
-    devices_state.DevicesState state,
+    devices_state.DevicesState freeState,
+    group_state.GroupState groupState, //
   ) {
-    return switch (state) {
-      devices_state.Loading() => const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: CustomCircularProgress(),
-        ),
-      ),
-      devices_state.Failure(exception: final e) => Center(
-        child: Text(e.message!),
-      ),
-      devices_state.Success(
-        devicesList: final devices,
-        searchQuery: final sq,
-      ) =>
-        _buildSuccessUI(
-          context,
-          devices,
-          devices_state.Success(devices, searchQuery: sq),
-        ),
-      _ => const Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: CustomCircularProgress(),
-        ),
-      ),
-    };
+    // Handle Loading
+    if (freeState is devices_state.Loading ||
+        freeState is devices_state.Initial) {
+      return _buildLoading();
+    }
+    if (_isEditMode &&
+        (groupState is group_state.Loading ||
+            groupState is group_state.Initial)) {
+      return _buildLoading();
+    }
+
+    // Handle Failure
+    if (freeState is devices_state.Failure) {
+      return _buildError(freeState.message);
+    }
+    if (_isEditMode && groupState is group_state.Failure) {
+      return _buildError(groupState.message);
+    }
+
+    // Handle Success
+    if (freeState is devices_state.Success) {
+      List<Device> freeDevices = freeState.devicesList;
+      List<Device> groupDevices = [];
+
+      if (_isEditMode) {
+        if (groupState is group_state.Success) {
+          groupDevices = groupState.listDevices ?? [];
+        } else {
+          return _buildLoading();
+        }
+      }
+
+      // Gộp 2 danh sách và loại bỏ trùng lặp (dùng Map)
+      final allDevicesMap = <String, Device>{};
+      for (var device in groupDevices) {
+        allDevicesMap[device.id] = device;
+      }
+      for (var device in freeDevices) {
+        // Chỉ thêm nếu chưa có (thiết bị trong nhóm luôn được ưu tiên)
+        allDevicesMap.putIfAbsent(device.id, () => device);
+      }
+      final allDevices = allDevicesMap.values.toList();
+
+      // Tạo một state Success tạm thời để truyền cho _buildSuccessUI
+      final combinedState = devices_state.Success(
+        allDevices,
+        searchQuery: freeState.searchQuery,
+      );
+
+      return _buildSuccessUI(context, allDevices, combinedState);
+    }
+
+    // Fallback
+    return _buildLoading();
   }
 
   Widget _buildSuccessUI(

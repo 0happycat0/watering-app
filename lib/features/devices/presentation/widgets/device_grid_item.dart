@@ -14,12 +14,14 @@ class DeviceGridItem extends ConsumerWidget {
   const DeviceGridItem({
     super.key,
     required this.device,
+    this.isInGroup = false,
     required this.onSelectDevice,
     required this.onSelectEdit,
     required this.onSelectDelete,
   });
 
   final Device device;
+  final bool isInGroup;
   final void Function() onSelectDevice;
   final void Function() onSelectEdit;
   final void Function() onSelectDelete;
@@ -292,17 +294,18 @@ class DeviceGridItem extends ConsumerWidget {
                     }
                   },
                   itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'edit',
-                      height: 40,
-                      child: Row(
-                        children: [
-                          Icon(Symbols.edit),
-                          SizedBox(width: 12),
-                          Text('Sửa thông tin'),
-                        ],
+                    if (!isInGroup)
+                      PopupMenuItem(
+                        value: 'edit',
+                        height: 40,
+                        child: Row(
+                          children: [
+                            Icon(Symbols.edit),
+                            SizedBox(width: 12),
+                            Text('Sửa thông tin'),
+                          ],
+                        ),
                       ),
-                    ),
                     PopupMenuItem(
                       value: 'delete',
                       height: 40,
@@ -310,7 +313,7 @@ class DeviceGridItem extends ConsumerWidget {
                         children: [
                           Icon(Symbols.delete, color: colorScheme.error),
                           SizedBox(width: 12),
-                          Text('Xóa thiết bị'),
+                          Text(isInGroup ? 'Xóa khỏi nhóm' : 'Xóa thiết bị'),
                         ],
                       ),
                     ),

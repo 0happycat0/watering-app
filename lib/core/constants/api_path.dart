@@ -47,4 +47,16 @@ class _GroupPath {
   final String createGroup = '/groups';
   final String searchGroups = '/groups/search';
   String groupById(String id) => '/groups/$id';
+  String toggleGroup(String id) => '/groups/$id/watering';
+  String getHistoryWatering(String id) => '/groups/$id/watering/history';
+
+  //schedule
+  String getListSchedule(String id) => '/groups/$id/schedule';
+  String toggleSchedule(String id, String scheduleId) =>
+      '/groups/$id/schedule/$scheduleId/trigger';
+  String createSchedule(String id) => '/groups/$id/schedule';
+  String updateSchedule(String id, String scheduleId) =>
+      '/groups/$id/schedule/$scheduleId';
+  String deleteSchedule(String id, String scheduleId) =>
+      '/groups/$id/schedule/$scheduleId';
 }

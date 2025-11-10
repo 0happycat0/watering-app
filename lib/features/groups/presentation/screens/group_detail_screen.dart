@@ -5,38 +5,40 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
-import 'package:watering_app/features/devices/presentation/screens/schedule_tab_screen.dart';
-import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
-import 'package:watering_app/features/devices/providers/device/device_provider.dart';
-import 'package:watering_app/features/devices/providers/device/device_state.dart'
-    as device_state;
-import 'package:watering_app/features/devices/data/models/device_model.dart';
-import 'package:watering_app/features/devices/presentation/screens/analytics_tab_screen.dart';
-import 'package:watering_app/features/devices/presentation/screens/control_tab_screen.dart';
+import 'package:watering_app/features/groups/data/models/group_model.dart';
+import 'package:watering_app/features/groups/providers/all_groups/groups_provider.dart';
+import 'package:watering_app/features/groups/providers/group/group_provider.dart';
+import 'package:watering_app/features/groups/providers/group/group_state.dart'
+    as group_state;
+import 'package:watering_app/features/groups/presentation/screens/group_control_tab_screen.dart';
+import 'package:watering_app/features/groups/presentation/screens/group_schedule_tab_screen.dart';
+import 'package:watering_app/features/groups/presentation/screens/group_devices_tab_screen.dart';
 import 'package:watering_app/theme/theme.dart';
 
-class DeviceDetailScreen extends ConsumerStatefulWidget {
-  const DeviceDetailScreen({super.key, required this.device});
+class GroupDetailScreen extends ConsumerStatefulWidget {
+  const GroupDetailScreen({super.key, required this.group});
 
-  final Device device;
+  final Group group;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _DeviceDetailScreenState();
+      _GroupDetailScreenState();
 }
 
-class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
+class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
+  Group? _currentGroup;
+
   void _showAskDeleteDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => Consumer(
         builder: (context, ref, child) {
-          final deviceState = ref.watch(deleteDeviceProvider);
+          final groupState = ref.watch(deleteGroupProvider);
           return AlertDialog(
-            title: Text('Xóa thiết bị'),
+            title: Text('Xóa nhóm'),
             content: Text(
-              'Bạn có muốn xóa "${widget.device.name}" khỏi danh sách thiết bị không?',
+              'Bạn có muốn xóa nhóm "${widget.group.name}" không?',
             ),
             actions: [
               OutlinedButton(
@@ -48,11 +50,11 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
               FilledButton(
                 onPressed: () async {
                   await ref
-                      .read(deleteDeviceProvider.notifier)
-                      .deleteDevice(id: widget.device.id);
-                  ref.read(devicesProvider.notifier).refresh();
+                      .read(deleteGroupProvider.notifier)
+                      .deleteGroup(id: widget.group.id);
+                  ref.read(groupsProvider.notifier).refresh();
                 },
-                child: deviceState is device_state.Loading
+                child: groupState is group_state.Loading
                     ? CustomCircularProgress(
                         color: colorScheme.primaryContainer,
                       )
@@ -66,29 +68,49 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final device = widget.device;
-    // final realtimeDeviceSensor = ref.watch(
-    //   deviceSensorProvider(device.deviceId),
-    // );
+  void initState() {
+    super.initState();
+    _currentGroup = widget.group;
 
-    ref.listen(deleteDeviceProvider, (prev, next) {
-      print(
-        'Delete device transition: ${prev.runtimeType} -> ${next.runtimeType}',
+    Future.microtask(() async {
+      await ref
+          .read(groupByIdProvider.notifier)
+          .getGroupById(id: widget.group.id);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final groupState = ref.watch(groupByIdProvider);
+
+    // Cập nhật group khi có data mới
+    if (groupState is group_state.Success && groupState.listDevices != null) {
+      _currentGroup = Group(
+        id: widget.group.id,
+        name: widget.group.name,
+        listDevices: groupState.listDevices!,
       );
-      if (next is device_state.Failure) {
+    }
+
+    ref.listen(deleteGroupProvider, (prev, next) {
+      print(
+        'Delete group transition: ${prev.runtimeType} -> ${next.runtimeType}',
+      );
+      if (next is group_state.Failure) {
         final message = next.message;
         Navigator.of(context).pop();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(CustomSnackBar(text: message));
       }
-      if (next is device_state.Success && prev is device_state.Loading) {
+      if (next is group_state.Success && prev is group_state.Loading) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${widget.device.name}"'));
+        ).showSnackBar(
+          CustomSnackBar(text: 'Đã xóa nhóm "${widget.group.name}"'),
+        );
       }
     });
 
@@ -98,7 +120,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
       child: Scaffold(
         appBar: CustomAppBar(
           automaticallyImplyLeading: false,
-          title: 'Thiết bị: ${widget.device.name}',
+          title: 'Nhóm: ${widget.group.name}',
           leading: BackIcon(),
           actions: [
             IconButton(
@@ -116,19 +138,16 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
             unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
             tabs: <Widget>[
               Tab(text: 'Điều khiển'),
-              Tab(text: 'Theo dõi'),
               Tab(text: 'Lên lịch'),
+              Tab(text: 'Thiết bị'),
             ],
           ),
         ),
         body: TabBarView(
           children: <Widget>[
-            ControlTabScreen(device: device),
-            AnalyticsTabScreen(
-              device: device,
-              // realtimeDeviceSensor: realtimeDeviceSensor,
-            ),
-            ScheduleTabScreen(device: device),
+            GroupControlTabScreen(group: _currentGroup ?? widget.group),
+            GroupScheduleTabScreen(group: _currentGroup ?? widget.group),
+            GroupDevicesTabScreen(group: _currentGroup ?? widget.group),
           ],
         ),
       ),

@@ -11,6 +11,8 @@ class ApiStrings {
   static const String size = 'size';
   static const String sort = 'sort';
 
+  static const String devices = 'devices';
+
   static const String scheduleId = 'scheduleId';
   static const String status = 'status';
 

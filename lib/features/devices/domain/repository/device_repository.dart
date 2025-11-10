@@ -3,8 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
-import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
-import 'package:watering_app/features/devices/data/models/schedule_model.dart';
+import 'package:watering_app/core/data/models/history_watering_model.dart';
+import 'package:watering_app/core/data/models/schedule_model.dart';
 
 abstract class DeviceRepository {
   Future<Either<Exception, List<Device>>> getAllDevices();

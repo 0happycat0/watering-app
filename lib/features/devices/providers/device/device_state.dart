@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
-import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
-import 'package:watering_app/features/devices/data/models/schedule_model.dart';
+import 'package:watering_app/core/data/models/history_watering_model.dart';
+import 'package:watering_app/core/data/models/schedule_model.dart';
 
 sealed class DeviceState {
   const DeviceState();

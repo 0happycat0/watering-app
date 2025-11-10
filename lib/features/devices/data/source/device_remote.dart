@@ -6,8 +6,8 @@ import 'package:watering_app/core/network/dio_network_service.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
-import 'package:watering_app/features/devices/data/models/history_watering_model.dart';
-import 'package:watering_app/features/devices/data/models/schedule_model.dart';
+import 'package:watering_app/core/data/models/history_watering_model.dart';
+import 'package:watering_app/core/data/models/schedule_model.dart';
 
 class DeviceRemoteDataSource {
   final DioNetworkService networkService;

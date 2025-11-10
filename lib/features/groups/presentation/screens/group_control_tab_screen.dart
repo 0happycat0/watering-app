@@ -8,31 +8,28 @@ import 'package:watering_app/core/constants/app_strings.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
-import 'package:watering_app/features/devices/data/models/device_model.dart';
-import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provider.dart';
-import 'package:watering_app/features/devices/providers/device/device_provider.dart';
-import 'package:watering_app/features/devices/providers/device/device_state.dart'
-    as device_state;
-import 'package:watering_app/features/devices/providers/device/get_history_provider.dart';
+import 'package:watering_app/features/groups/data/models/group_model.dart';
+import 'package:watering_app/features/groups/providers/group/group_provider.dart';
+import 'package:watering_app/features/groups/providers/group/group_state.dart'
+    as group_state;
+import 'package:watering_app/features/groups/providers/group/get_history_provider.dart';
 import 'package:watering_app/core/widgets/history_watering_data_table.dart';
 import 'package:watering_app/theme/styles.dart';
 import 'package:watering_app/theme/theme.dart';
 
-class ControlTabScreen extends ConsumerStatefulWidget {
-  const ControlTabScreen({super.key, required this.device});
+class GroupControlTabScreen extends ConsumerStatefulWidget {
+  const GroupControlTabScreen({super.key, required this.group});
 
-  final Device device;
+  final Group group;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _ControlTabScreenState();
+      _GroupControlTabScreenState();
 }
 
-class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
+class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
   final _durationController = TextEditingController(text: '10');
   bool _isToggling = false;
-
-  // final _rowPerPage = 5;
 
   void _onDurationTextChanged(String text) {
     setState(() {
@@ -45,7 +42,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
         } else if (value < 0) {
           newText = AppStrings.minPumpDurationValue;
         } else {
-          //xóa số 0 đứng đầu
+          // Xóa số 0 đứng đầu
           newText = value.toStringAsFixed(0);
         }
       } else {
@@ -54,7 +51,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
 
       if (_durationController.text != newText) {
         _durationController.text = newText;
-        //di chuyển con trỏ về cuối
+        // Di chuyển con trỏ về cuối
         _durationController.selection = TextSelection.fromPosition(
           TextPosition(offset: _durationController.text.length),
         );
@@ -62,52 +59,33 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
     });
   }
 
-  void _toggleDevice(String id, String action, int duration) async {
+  void _toggleGroup(String id, String action, int duration) async {
     if (_isToggling) return;
 
     setState(() {
       _isToggling = true;
     });
 
-    // Trạng thái mong đợi sau khi toggle
-    final expectedWateringState = action == 'START';
-
     // Gọi API
     final success = await ref
-        .read(toggleDeviceProvider.notifier)
-        .toggleDevice(
-          device: Device(id: id, action: action, duration: duration),
+        .read(toggleGroupProvider.notifier)
+        .toggleGroup(
+          group: Group(id: id, action: action, duration: duration),
         );
 
     if (!mounted) return;
 
     if (success) {
-      // API thành công, đợi 300ms để nhận realtime
+      // API thành công
       await Future.delayed(const Duration(milliseconds: 300));
 
       if (!mounted) return;
 
-      // Kiểm tra xem realtime có update không
-      final updatedWateringMap = ref.read(devicesWateringProvider);
-      final newWateringState = updatedWateringMap[widget.device.deviceId];
-
-      // Nếu trạng thái không thay đổi theo expected hoặc giống trạng thái cũ
-      if (newWateringState != expectedWateringState) {
-        // Không nhận được realtime confirmation
-        ScaffoldMessenger.of(context).showSnackBar(
-          CustomSnackBar(
-            text: action == 'START'
-                ? 'Bơm không thành công! Vui lòng thử lại.'
-                : 'Hủy bơm không thành công! Vui lòng thử lại.',
-          ),
-        );
-      } else {
-        // Thành công, nếu là STOP thì refresh history
-        if (action == 'STOP') {
-          await ref
-              .read(getHistoryWateringProvider.notifier)
-              .getHistoryWatering(id: widget.device.id);
-        }
+      // Thành công, nếu là STOP thì refresh history
+      if (action == 'STOP') {
+        await ref
+            .read(getGroupHistoryWateringProvider.notifier)
+            .getHistoryWatering(id: widget.group.id);
       }
     } else {
       // API thất bại
@@ -126,36 +104,26 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   @override
   void initState() {
     super.initState();
-
-    //chạy sau khi initstate hoàn tất
+    // Chạy sau khi initstate hoàn tất
     Future.microtask(() async {
-      if (!mounted) return;
+      if(!mounted) return;
       await ref
-          .read(getHistoryWateringProvider.notifier)
-          .getHistoryWatering(id: widget.device.id);
+          .read(getGroupHistoryWateringProvider.notifier)
+          .getHistoryWatering(id: widget.group.id);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final id = widget.device.id;
+    final id = widget.group.id;
 
-    // Lấy trạng thái watering từ realtime hoặc device
-    final wateringMap = ref.watch(devicesWateringProvider);
-    final isWatering =
-        wateringMap[widget.device.deviceId] ?? widget.device.watering;
-
-    // Lấy trạng thái online từ realtime hoặc device
-    final statusMap = ref.watch(devicesStatusProvider);
-    final isOnline = statusMap[widget.device.deviceId] ?? widget.device.online;
-
-    final historyWateringState = ref.watch(getHistoryWateringProvider);
+    final historyWateringState = ref.watch(getGroupHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;
 
     double currentSliderValue = double.tryParse(_durationController.text) ?? 0;
     double sliderValue = currentSliderValue.clamp(0.0, 60.0);
 
-    if (historyWateringState is device_state.Success) {
+    if (historyWateringState is group_state.Success) {
       historyWateringDataSource = HistoryWateringDataSource(
         historyWateringList: historyWateringState.listHistoryWatering ?? [],
       );
@@ -166,7 +134,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
       color: AppColors.primarySurface,
       child: Column(
         children: [
-          //pump section
+          // Pump section
           Card(
             color: colorScheme.onPrimary,
             margin: EdgeInsets.fromLTRB(14, 12, 14, 0),
@@ -231,66 +199,33 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 20,
-                    child: isWatering
-                        ? Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 14),
-                            child: Text(
-                              'Đang bơm...',
-                              textAlign: TextAlign.left,
-                            ),
-                          )
-                        : null,
-                  ),
+                  SizedBox(height: 20),
                   Center(
                     child: SizedBox(
                       width: 150,
-                      child: isWatering
-                          ? ElevatedButton(
-                              onPressed: (isOnline && !_isToggling)
-                                  ? () {
-                                      _toggleDevice(id, 'STOP', 0);
-                                    }
-                                  : null,
-                              style: AppStyles.elevatedButtonStyle(),
-                              child: _isToggling
-                                  ? SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                      ),
-                                    )
-                                  : Text('Hủy'),
-                            )
-                          : ElevatedButton(
-                              onPressed: (isOnline && !_isToggling)
-                                  ? () {
-                                      _toggleDevice(
-                                        id,
-                                        'START',
-                                        int.tryParse(
-                                              _durationController.text,
-                                            ) ??
-                                            0,
-                                      );
-                                    }
-                                  : null,
-                              style: AppStyles.elevatedButtonStyle(),
-                              child: _isToggling
-                                  ? CustomCircularProgress()
-                                  : Text(
-                                      'Bơm ngay',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            ),
+                      child: ElevatedButton(
+                        onPressed: !_isToggling
+                            ? () {
+                                _toggleGroup(
+                                  id,
+                                  'START',
+                                  int.tryParse(
+                                        _durationController.text,
+                                      ) ??
+                                      0,
+                                );
+                              }
+                            : null,
+                        style: AppStyles.elevatedButtonStyle(),
+                        child: _isToggling
+                            ? CustomCircularProgress()
+                            : Text(
+                                'Bơm ngay',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
                 ],
@@ -298,7 +233,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
             ),
           ),
 
-          //history section
+          // History section
           Expanded(
             child: Card(
               color: colorScheme.onPrimary,
@@ -323,7 +258,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                         IconButton(
                           onPressed: () async {
                             await ref
-                                .read(getHistoryWateringProvider.notifier)
+                                .read(getGroupHistoryWateringProvider.notifier)
                                 .refresh(id: id);
                           },
                           icon: Icon(Symbols.refresh_rounded),
@@ -331,11 +266,11 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                       ],
                     ),
                   ),
-                  historyWateringState is device_state.Loading
+                  historyWateringState is group_state.Loading
                       ? Expanded(
                           child: Center(child: CircularProgressIndicator()),
                         )
-                      : historyWateringState is device_state.Success
+                      : historyWateringState is group_state.Success
                       ? Expanded(
                           child: Theme(
                             data: ThemeData(),
@@ -365,14 +300,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                                   ),
                                 ),
                               ],
-
-                              // rowsPerPage: _rowPerPage,
-                              // availableRowsPerPage: [5, 10, 15, 20],
-                              // onRowsPerPageChanged: (value) {
-                              //   _rowPerPage = value!;
-                              // },
                               showFirstLastButtons: true,
-                              // columnSpacing: 10,
                               horizontalMargin: 32,
                               headingRowHeight: 48,
                               headingRowColor: WidgetStateColor.resolveWith(
@@ -408,3 +336,4 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
     );
   }
 }
+

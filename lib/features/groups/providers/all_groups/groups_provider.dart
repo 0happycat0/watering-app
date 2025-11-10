@@ -90,3 +90,7 @@ class FreeDevicesNotifier extends StateNotifier<devices_state.DevicesState> {
     );
   }
 }
+
+final shouldResetGroupSearchProvider = StateProvider<bool>(
+  (ref) => false,
+);

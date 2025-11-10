@@ -5,7 +5,8 @@ import 'package:watering_app/features/groups/data/models/group_model.dart';
 import 'package:watering_app/features/groups/providers/group/group_state.dart'
     as group_state;
 
-final groupProvider =
+//get group by id
+final groupByIdProvider =
     StateNotifierProvider.autoDispose<GroupNotifier, group_state.GroupState>(
       (ref) {
         final groupRepository = ref.watch(groupRepositoryProvider);
@@ -45,10 +46,14 @@ class CreateGroupNotifier extends StateNotifier<group_state.GroupState> {
   CreateGroupNotifier(this.groupRepository) : super(group_state.Initial());
   final GroupRepositoryImpl groupRepository;
 
-  Future<void> createGroup({required String name}) async {
+  Future<void> createGroup({
+    required String name,
+    required List<String> listIdOfDevices,
+  }) async {
     state = group_state.Loading();
     final response = await groupRepository.createGroup(
       group: Group(name: name),
+      listIdOfDevices: listIdOfDevices,
     );
     state = response.fold(
       (exception) {
@@ -72,11 +77,16 @@ final updateGroupProvider =
 class UpdateGroupNotifier extends StateNotifier<group_state.GroupState> {
   UpdateGroupNotifier(this.groupRepository) : super(group_state.Initial());
   final GroupRepositoryImpl groupRepository;
-  
-  Future<void> updateGroup({required String id, required String name}) async {
+
+  Future<void> updateGroup({
+    required String id,
+    required String name,
+    required List<String> listIdOfDevices,
+  }) async {
     state = group_state.Loading();
     final response = await groupRepository.updateGroup(
       group: Group(id: id, name: name),
+      listIdOfDevices: listIdOfDevices,
     );
     state = response.fold(
       (exception) {
@@ -110,6 +120,42 @@ class DeleteGroupNotifier extends StateNotifier<group_state.GroupState> {
       },
       (_) {
         return group_state.Success();
+      },
+    );
+  }
+}
+
+//toggle group (true: đang bơm, false: không bơm)
+final toggleGroupProvider = StateNotifierProvider<ToggleGroupNotifier, bool>(
+  (ref) => ToggleGroupNotifier(ref.watch(groupRepositoryProvider)),
+);
+
+class ToggleGroupNotifier extends StateNotifier<bool> {
+  ToggleGroupNotifier(this.groupRepository) : super(false);
+  final GroupRepositoryImpl groupRepository;
+
+  Future<bool> toggleGroup({
+    required Group group,
+  }) async {
+    final originalState = state;
+
+    if (group.action == 'START') {
+      state = true;
+    } else if (group.action == 'STOP') {
+      state = false;
+    }
+
+    final response = await groupRepository.toggleGroup(
+      group: group,
+    );
+
+    return response.fold(
+      (exception) {
+        state = originalState;
+        return false;
+      },
+      (_) {
+        return true;
       },
     );
   }
