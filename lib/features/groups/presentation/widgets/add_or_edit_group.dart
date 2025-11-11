@@ -15,9 +15,10 @@ import 'package:watering_app/features/devices/providers/all_devices/devices_stat
 import 'package:watering_app/theme/styles.dart';
 
 class AddOrEditGroup extends ConsumerStatefulWidget {
-  const AddOrEditGroup({super.key, this.groupToEdit});
+  const AddOrEditGroup({super.key, this.groupToEdit, this.isInTab = false});
 
   final Group? groupToEdit; //null: thêm, != null: sửa
+  final bool isInTab;
 
   @override
   ConsumerState<AddOrEditGroup> createState() => _AddOrEditGroupState();
@@ -49,7 +50,7 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
 
     // Đóng dialog khi thành công
     if (next is group_state.Success && prev is group_state.Loading) {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     }
   }
 
@@ -83,7 +84,9 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
     }
 
     // Reset search
-    ref.read(shouldResetGroupSearchProvider.notifier).state = true;
+    if (!widget.isInTab && !_isEditMode) {
+      ref.read(shouldResetGroupSearchProvider.notifier).state = true;
+    }
   }
 
   @override
@@ -162,7 +165,11 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                   children: [
                     Center(
                       child: Text(
-                        _isEditMode ? 'Sửa nhóm' : 'Thêm nhóm thiết bị',
+                        _isEditMode
+                            ? widget.isInTab
+                                  ? 'Sửa thiết bị'
+                                  : 'Sửa nhóm'
+                            : 'Thêm nhóm thiết bị',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
@@ -174,26 +181,32 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                           weight: 700,
                           color: Colors.grey,
                         ),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(false),
                       ),
                     ),
                   ],
                 ),
                 Center(
                   child: _isEditMode
-                      ? null
+                      ? widget.isInTab
+                            ? Text(
+                                'Chọn hoặc bỏ chọn thiết bị trong nhóm',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              )
+                            : null
                       : Text(
                           'Tạo tên nhóm và chọn thiết bị để thêm vào nhóm',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                 ),
-                const SizedBox(height: 24),
 
-                NormalTextFormField(
-                  textController: _nameController,
-                  hintText: 'Nhập tên nhóm...',
-                  label: 'Tên nhóm',
-                ),
+                if (!widget.isInTab) const SizedBox(height: 24),
+                if (!widget.isInTab)
+                  NormalTextFormField(
+                    textController: _nameController,
+                    hintText: 'Nhập tên nhóm...',
+                    label: 'Tên nhóm',
+                  ),
                 const SizedBox(height: 16),
                 Text(
                   'Chọn thiết bị',
@@ -223,7 +236,7 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(false),
                         style: OutlinedButton.styleFrom(
                           splashFactory: NoSplash.splashFactory,
                         ),

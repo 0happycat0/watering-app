@@ -4,13 +4,15 @@ import 'package:watering_app/features/devices/data/models/device_model.dart';
 class Group extends Equatable {
   final String id;
   final String name;
+  final int devicesQuantity;
   final List<Device> listDevices;
   final String action;
-  final int duration; 
+  final int duration;
 
   const Group({
     this.id = '',
     this.name = '',
+    this.devicesQuantity = 0,
     this.listDevices = const [],
     this.action = '',
     this.duration = 0,
@@ -19,10 +21,11 @@ class Group extends Equatable {
   factory Group.fromJson(Map<String, dynamic> json) => Group(
     id: json['id'] ?? '',
     name: json['name'] ?? '',
+    devicesQuantity: json['devicesQuantity'] ?? 0,
     listDevices: json['devices'] != null
         ? (json['devices'] as List)
-            .map((deviceJson) => Device.fromJson(deviceJson))
-            .toList()
+              .map((deviceJson) => Device.fromJson(deviceJson))
+              .toList()
         : [],
     action: json['action'] ?? '',
     duration: (json['duration'] ?? 0) ~/ 60,
@@ -32,6 +35,7 @@ class Group extends Equatable {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      'devicesQuantity': devicesQuantity,
       'devices': listDevices.map((device) => device.toJson()).toList(),
       'action': action,
       'duration': duration * 60,
@@ -42,9 +46,9 @@ class Group extends Equatable {
   List<Object?> get props => [
     id,
     name,
+    devicesQuantity,
     listDevices,
     action,
     duration,
   ];
 }
-

@@ -181,6 +181,7 @@ class StompService {
   void _onError(dynamic error) {
     print('[WebSocket] ❌ Error: $error');
     _updateStatus(ConnectionStatus.disconnected);
+    _stompClient?.deactivate();
     _stompClient = null;
     _scheduleReconnect();
   }
@@ -212,6 +213,7 @@ class StompService {
   void _onDisconnect(StompFrame frame) {
     print('[WebSocket] 🔌 Disconnected');
     _updateStatus(ConnectionStatus.disconnected);
+    _stompClient?.deactivate();
     _stompClient = null;
 
     // Clear unsubscribe callbacks (they're invalid now)

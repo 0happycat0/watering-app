@@ -91,6 +91,14 @@ class FreeDevicesNotifier extends StateNotifier<devices_state.DevicesState> {
   }
 }
 
+//--------------------------------------------------------------------------------------------------
+//should reset group search
 final shouldResetGroupSearchProvider = StateProvider<bool>(
+  (ref) => false,
+);
+
+//--------------------------------------------------------------------------------------------------
+//should refresh groups list
+final shouldRefreshGroupsListProvider = StateProvider.autoDispose<bool>(
   (ref) => false,
 );

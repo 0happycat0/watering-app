@@ -25,6 +25,10 @@ class GroupGridItem extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
+        side: BorderSide(
+          color: AppColors.mainGreen[100]!,
+          width: 0.5,
+        ),
       ),
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       child: InkWell(
@@ -66,42 +70,42 @@ class GroupGridItem extends StatelessWidget {
 
                       SizedBox(height: 8),
 
-                      // // Số lượng thiết bị
-                      // Container(
-                      //   padding: EdgeInsets.symmetric(
-                      //     horizontal: 12,
-                      //     vertical: 4,
-                      //   ),
-                      //   decoration: BoxDecoration(
-                      //     color: AppColors.primarySurface.withValues(
-                      //       alpha: 0.6,
-                      //     ),
-                      //     borderRadius: BorderRadius.circular(12),
-                      //     border: Border.all(
-                      //       color: AppColors.divider,
-                      //       width: 1,
-                      //     ),
-                      //   ),
-                      //   child: Row(
-                      //     mainAxisSize: MainAxisSize.min,
-                      //     children: [
-                      //       Icon(
-                      //         Symbols.devices,
-                      //         size: 16,
-                      //         color: colorScheme.primary,
-                      //       ),
-                      //       SizedBox(width: 6),
-                      //       Text(
-                      //         '$deviceCount thiết bị',
-                      //         style: TextStyle(
-                      //           color: colorScheme.primary,
-                      //           fontSize: 12,
-                      //           fontWeight: FontWeight.w600,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
+                      // Số lượng thiết bị
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primarySurface.withValues(
+                            alpha: 0.6,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.divider,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Symbols.sprinkler,
+                              size: 16,
+                              color: colorScheme.primary,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              '${group.devicesQuantity} thiết bị',
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),

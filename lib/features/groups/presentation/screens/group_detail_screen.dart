@@ -73,6 +73,7 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
     _currentGroup = widget.group;
 
     Future.microtask(() async {
+      if (!mounted) return;
       await ref
           .read(groupByIdProvider.notifier)
           .getGroupById(id: widget.group.id);

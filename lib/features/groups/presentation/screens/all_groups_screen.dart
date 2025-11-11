@@ -106,8 +106,8 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
     );
   }
 
-  void _showEditDialog(Group group) {
-    showModalBottomSheet(
+  void _showEditDialog(Group group) async {
+    final isSuccess = await showModalBottomSheet(
       context: context,
       useSafeArea: true,
       isScrollControlled: true,
@@ -117,6 +117,10 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
         return AddOrEditGroup(groupToEdit: group);
       },
     );
+
+    if (isSuccess && mounted) {
+      ref.read(groupsProvider.notifier).getAllGroups(name: _currentSearchQuery);
+    }
   }
 
   @override
@@ -130,8 +134,8 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
   @override
   void initState() {
     super.initState();
-    if (!mounted) return;
     Future.microtask(() async {
+      if (!mounted) return;
       ref.read(groupsProvider.notifier).getAllGroups();
     });
   }
@@ -144,6 +148,16 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
       if (next == true) {
         _currentSearchQuery = '';
         ref.read(shouldResetGroupSearchProvider.notifier).state = false;
+      }
+    });
+    ref.listen(shouldRefreshGroupsListProvider, (prev, next) {
+      if (next == true) {
+        ref
+            .read(groupsProvider.notifier)
+            .getAllGroups(
+              name: _currentSearchQuery,
+            );
+        ref.read(shouldRefreshGroupsListProvider.notifier).state = false;
       }
     });
 
