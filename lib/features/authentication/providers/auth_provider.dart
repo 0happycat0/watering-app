@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_impl.dart';
@@ -21,12 +22,14 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
 
   final AuthRepositoryImpl authRepository;
 
-  Future<void> loginUser({
+  Future<void> loginUser(
+    WidgetRef ref, {
     required String username,
     required String password,
   }) async {
     state = const auth_state.Loading();
     final response = await authRepository.loginUser(
+      ref,
       user: User(username: username, password: password),
     );
 
@@ -42,8 +45,8 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
   }
 
   //TODO: fix this (do not call log out api when token is expired)
-  Future<void> logout() async {
-    await authRepository.logout();
+  Future<void> logout(WidgetRef ref) async {
+    await authRepository.logout(ref);
     state = auth_state.UnAuthenticated();
     print('Da dang xuat');
   }
@@ -55,7 +58,7 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
   //TODO: review this
   Future<void> checkAuthStatus() async {
     final isLoggedIn = await authRepository.isLoggedIn;
-    if(isLoggedIn) {
+    if (isLoggedIn) {
       state = auth_state.Success();
     } else {
       state = auth_state.UnAuthenticated();

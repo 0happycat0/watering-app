@@ -1,10 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 
 abstract class AuthRepository {
-  Future<Either<Exception, User>> loginUser({required User user});
-  Future<void> logout();
+  Future<Either<Exception, User>> loginUser(WidgetRef ref, {required User user});
+  Future<void> logout(WidgetRef ref);
   Future<bool> get isLoggedIn;
   Future<Either<Exception, Response>> createUser({required User user});
 }

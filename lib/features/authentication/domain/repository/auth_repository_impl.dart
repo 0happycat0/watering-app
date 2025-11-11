@@ -1,7 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:watering_app/core/utils/stomp_service.dart';
+import 'package:watering_app/core/network/stomp_service.dart';
+import 'package:watering_app/core/network/stomp_service_provider.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/features/authentication/data/source/auth_local.dart';
 import 'package:watering_app/features/authentication/data/source/auth_remote.dart';
@@ -13,7 +16,7 @@ class AuthRepositoryImpl extends AuthRepository {
   AuthRepositoryImpl(this.authRemoteDataSource);
 
   @override
-  Future<Either<DioException, User>> loginUser({required User user}) async {
+  Future<Either<DioException, User>> loginUser(WidgetRef ref,{required User user}) async {
     final prefs = await SharedPreferences.getInstance();
     final local = AuthLocalDataSource(prefs);
 
@@ -27,13 +30,14 @@ class AuthRepositoryImpl extends AuthRepository {
       (user) async {
         //save user info
         await local.loginUser(user);
+        ref.read(stompServiceProvider.notifier).state = StompService();
         return Right(user);
       },
     );
   }
 
   @override
-  Future<void> logout() async {
+  Future<void> logout(WidgetRef ref) async {
     final prefs = await SharedPreferences.getInstance();
     final local = AuthLocalDataSource(prefs);
     final accessToken = local.accessToken;
@@ -41,7 +45,11 @@ class AuthRepositoryImpl extends AuthRepository {
     //logout: gọi api, xóa local, dispose Stomp
     await authRemoteDataSource.logoutUser(user: User(accessToken: accessToken));
     await local.logout();
-    StompService().dispose();
+    final currentService = ref.read(stompServiceProvider);
+    if (currentService != null) {
+      currentService.dispose();
+      ref.read(stompServiceProvider.notifier).state = null;
+    }
   }
 
   @override

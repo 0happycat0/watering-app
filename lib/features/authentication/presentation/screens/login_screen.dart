@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:watering_app/core/network/stomp_service.dart';
+import 'package:watering_app/core/network/stomp_service_provider.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -53,6 +55,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           MaterialPageRoute(builder: (ctx) => const MainScaffold()),
           (route) => false,
         );
+        //Khởi tạo stomp service khi đã đăng nhập 
+        //(nếu chỉ khởi tạo lúc gọi hàm login thì khi khởi động app lại sẽ không có stomp service)
+        ref.read(stompServiceProvider.notifier).state = StompService();
       }
       //bỏ màn hình splash sau khi xử lý xong
       FlutterNativeSplash.remove();
@@ -166,6 +171,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ref
                                     .read(authProvider.notifier)
                                     .loginUser(
+                                      ref,
                                       username: _usernameTextController.text
                                           .trim(),
                                       password: _passwordTextController.text,

@@ -1,4 +1,6 @@
 class AppStrings {
+  static final String version = '1.0.0';
+
   static final String login = 'Đăng nhập';
   static final String email = 'Email';
   static final String password = 'Mật khẩu';

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/widgets/bottom_nav_bar.dart';
 import 'package:watering_app/core/widgets/custom_fab.dart';
+import 'package:watering_app/features/authentication/presentation/screens/account_screen.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/all_devices_screen.dart';
@@ -88,7 +89,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     ref.listen(requestLogoutProvider, (prev, next) {
       print('Request logout transition: $prev -> $next');
       if (next == true) {
-        ref.read(authProvider.notifier).logout();
+        ref.read(authProvider.notifier).logout(ref);
         //reset
         ref.read(requestLogoutProvider.notifier).state = false;
         _showRequestLogInAgainDialog();
@@ -119,23 +120,12 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         Column(
           children: [
             //TODO: remove this
-            Spacer(),
-            ElevatedButton(
-              onPressed: () async {
-                await ref.read(authProvider.notifier).logout();
-                if (mounted) {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => LoginScreen()),
-                  );
-                }
-              },
-              child: Text('logout'),
-            ),
+           
           ],
         ),
         AllDevicesScreen(),
         AllGroupsScreen(),
-        Text('page3'),
+        AccountScreen(),
       ][_currentPageIndex],
     );
   }

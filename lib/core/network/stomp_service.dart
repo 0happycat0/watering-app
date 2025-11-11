@@ -24,9 +24,9 @@ class _Subscription {
 }
 
 class StompService {
-  static final StompService _instance = StompService._internal();
-  factory StompService() => _instance;
-  StompService._internal();
+  StompService();
+
+  bool _isDisposed = false;
 
   StompClient? _stompClient;
   ConnectionStatus _status = ConnectionStatus.disconnected;
@@ -53,6 +53,8 @@ class StompService {
   static const int _baseReconnectDelay = 2; // seconds
 
   void _updateStatus(ConnectionStatus newStatus) {
+    if(_isDisposed) return;
+
     if (_status != newStatus) {
       _status = newStatus;
       _statusController.add(newStatus);
@@ -99,6 +101,7 @@ class StompService {
   }
 
   void connect() {
+    if(_isDisposed) return;
     if (_status == ConnectionStatus.connected ||
         _status == ConnectionStatus.connecting) {
       print(
@@ -181,7 +184,6 @@ class StompService {
   void _onError(dynamic error) {
     print('[WebSocket] ❌ Error: $error');
     _updateStatus(ConnectionStatus.disconnected);
-    _stompClient?.deactivate();
     _stompClient = null;
     _scheduleReconnect();
   }
@@ -213,7 +215,6 @@ class StompService {
   void _onDisconnect(StompFrame frame) {
     print('[WebSocket] 🔌 Disconnected');
     _updateStatus(ConnectionStatus.disconnected);
-    _stompClient?.deactivate();
     _stompClient = null;
 
     // Clear unsubscribe callbacks (they're invalid now)
@@ -225,6 +226,8 @@ class StompService {
   }
 
   void _scheduleReconnect() {
+    if(_isDisposed) return;
+
     // Don't reconnect if manually disconnected or already scheduling
     if (_reconnectTimer != null && _reconnectTimer!.isActive) {
       print('[WebSocket] ⚠️ Reconnect timer already active, skipping');
@@ -334,6 +337,7 @@ class StompService {
   }
 
   void dispose() {
+    _isDisposed = true;
     disconnect();
     _statusController.close();
     _tokenRefreshController.close();
