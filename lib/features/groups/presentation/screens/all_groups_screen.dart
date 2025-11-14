@@ -136,7 +136,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
     super.initState();
     Future.microtask(() async {
       if (!mounted) return;
-      ref.read(groupsProvider.notifier).getAllGroups();
+      await ref.read(groupsProvider.notifier).getAllGroups();
     });
   }
 

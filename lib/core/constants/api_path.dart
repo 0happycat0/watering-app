@@ -17,6 +17,10 @@ class _AuthPath {
   final String getUser = '/users';
 
   final String createUser = '/users';
+
+  final String sendOtp = '/mail/send';
+  final String verifyEmail = '/auth/verify';
+  final String changePassword = '/auth/change-password';
 }
 
 class _DevicePath {

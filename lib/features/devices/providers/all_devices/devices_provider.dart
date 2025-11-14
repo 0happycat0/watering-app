@@ -35,6 +35,7 @@ class DevicesNotifier extends StateNotifier<devices_state.DevicesState> {
       sortField: sortField,
       isAscending: isAscending,
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return devices_state.Failure(exception);

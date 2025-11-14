@@ -237,7 +237,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     super.initState();
     Future.microtask(() async {
       if (!mounted) return;
-      ref.read(devicesProvider.notifier).getAllDevices();
+      await ref.read(devicesProvider.notifier).getAllDevices();
     });
   }
 

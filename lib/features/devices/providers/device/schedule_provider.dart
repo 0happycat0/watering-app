@@ -109,6 +109,7 @@ class CreateScheduleNotifier extends StateNotifier<device_state.DeviceState> {
         daysOfWeek: daysOfWeek,
       ),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => device_state.Failure(exception),
       (_) => device_state.Success(),
@@ -149,6 +150,7 @@ class UpdateScheduleNotifier extends StateNotifier<device_state.DeviceState> {
         daysOfWeek: daysOfWeek,
       ),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => device_state.Failure(exception),
       (_) => device_state.Success(),
@@ -179,6 +181,7 @@ class DeleteScheduleNotifier extends StateNotifier<device_state.DeviceState> {
       device: Device(id: id),
       schedule: Schedule(id: scheduleId),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => device_state.Failure(exception),
       (_) => device_state.Success(),

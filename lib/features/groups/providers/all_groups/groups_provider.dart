@@ -8,10 +8,7 @@ import 'package:watering_app/features/groups/providers/all_groups/groups_state.d
 
 //get all groups
 final groupsProvider =
-    StateNotifierProvider.autoDispose<
-      GroupsNotifier,
-      groups_state.GroupsState
-    >(
+    StateNotifierProvider.autoDispose<GroupsNotifier, groups_state.GroupsState>(
       (ref) {
         final groupRepository = ref.watch(groupRepositoryProvider);
         return GroupsNotifier(groupRepository);
@@ -33,6 +30,7 @@ class GroupsNotifier extends StateNotifier<groups_state.GroupsState> {
       page: page,
       size: size,
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return groups_state.Failure(exception);
@@ -80,6 +78,7 @@ class FreeDevicesNotifier extends StateNotifier<devices_state.DevicesState> {
       page: page,
       size: size,
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return devices_state.Failure(exception);

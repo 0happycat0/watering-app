@@ -109,6 +109,7 @@ class CreateGroupScheduleNotifier extends StateNotifier<group_state.GroupState> 
         daysOfWeek: daysOfWeek,
       ),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => group_state.Failure(exception),
       (_) => group_state.Success(),
@@ -149,6 +150,7 @@ class UpdateGroupScheduleNotifier extends StateNotifier<group_state.GroupState> 
         daysOfWeek: daysOfWeek,
       ),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => group_state.Failure(exception),
       (_) => group_state.Success(),
@@ -179,6 +181,7 @@ class DeleteGroupScheduleNotifier extends StateNotifier<group_state.GroupState> 
       group: Group(id: id),
       schedule: Schedule(id: scheduleId),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => group_state.Failure(exception),
       (_) => group_state.Success(),

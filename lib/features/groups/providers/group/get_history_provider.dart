@@ -30,7 +30,7 @@ class GetGroupHistoryWateringNotifier
     final response = await groupRepository.getHistoryWatering(
       group: Group(id: id),
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return group_state.Failure(exception);

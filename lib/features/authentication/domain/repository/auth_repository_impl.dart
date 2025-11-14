@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
@@ -16,7 +15,10 @@ class AuthRepositoryImpl extends AuthRepository {
   AuthRepositoryImpl(this.authRemoteDataSource);
 
   @override
-  Future<Either<DioException, User>> loginUser(WidgetRef ref,{required User user}) async {
+  Future<Either<DioException, User>> loginUser(
+    WidgetRef ref, {
+    required User user,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     final local = AuthLocalDataSource(prefs);
 
@@ -44,7 +46,7 @@ class AuthRepositoryImpl extends AuthRepository {
 
     //logout: gọi api, xóa local, dispose Stomp
     await authRemoteDataSource.logoutUser(user: User(accessToken: accessToken));
-    await local.logout();
+    await local.deleteUser();
     final currentService = ref.read(stompServiceProvider);
     if (currentService != null) {
       currentService.dispose();
@@ -63,8 +65,31 @@ class AuthRepositoryImpl extends AuthRepository {
     final response = await authRemoteDataSource.getMe(
       options: Options(extra: {'isCheckingAuth': true}),
     );
+
+    response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (user) async {
+        await local.saveUser(user);
+        return Right(user);
+      },
+    );
+
     final bool isRemoteLoggedIn = response.isRight();
     return isLocalLoggedIn && isRemoteLoggedIn;
+  }
+
+  @override
+  Future<User> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final local = AuthLocalDataSource(prefs);
+    final username = local.username;
+    final email = local.email;
+    final verified = local.verified;
+    final user = User(username: username, email: email, verified: verified);
+    print('DEBUG: user = $user');
+    return user;
   }
 
   @override
@@ -72,6 +97,65 @@ class AuthRepositoryImpl extends AuthRepository {
     required User user,
   }) async {
     final response = await authRemoteDataSource.createUser(user: user);
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) async {
+        return Right(res);
+      },
+    );
+  }
+
+  @override
+  Future<Either<DioException, Response>> sendOtp({
+    required String email,
+  }) async {
+    final response = await authRemoteDataSource.sendOtp(email: email);
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) async {
+        return Right(res);
+      },
+    );
+  }
+
+  @override
+  Future<Either<DioException, Response>> verifyEmail({
+    required String email,
+    required String otp,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final local = AuthLocalDataSource(prefs);
+
+    final response = await authRemoteDataSource.verifyEmail(
+      email: email,
+      otp: otp,
+    );
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) async {
+        await local.setVerified(true);
+        return Right(res);
+      },
+    );
+  }
+
+  @override
+  Future<Either<DioException, Response>> changePassword({
+    required String code,
+    required String newPassword,
+    required String confirmNewPassword,
+  }) async {
+    final response = await authRemoteDataSource.changePassword(
+      code: code,
+      newPassword: newPassword,
+      confirmNewPassword: confirmNewPassword,
+    );
     return response.fold(
       (exception) {
         return Left(exception);

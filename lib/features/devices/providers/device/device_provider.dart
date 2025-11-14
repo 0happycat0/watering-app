@@ -26,6 +26,7 @@ class CreateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
     final response = await deviceRepository.createDevice(
       device: Device(name: name, deviceId: deviceId),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => device_state.Failure(exception),
       (_) => device_state.Success(),
@@ -57,7 +58,7 @@ class UpdateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
     final response = await deviceRepository.updateDevice(
       device: Device(id: id, name: name, deviceId: deviceId),
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return device_state.Failure(exception);
@@ -89,7 +90,7 @@ class DeleteDeviceNotifier extends StateNotifier<device_state.DeviceState> {
     final response = await deviceRepository.deleteDevice(
       device: Device(id: id),
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return device_state.Failure(exception);

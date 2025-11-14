@@ -21,6 +21,7 @@ class GroupNotifier extends StateNotifier<group_state.GroupState> {
   Future<void> getGroupById({required String id}) async {
     state = group_state.Loading();
     final response = await groupRepository.getGroupById(id: id);
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return group_state.Failure(exception);
@@ -55,6 +56,7 @@ class CreateGroupNotifier extends StateNotifier<group_state.GroupState> {
       group: Group(name: name),
       listIdOfDevices: listIdOfDevices,
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return group_state.Failure(exception);
@@ -88,6 +90,7 @@ class UpdateGroupNotifier extends StateNotifier<group_state.GroupState> {
       group: Group(id: id, name: name),
       listIdOfDevices: listIdOfDevices,
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return group_state.Failure(exception);
@@ -114,6 +117,7 @@ class DeleteGroupNotifier extends StateNotifier<group_state.GroupState> {
   Future<void> deleteGroup({required String id}) async {
     state = group_state.Loading();
     final response = await groupRepository.deleteGroup(group: Group(id: id));
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return group_state.Failure(exception);
