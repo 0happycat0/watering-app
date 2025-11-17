@@ -43,9 +43,7 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
     // Hiển thị snack bar khi có lỗi
     if (next is group_state.Failure) {
       final message = next.message;
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(text: message),
-      );
+      CustomSnackBar.showSnackBar(text: message);
     }
 
     // Đóng dialog khi thành công
@@ -56,20 +54,12 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
 
   void _handleSubmit() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          text: 'Vui lòng nhập tên nhóm',
-        ),
-      );
+      CustomSnackBar.showSnackBar(text: 'Vui lòng nhập tên nhóm');
       return;
     }
 
     if (_selectedIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          text: 'Vui lòng chọn ít nhất 1 thiết bị',
-        ),
-      );
+      CustomSnackBar.showSnackBar(text: 'Vui lòng chọn ít nhất 1 thiết bị');
       return;
     }
 

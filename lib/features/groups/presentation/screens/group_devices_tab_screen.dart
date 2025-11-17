@@ -49,16 +49,12 @@ class _GroupDevicesTabScreenState extends ConsumerState<GroupDevicesTabScreen> {
       ref.read(groupByIdProvider.notifier).getGroupById(id: widget.group.id);
       ref.read(shouldRefreshGroupsListProvider.notifier).state = true;
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          text: 'Đã xóa "${device.name}" khỏi nhóm',
-        ),
+      CustomSnackBar.showSnackBar(
+        text: 'Đã xóa "${device.name}" khỏi nhóm',
       );
     } on DioException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          text: e.message!,
-        ),
+      CustomSnackBar.showSnackBar(
+        text: e.message!,
       );
     }
   }

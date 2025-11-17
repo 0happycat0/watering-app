@@ -366,9 +366,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
     ref.listen(sendOtpProvider, (prev, next) {
       if (next is auth_state.SendOtpFailure) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: next.message));
+        CustomSnackBar.showSnackBar(text: next.message);
       }
     });
 
@@ -379,9 +377,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
       }
       // Sửa: Dùng else if và đúng tên State
       else if (next is auth_state.VerifyEmailFailure) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: next.message));
+        CustomSnackBar.showSnackBar(text: next.message);
       }
     });
 

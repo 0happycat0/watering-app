@@ -73,12 +73,13 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
   }
 
   Future<void> createUser({
+    required String email,
     required String username,
     required String password,
   }) async {
     state = const auth_state.Loading();
     final response = await authRepository.createUser(
-      user: User(username: username, password: password),
+      user: User(email: email, username: username, password: password),
     );
 
     state = response.fold(

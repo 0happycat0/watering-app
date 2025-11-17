@@ -53,9 +53,7 @@ class _GroupScheduleTabScreenState
           newStatus: newState,
         );
     if (!success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(text: 'Đặt lịch thất bại.'),
-      );
+      CustomSnackBar.showSnackBar(text: 'Đặt lịch thất bại.');
     }
   }
 
@@ -91,9 +89,7 @@ class _GroupScheduleTabScreenState
                 scheduleId: schedule.id,
               );
               if (mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(CustomSnackBar(text: 'Đã xóa lịch'));
+                CustomSnackBar.showSnackBar(text: 'Đã xóa lịch');
               }
               listScheduleNotifier.refresh(id: widget.group.id);
             },

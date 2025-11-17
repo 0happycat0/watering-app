@@ -399,9 +399,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
     ref.listen(sendOtpProvider, (prev, next) {
       if (next is auth_state.SendOtpFailure) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: next.message));
+        CustomSnackBar.showSnackBar(text: next.message);
       }
     });
 

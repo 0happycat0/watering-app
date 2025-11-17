@@ -100,18 +100,12 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
       if (next is group_state.Failure) {
         final message = next.message;
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: message));
+        CustomSnackBar.showSnackBar(text: message);
       }
       if (next is group_state.Success && prev is group_state.Loading) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-          CustomSnackBar(text: 'Đã xóa nhóm "${widget.group.name}"'),
-        );
+        CustomSnackBar.showSnackBar(text: 'Đã xóa nhóm "${widget.group.name}"');
       }
     });
 

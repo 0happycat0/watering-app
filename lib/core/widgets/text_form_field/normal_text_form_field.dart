@@ -11,6 +11,7 @@ class NormalTextFormField extends StatelessWidget {
     this.suffixText,
     this.suffixIcon,
     this.label,
+    this.helperText,
     this.validator,
     this.isDense = false,
     this.padding,
@@ -24,6 +25,7 @@ class NormalTextFormField extends StatelessWidget {
 
   final String? Function(String?)? validator;
   final TextEditingController textController;
+  final String? helperText;
   final String hintText;
   final String? suffixText;
   final Icon? suffixIcon;
@@ -45,7 +47,7 @@ class NormalTextFormField extends StatelessWidget {
       children: [
         if (label != null)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            padding: const EdgeInsets.only(left: 6, bottom: 6),
             child: Text(
               label!,
               style: TextStyle(
@@ -67,6 +69,7 @@ class NormalTextFormField extends StatelessWidget {
           inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hintText,
+            helperText: helperText,
             contentPadding: isDense
                 ? EdgeInsets.symmetric(vertical: 8, horizontal: 12)
                 : padding,

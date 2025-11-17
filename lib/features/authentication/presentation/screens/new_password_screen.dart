@@ -197,9 +197,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
 
     ref.listen(changePasswordProvider, (prev, next) {
       if (next is auth_state.ChangePasswordFailure) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: next.message));
+        CustomSnackBar.showSnackBar(text: next.message);
       }
     });
 

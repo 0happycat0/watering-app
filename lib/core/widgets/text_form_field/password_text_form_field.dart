@@ -43,7 +43,7 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
       children: [
         if (widget.label != null)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            padding: const EdgeInsets.only(left: 6, bottom: 6),
             child: Text(
               widget.label!,
               style: TextStyle(

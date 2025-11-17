@@ -134,9 +134,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
               devicesNotifier.setLoading();
               await deleteDeviceNotifier.deleteDevice(id: device.id);
               if (mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${device.name}"'));
+                CustomSnackBar.showSnackBar(text: 'Đã xóa "${device.name}"');
                 ref
                     .read(devicesProvider.notifier)
                     .getAllDevices(

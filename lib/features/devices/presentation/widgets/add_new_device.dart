@@ -43,9 +43,7 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
       //hien thi snack bar khi co loi
       if (next is device_state.Failure) {
         final message = next.message;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: message));
+        CustomSnackBar.showSnackBar(text: message);
       }
       if (next is device_state.Success && prev is device_state.Loading) {
         Navigator.of(context).pop();

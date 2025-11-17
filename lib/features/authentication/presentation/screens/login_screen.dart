@@ -55,7 +55,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           MaterialPageRoute(builder: (ctx) => const MainScaffold()),
           (route) => false,
         );
-        //Khởi tạo stomp service khi đã đăng nhập 
+        //Khởi tạo stomp service khi đã đăng nhập
         //(nếu chỉ khởi tạo lúc gọi hàm login thì khi khởi động app lại sẽ không có stomp service)
         ref.read(stompServiceProvider.notifier).state = StompService();
       }
@@ -79,8 +79,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen(authProvider, (prev, next) {
       print('Auth transition: ${prev.runtimeType} -> ${next.runtimeType}');
       if (next is auth_state.LoginFailure) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          CustomSnackBar(text: 'Đăng nhập thất bại. ${next.message}'),
+        CustomSnackBar.showSnackBar(
+          text: 'Đăng nhập thất bại. ${next.message}',
         );
       }
       if (next is auth_state.Success && prev is! auth_state.Success) {

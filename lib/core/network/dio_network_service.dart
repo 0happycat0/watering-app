@@ -47,7 +47,7 @@ class DioNetworkService {
         DioException(
           requestOptions: e.requestOptions,
           response: e.response,
-          message: e.response?.data['message'],
+          message: e.response?.data['message'] ?? e.response?.data['error'],
         ),
       );
     }
@@ -75,7 +75,7 @@ class DioNetworkService {
         DioException(
           requestOptions: RequestOptions(),
           response: e.response,
-          message: e.response?.data['message'],
+          message: e.response?.data['message'] ?? e.response?.data['error'],
         ),
       );
     }
@@ -137,7 +137,7 @@ class DioNetworkService {
         DioException(
           requestOptions: e.requestOptions,
           response: e.response,
-          message: e.response?.data['message'],
+          message: e.response?.data['message'] ?? e.response?.data['error'],
         ),
       );
     }

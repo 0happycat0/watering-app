@@ -79,16 +79,12 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
       if (next is device_state.Failure) {
         final message = next.message;
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: message));
+        CustomSnackBar.showSnackBar(text: message);
       }
       if (next is device_state.Success && prev is device_state.Loading) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${widget.device.name}"'));
+        CustomSnackBar.showSnackBar(text: 'Đã xóa "${widget.device.name}"');
       }
     });
 

@@ -14,6 +14,8 @@ import 'package:watering_app/features/groups/presentation/screens/group_detail_s
 import 'package:watering_app/features/groups/presentation/widgets/add_or_edit_group.dart';
 import 'package:watering_app/features/groups/providers/all_groups/groups_provider.dart';
 import 'package:watering_app/features/groups/presentation/widgets/group_grid_item.dart';
+import 'package:watering_app/features/groups/providers/group/group_state.dart'
+    as group_state;
 import 'package:watering_app/features/groups/providers/all_groups/groups_state.dart'
     as groups_state;
 import 'package:watering_app/features/groups/providers/all_groups/realtime_groups_provider.dart';
@@ -94,9 +96,14 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
               groupsNotifier.setLoading();
               await deleteGroupNotifier.deleteGroup(id: group.id);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  CustomSnackBar(text: 'Đã xóa nhóm "${group.name}"'),
-                );
+                final deleteState = ref.read(deleteGroupProvider);
+                if (deleteState is group_state.Failure) {
+                  CustomSnackBar.showSnackBar(text: deleteState.message);
+                } else if (deleteState is group_state.Success) {
+                  CustomSnackBar.showSnackBar(
+                    text: 'Đã xóa nhóm "${group.name}"',
+                  );
+                }
                 groupsNotifier.getAllGroups(name: _currentSearchQuery);
               }
             },

@@ -223,16 +223,10 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
           if (next is group_state.Failure) {
             final message = next.message;
             Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is group_state.Success && prev is group_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Cập nhật thành công'),
-            );
+            CustomSnackBar.showSnackBar(text: 'Cập nhật thành công');
             Navigator.pop(context);
           }
         });
@@ -246,16 +240,10 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
           if (next is group_state.Failure) {
             final message = next.message;
             Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is group_state.Success && prev is group_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Đã thêm lịch'),
-            );
+            CustomSnackBar.showSnackBar(text: 'Đã thêm lịch');
             Navigator.pop(context);
           }
         });
@@ -272,16 +260,10 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
           if (next is device_state.Failure) {
             final message = next.message;
             Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is device_state.Success && prev is device_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Cập nhật thành công'),
-            );
+            CustomSnackBar.showSnackBar(text: 'Cập nhật thành công');
             Navigator.pop(context);
           }
         });
@@ -295,16 +277,10 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
           if (next is device_state.Failure) {
             final message = next.message;
             Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is device_state.Success && prev is device_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Đã thêm lịch'),
-            );
+            CustomSnackBar.showSnackBar(text: 'Đã thêm lịch');
             Navigator.pop(context);
           }
         });
@@ -453,9 +429,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: isLoading
-                        ? null
-                        : const Icon(Symbols.check),
+                    icon: isLoading ? null : const Icon(Symbols.check),
                     label: isLoading
                         ? CustomCircularProgress()
                         : const Text('Lưu Lịch'),

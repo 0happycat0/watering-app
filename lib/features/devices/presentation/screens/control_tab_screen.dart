@@ -94,12 +94,10 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
       // Nếu trạng thái không thay đổi theo expected hoặc giống trạng thái cũ
       if (newWateringState != expectedWateringState) {
         // Không nhận được realtime confirmation
-        ScaffoldMessenger.of(context).showSnackBar(
-          CustomSnackBar(
-            text: action == 'START'
-                ? 'Bơm không thành công! Vui lòng thử lại.'
-                : 'Hủy bơm không thành công! Vui lòng thử lại.',
-          ),
+        CustomSnackBar.showSnackBar(
+          text: action == 'START'
+              ? 'Bơm không thành công! Vui lòng thử lại.'
+              : 'Hủy bơm không thành công! Vui lòng thử lại.',
         );
       } else {
         // Thành công, nếu là STOP thì refresh history
@@ -111,9 +109,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
       }
     } else {
       // API thất bại
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(text: 'Có lỗi xảy ra. Vui lòng thử lại.'),
-      );
+      CustomSnackBar.showSnackBar(text: 'Có lỗi xảy ra. Vui lòng thử lại.');
     }
 
     if (mounted) {
