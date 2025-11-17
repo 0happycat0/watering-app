@@ -145,9 +145,13 @@ class GroupRepositoryImpl extends GroupRepository {
   @override
   Future<Either<DioException, List<HistoryWatering>>> getHistoryWatering({
     required Group group,
+    int? page,
+    int? size,
   }) async {
     final response = await groupRemoteDataSource.getHistoryWatering(
       group: group,
+      page: page,
+      size: size,
     );
     return response.fold(
       (exception) {

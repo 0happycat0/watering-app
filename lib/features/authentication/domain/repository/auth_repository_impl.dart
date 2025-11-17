@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
 import 'package:watering_app/core/network/stomp_service_provider.dart';
@@ -30,10 +31,23 @@ class AuthRepositoryImpl extends AuthRepository {
         return Left(exception);
       },
       (user) async {
+        //user in response only have JWT token, so must decode it to save username and email
+        final Map<String, dynamic> decodedToken = JwtDecoder.decode(
+          user.accessToken,
+        );
+        final username = decodedToken['sub'] ?? '--';
+        final email = decodedToken['email'] ?? '--';
+        final userToSave = User(
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
+          username: username,
+          email: email,
+          verified: user.verified,
+        );
         //save user info
-        await local.loginUser(user);
+        await local.loginUser(userToSave);
         ref.read(stompServiceProvider.notifier).state = StompService();
-        return Right(user);
+        return Right(userToSave);
       },
     );
   }

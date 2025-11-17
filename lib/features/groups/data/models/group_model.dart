@@ -8,6 +8,7 @@ class Group extends Equatable {
   final List<Device> listDevices;
   final String action;
   final int duration;
+  final bool watering;
 
   const Group({
     this.id = '',
@@ -16,6 +17,7 @@ class Group extends Equatable {
     this.listDevices = const [],
     this.action = '',
     this.duration = 0,
+    this.watering = false,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) => Group(
@@ -29,6 +31,7 @@ class Group extends Equatable {
         : [],
     action: json['action'] ?? '',
     duration: (json['duration'] ?? 0) ~/ 60,
+    watering: json['watering'] ?? false,
   );
 
   Map<String, dynamic> toJson() {
@@ -39,6 +42,7 @@ class Group extends Equatable {
       'devices': listDevices.map((device) => device.toJson()).toList(),
       'action': action,
       'duration': duration * 60,
+      'watering': watering,
     };
   }
 
@@ -50,5 +54,6 @@ class Group extends Equatable {
     listDevices,
     action,
     duration,
+    watering,
   ];
 }

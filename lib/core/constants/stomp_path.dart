@@ -15,4 +15,7 @@ class _Topic {
   String deviceSensor(String deviceId) => '/user/device/sensor/$deviceId';
   String deviceStatus(String deviceId) => '/user/device/status/$deviceId';
   String deviceWatering(String deviceId) => '/user/device/watering/$deviceId';
+
+  final String groupsWatering = '/user/groups/watering';
+
 }

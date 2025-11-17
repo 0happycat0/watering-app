@@ -7,7 +7,6 @@ import 'package:watering_app/core/constants/app_strings.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/features/authentication/presentation/screens/change_password_screen.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
-import 'package:watering_app/features/authentication/presentation/screens/new_password_screen.dart';
 import 'package:watering_app/features/authentication/presentation/screens/verify_email_screen.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/authentication/providers/auth_state.dart'
@@ -55,6 +54,12 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(authProvider);
+    final username = userState is auth_state.Success
+        ? userState.user?.username ?? ''
+        : '';
+    final email = userState is auth_state.Success
+        ? userState.user?.email ?? ''
+        : '';
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Tài khoản',
@@ -79,97 +84,92 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-                child: userState is auth_state.Loading
-                    ? Center(child: CircularProgressIndicator())
-                    : userState is auth_state.Success
-                    ? Column(
-                        children: [
-                          // Avatar
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              // Gradient cho avatar
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.mainBlue[300]!,
-                                  AppColors.mainGreen[150]!,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            child: Icon(
-                              Symbols.person_rounded,
-                              color: Colors.white,
-                              fill: 1,
-                              size: 52,
-                            ),
+                child: Column(
+                  children: [
+                    // Avatar
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        // Gradient cho avatar
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.mainBlue[300]!,
+                            AppColors.mainGreen[150]!,
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Icon(
+                        Symbols.person_rounded,
+                        color: Colors.white,
+                        fill: 1,
+                        size: 52,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    // Name
+                    Text(
+                      username,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 22,
                           ),
-                          SizedBox(height: 12),
-                          // Name
-                          Text(
-                            userState.user?.username ?? '',
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 22,
-                                ),
-                          ),
-                          SizedBox(height: 4),
-                          // Email
-                          Text(
-                            userState.user?.email ?? '',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: Colors.grey.shade600,
-                                ),
-                          ),
-                          // SizedBox(height: 16),
-                          // Divider(height: 1, color: AppColors.divider),
-                          // SizedBox(height: 4),
-                          // Email Row
-                          // ListTile(
-                          //   leading: Icon(
-                          //     Symbols.mail,
-                          //     fill: 1,
-                          //   ),
-                          //   title: Text(
-                          //     'Email',
-                          //     style: TextStyle(
-                          //       color: Colors.grey.shade700,
-                          //       fontSize: 13,
-                          //     ),
-                          //   ),
-                          //   subtitle: Text(
-                          //     'nguyenvana@email.com',
-                          //     style: TextStyle(color: Colors.black87, fontSize: 16),
-                          //   ),
-                          //   contentPadding: EdgeInsets.zero,
-                          // ),
-                          // // Phone Row
-                          // ListTile(
-                          //   leading: Icon(
-                          //     Symbols.call,
-                          //     fill: 1,
-                          //   ),
-                          //   title: Text(
-                          //     'Số điện thoại',
-                          //     style: TextStyle(
-                          //       color: Colors.grey.shade700,
-                          //       fontSize: 13,
-                          //     ),
-                          //   ),
-                          //   subtitle: Text(
-                          //     '0123456789',
-                          //     style: TextStyle(fontSize: 16),
-                          //   ),
-                          //   contentPadding: EdgeInsets.zero,
-                          // ),
-                        ],
-                      )
-                    : Center(child: CircularProgressIndicator()),
+                    ),
+                    SizedBox(height: 4),
+                    // Email
+                    Text(
+                      email,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    // SizedBox(height: 16),
+                    // Divider(height: 1, color: AppColors.divider),
+                    // SizedBox(height: 4),
+                    // Email Row
+                    // ListTile(
+                    //   leading: Icon(
+                    //     Symbols.mail,
+                    //     fill: 1,
+                    //   ),
+                    //   title: Text(
+                    //     'Email',
+                    //     style: TextStyle(
+                    //       color: Colors.grey.shade700,
+                    //       fontSize: 13,
+                    //     ),
+                    //   ),
+                    //   subtitle: Text(
+                    //     'nguyenvana@email.com',
+                    //     style: TextStyle(color: Colors.black87, fontSize: 16),
+                    //   ),
+                    //   contentPadding: EdgeInsets.zero,
+                    // ),
+                    // // Phone Row
+                    // ListTile(
+                    //   leading: Icon(
+                    //     Symbols.call,
+                    //     fill: 1,
+                    //   ),
+                    //   title: Text(
+                    //     'Số điện thoại',
+                    //     style: TextStyle(
+                    //       color: Colors.grey.shade700,
+                    //       fontSize: 13,
+                    //     ),
+                    //   ),
+                    //   subtitle: Text(
+                    //     '0123456789',
+                    //     style: TextStyle(fontSize: 16),
+                    //   ),
+                    //   contentPadding: EdgeInsets.zero,
+                    // ),
+                  ],
+                ),
               ),
             ),
             SizedBox(height: 24),

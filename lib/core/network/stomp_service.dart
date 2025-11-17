@@ -53,7 +53,7 @@ class StompService {
   static const int _baseReconnectDelay = 2; // seconds
 
   void _updateStatus(ConnectionStatus newStatus) {
-    if(_isDisposed) return;
+    if (_isDisposed) return;
 
     if (_status != newStatus) {
       _status = newStatus;
@@ -101,7 +101,7 @@ class StompService {
   }
 
   void connect() {
-    if(_isDisposed) return;
+    if (_isDisposed) return;
     if (_status == ConnectionStatus.connected ||
         _status == ConnectionStatus.connecting) {
       print(
@@ -184,6 +184,7 @@ class StompService {
   void _onError(dynamic error) {
     print('[WebSocket] ❌ Error: $error');
     _updateStatus(ConnectionStatus.disconnected);
+    _stompClient?.deactivate();
     _stompClient = null;
     _scheduleReconnect();
   }
@@ -215,6 +216,7 @@ class StompService {
   void _onDisconnect(StompFrame frame) {
     print('[WebSocket] 🔌 Disconnected');
     _updateStatus(ConnectionStatus.disconnected);
+    _stompClient?.deactivate();
     _stompClient = null;
 
     // Clear unsubscribe callbacks (they're invalid now)
@@ -226,7 +228,7 @@ class StompService {
   }
 
   void _scheduleReconnect() {
-    if(_isDisposed) return;
+    if (_isDisposed) return;
 
     // Don't reconnect if manually disconnected or already scheduling
     if (_reconnectTimer != null && _reconnectTimer!.isActive) {
@@ -261,7 +263,9 @@ class StompService {
 
   void _doSubscribe(_Subscription sub) {
     if (_stompClient == null || _status != ConnectionStatus.connected) {
-      print('[WebSocket] Cannot subscribe (not connected): ${sub.destination}');
+      print(
+        '[WebSocket] Cannot subscribe (not connected): ${sub.destination}',
+      );
       return;
     }
 

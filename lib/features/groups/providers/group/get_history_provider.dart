@@ -29,6 +29,8 @@ class GetGroupHistoryWateringNotifier
 
     final response = await groupRepository.getHistoryWatering(
       group: Group(id: id),
+      page: page,
+      size: size,
     );
     if (!mounted) return;
     state = response.fold(

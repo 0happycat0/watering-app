@@ -77,6 +77,7 @@ class DeviceGridItem extends ConsumerWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           children: [
+                            // status icon
                             Align(
                               alignment: Alignment.centerLeft,
                               child: Row(
@@ -149,7 +150,7 @@ class DeviceGridItem extends ConsumerWidget {
                         ),
                       ),
                     ),
-
+                    // device name & device ID
                     Padding(
                       padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
                       child: Column(

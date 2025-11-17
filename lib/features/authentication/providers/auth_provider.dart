@@ -126,17 +126,17 @@ class SendOtpNotifier extends StateNotifier<auth_state.AuthState> {
 // verify otp
 final verifyEmailProvider =
     StateNotifierProvider.autoDispose<
-      verifyEmailNotifier,
+      VerifyEmailNotifier,
       auth_state.AuthState
     >(
       (ref) {
         final authRepository = ref.watch(authRepositoryProvider);
-        return verifyEmailNotifier(authRepository);
+        return VerifyEmailNotifier(authRepository);
       },
     );
 
-class verifyEmailNotifier extends StateNotifier<auth_state.AuthState> {
-  verifyEmailNotifier(this.authRepository) : super(auth_state.Initial());
+class VerifyEmailNotifier extends StateNotifier<auth_state.AuthState> {
+  VerifyEmailNotifier(this.authRepository) : super(auth_state.Initial());
   final AuthRepositoryImpl authRepository;
 
   Future<void> verifyEmail({required String email, required String otp}) async {

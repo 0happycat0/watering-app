@@ -64,6 +64,15 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
       return;
     }
 
+    if (_selectedIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        CustomSnackBar(
+          text: 'Vui lòng chọn ít nhất 1 thiết bị',
+        ),
+      );
+      return;
+    }
+
     if (!mounted) return;
 
     if (_isEditMode) {

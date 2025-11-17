@@ -16,6 +16,7 @@ import 'package:watering_app/features/groups/providers/all_groups/groups_provide
 import 'package:watering_app/features/groups/presentation/widgets/group_grid_item.dart';
 import 'package:watering_app/features/groups/providers/all_groups/groups_state.dart'
     as groups_state;
+import 'package:watering_app/features/groups/providers/all_groups/realtime_groups_provider.dart';
 import 'package:watering_app/features/groups/providers/group/group_provider.dart';
 import 'package:watering_app/theme/styles.dart';
 
@@ -143,6 +144,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
   @override
   Widget build(BuildContext context) {
     final groupsState = ref.watch(groupsProvider);
+    ref.watch(groupsWateringProvider);
 
     ref.listen(shouldResetGroupSearchProvider, (prev, next) {
       if (next == true) {
@@ -253,7 +255,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
                     padding: EdgeInsets.only(bottom: 42),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 5 / 4,
+                      childAspectRatio: 4 / 4,
                       mainAxisSpacing: 0,
                       crossAxisSpacing: 0,
                     ),

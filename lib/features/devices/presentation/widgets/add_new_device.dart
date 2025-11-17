@@ -132,6 +132,7 @@ class _AddNewDeviceState extends ConsumerState<AddNewDevice> {
                                 name: _nameController.text,
                                 deviceId: _deviceIdController.text,
                               );
+                          ref.read(devicesProvider.notifier).refresh();
                           ref
                                   .read(
                                     shouldResetSortAndSearchProvider.notifier,
