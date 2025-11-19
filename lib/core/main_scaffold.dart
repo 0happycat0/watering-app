@@ -12,6 +12,7 @@ import 'package:watering_app/features/devices/presentation/screens/all_devices_s
 import 'package:watering_app/features/devices/presentation/widgets/add_new_device.dart';
 import 'package:watering_app/features/groups/presentation/screens/all_groups_screen.dart';
 import 'package:watering_app/features/groups/presentation/widgets/add_or_edit_group.dart';
+import 'package:watering_app/features/home/presentation/screens/home_screen.dart';
 import 'package:watering_app/theme/styles.dart';
 
 class MainScaffold extends ConsumerStatefulWidget {
@@ -117,12 +118,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
             )
           : null,
       body: <Widget>[
-        Column(
-          children: [
-            //TODO: remove this
-           
-          ],
-        ),
+        HomeScreen(),
         AllDevicesScreen(),
         AllGroupsScreen(),
         AccountScreen(),

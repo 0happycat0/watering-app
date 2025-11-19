@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:watering_app/core/data/models/schedule_model.dart';
 
 class Device extends Equatable {
   final String id;
@@ -10,6 +11,7 @@ class Device extends Equatable {
   final int duration;
   final bool online;
   final bool watering;
+  final Schedule? nextSchedule;
 
   const Device({
     this.id = '',
@@ -21,6 +23,7 @@ class Device extends Equatable {
     this.duration = 0,
     this.online = true,
     this.watering = false,
+    this.nextSchedule,
   });
 
   factory Device.fromJson(Map<String, dynamic> json) => Device(
@@ -33,6 +36,9 @@ class Device extends Equatable {
     duration: (json['duration'] ?? 0) ~/ 60,
     online: json['online'] ?? true,
     watering: json['watering'] ?? false,
+    nextSchedule: json['nextSchedule'] != null
+        ? Schedule.fromJson(json['nextSchedule'])
+        : null,
   );
 
   Map<String, dynamic> toJson() {
@@ -46,6 +52,7 @@ class Device extends Equatable {
       'duration': duration * 60,
       'online': online,
       'watering': watering,
+      'nextSchedule': nextSchedule,
     };
   }
 
@@ -60,5 +67,6 @@ class Device extends Equatable {
     duration,
     online,
     watering,
+    nextSchedule,
   ];
 }

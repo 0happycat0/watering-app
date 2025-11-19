@@ -39,7 +39,7 @@ class DioNetworkService {
         Response(
           requestOptions: res.requestOptions,
           statusCode: res.statusCode,
-          data: res.data['data'],
+          data: res.data['data'] ?? res.data['quantity'],
         ),
       );
     } on DioException catch (e) {

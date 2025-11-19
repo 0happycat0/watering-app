@@ -47,13 +47,13 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       //đọc từ local
-      await ref.read(authProvider.notifier).getUserInfo();
+      await ref.read(getUserLocalProvider.notifier).getUserLocal();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(authProvider);
+    final userState = ref.watch(getUserLocalProvider);
     final username = userState is auth_state.Success
         ? userState.user?.username ?? ''
         : '';
@@ -62,7 +62,8 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
         : '';
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Tài khoản',
+        title: '',
+        backgroundColor: Colors.white,
       ),
       body: Container(
         color: Colors.white,
@@ -70,7 +71,6 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: 20),
             Card(
               elevation: 0,
               color: Colors.white,
@@ -83,7 +83,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
                 child: Column(
                   children: [
                     // Avatar
@@ -248,25 +248,29 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               ),
             ),
             Spacer(),
-            OutlinedButton.icon(
-              label: Text('Đăng xuất'),
-              icon: Icon(Symbols.logout),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.red,
-                side: BorderSide(color: Colors.red.shade200, width: 1.5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: OutlinedButton.icon(
+                label: Text('Đăng xuất'),
+                icon: Icon(Symbols.logout),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.red,
+                  backgroundColor: Colors.red.shade200.withAlpha(30),
+                  side: BorderSide(color: Colors.red.shade300, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                onPressed: () async {
+                  await ref.read(authProvider.notifier).logout(ref);
+                  if (context.mounted) {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (ctx) => LoginScreen()),
+                    );
+                  }
+                },
               ),
-              onPressed: () async {
-                await ref.read(authProvider.notifier).logout(ref);
-                if (context.mounted) {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => LoginScreen()),
-                  );
-                }
-              },
             ),
 
             SizedBox(height: 8),

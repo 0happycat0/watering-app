@@ -16,9 +16,14 @@ import 'package:watering_app/features/devices/presentation/screens/control_tab_s
 import 'package:watering_app/theme/theme.dart';
 
 class DeviceDetailScreen extends ConsumerStatefulWidget {
-  const DeviceDetailScreen({super.key, required this.device});
+  const DeviceDetailScreen({
+    super.key,
+    required this.device,
+    this.isNavigetedFromHome = false,
+  });
 
   final Device device;
+  final bool isNavigetedFromHome;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -124,7 +129,10 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
               device: device,
               // realtimeDeviceSensor: realtimeDeviceSensor,
             ),
-            ScheduleTabScreen(device: device),
+            ScheduleTabScreen(
+              device: device,
+              isNavigetedFromHome: widget.isNavigetedFromHome,
+            ),
           ],
         ),
       ),

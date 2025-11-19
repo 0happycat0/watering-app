@@ -10,6 +10,15 @@ class AppColors {
     300: Color.fromARGB(255, 85, 113, 56),
     400: Color.fromARGB(255, 60, 80, 39),
   };
+  static const Map<int, Color> secondaryGreen = {
+    10: Color.fromARGB(255, 235, 254, 234),
+    50: Color.fromARGB(255, 215, 255, 215),
+    100: Color.fromARGB(255, 156, 235, 137),
+    150: Color.fromARGB(255, 95, 212, 59),
+    200: Color.fromARGB(255, 84, 188, 53),
+    300: Color.fromARGB(255, 53, 119, 35),
+    400: Color.fromARGB(255, 42, 95, 28),
+  };
   static const Map<int, Color> mainYellow = {
     50: Color(0xFFFFFD8F),
     100: Color.fromARGB(255, 224, 223, 130),

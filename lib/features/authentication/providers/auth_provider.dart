@@ -66,12 +66,6 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
   //   }
   // }
 
-  Future<void> getUserInfo() async {
-    state = auth_state.Loading();
-    final user = await authRepository.getUser();
-    state = auth_state.Success(user);
-  }
-
   Future<void> createUser({
     required String email,
     required String username,
@@ -91,6 +85,35 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
         return auth_state.SignupSuccess();
       },
     );
+  }
+}
+
+//--------------------------------------------------------------------------------------------------
+// get user local
+final getUserLocalProvider =
+    StateNotifierProvider.autoDispose<
+      GetUserLocalNotifier,
+      auth_state.AuthState
+    >(
+      (ref) {
+        final authRepository = ref.watch(authRepositoryProvider);
+        return GetUserLocalNotifier(authRepository);
+      },
+    );
+
+class GetUserLocalNotifier extends StateNotifier<auth_state.AuthState> {
+  GetUserLocalNotifier(this.authRepository) : super(auth_state.Initial());
+  final AuthRepositoryImpl authRepository;
+
+  Future<void> getUserLocal() async {
+    state = auth_state.Loading();
+    try {
+      final user = await authRepository.getUser();
+      if (!mounted) return;
+      state = auth_state.Success(user);
+    } catch (e) {
+      print('Loi getUserLocal');
+    }
   }
 }
 

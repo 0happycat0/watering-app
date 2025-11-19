@@ -309,7 +309,7 @@ class DeviceRemoteDataSource {
     try {
       final result = await networkService.post(
         endpoint: ApiPath.device.toggleSchedule(device.id, schedule.id),
-        data: {ApiStrings.status: schedule.status},
+        data: {ApiStrings.status: !schedule.status},
       );
       return result.fold(
         (exception) {

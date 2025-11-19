@@ -7,15 +7,21 @@ import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/core/widgets/edit_schedule_sheet.dart';
 import 'package:watering_app/core/widgets/schedule_list_item.dart';
+import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/features/devices/providers/device/schedule_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/theme/styles.dart';
 
 class ScheduleTabScreen extends ConsumerStatefulWidget {
-  const ScheduleTabScreen({super.key, required this.device});
+  const ScheduleTabScreen({
+    super.key,
+    required this.device,
+    this.isNavigetedFromHome = false,
+  });
 
   final Device device;
+  final bool isNavigetedFromHome;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -67,8 +73,8 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
   //   ),
   // ];
 
-  void _showScheduleSheet(Schedule? schedule) {
-    showModalBottomSheet(
+  void _showScheduleSheet(Schedule? schedule) async {
+    final shouldRefresh = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -81,6 +87,9 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
         return EditScheduleSheet(id: widget.device.id, schedule: schedule);
       },
     );
+    if (widget.isNavigetedFromHome && shouldRefresh) {
+      await ref.read(devicesProvider.notifier).getAllDevices();
+    }
   }
 
   void _toggleSchedule(bool newState, Schedule schedule) async {
@@ -91,12 +100,17 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
           scheduleToToggle: schedule,
           newStatus: newState,
         );
+    if (widget.isNavigetedFromHome) {
+      await ref.read(devicesProvider.notifier).getAllDevices();
+    }
     if (!success && mounted) {
       CustomSnackBar.showSnackBar(text: 'Đặt lịch thất bại.');
     }
   }
 
   void _showAskDeleteDialog(Schedule schedule) {
+    final deleteScheduleState = ref.watch(deleteScheduleProvider);
+
     final deleteScheduleNotifier = ref.read(deleteScheduleProvider.notifier);
     final listScheduleNotifier = ref.read(getListScheduleProvider.notifier);
 
@@ -124,9 +138,16 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                 scheduleId: schedule.id,
               );
               if (mounted) {
-                CustomSnackBar.showSnackBar(text: 'Đã xóa lịch');
+                if (deleteScheduleState is device_state.Success) {
+                  CustomSnackBar.showSnackBar(text: 'Đã xóa lịch');
+                } else if (deleteScheduleState is device_state.Failure) {
+                  CustomSnackBar.showSnackBar(text: 'Xóa lịch thất bại');
+                }
               }
               listScheduleNotifier.refresh(id: widget.device.id);
+              if (widget.isNavigetedFromHome) {
+                await ref.read(devicesProvider.notifier).getAllDevices();
+              }
             },
             child: Text('Xóa'),
           ),

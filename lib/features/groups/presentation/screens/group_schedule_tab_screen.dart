@@ -7,15 +7,21 @@ import 'package:watering_app/features/groups/data/models/group_model.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/core/widgets/edit_schedule_sheet.dart';
 import 'package:watering_app/core/widgets/schedule_list_item.dart';
+import 'package:watering_app/features/groups/providers/all_groups/groups_provider.dart';
 import 'package:watering_app/features/groups/providers/group/schedule_provider.dart';
 import 'package:watering_app/features/groups/providers/group/group_state.dart'
     as group_state;
 import 'package:watering_app/theme/styles.dart';
 
 class GroupScheduleTabScreen extends ConsumerStatefulWidget {
-  const GroupScheduleTabScreen({super.key, required this.group});
+  const GroupScheduleTabScreen({
+    super.key,
+    required this.group,
+    this.isNavigetedFromHome = false,
+  });
 
   final Group group;
+  final bool isNavigetedFromHome;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -24,8 +30,8 @@ class GroupScheduleTabScreen extends ConsumerStatefulWidget {
 
 class _GroupScheduleTabScreenState
     extends ConsumerState<GroupScheduleTabScreen> {
-  void _showScheduleSheet(Schedule? schedule) {
-    showModalBottomSheet(
+  void _showScheduleSheet(Schedule? schedule) async {
+    final shouldRefresh = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -42,6 +48,9 @@ class _GroupScheduleTabScreenState
         );
       },
     );
+    if (widget.isNavigetedFromHome && shouldRefresh) {
+      await ref.read(groupsProvider.notifier).getAllGroups();
+    }
   }
 
   void _toggleSchedule(bool newState, Schedule schedule) async {
@@ -52,12 +61,17 @@ class _GroupScheduleTabScreenState
           scheduleToToggle: schedule,
           newStatus: newState,
         );
+    if (widget.isNavigetedFromHome) {
+      await ref.read(groupsProvider.notifier).getAllGroups();
+    }
     if (!success && mounted) {
       CustomSnackBar.showSnackBar(text: 'Đặt lịch thất bại.');
     }
   }
 
   void _showAskDeleteDialog(Schedule schedule) {
+    final deleteScheduleState = ref.watch(deleteGroupScheduleProvider);
+
     final deleteScheduleNotifier = ref.read(
       deleteGroupScheduleProvider.notifier,
     );
@@ -89,9 +103,16 @@ class _GroupScheduleTabScreenState
                 scheduleId: schedule.id,
               );
               if (mounted) {
-                CustomSnackBar.showSnackBar(text: 'Đã xóa lịch');
+                if (deleteScheduleState is group_state.Success) {
+                  CustomSnackBar.showSnackBar(text: 'Đã xóa lịch');
+                } else if (deleteScheduleState is group_state.Failure) {
+                  CustomSnackBar.showSnackBar(text: 'Xóa lịch thất bại');
+                }
               }
               listScheduleNotifier.refresh(id: widget.group.id);
+              if (widget.isNavigetedFromHome) {
+                await ref.read(groupsProvider.notifier).getAllGroups();
+              }
             },
             child: Text('Xóa'),
           ),

@@ -60,7 +60,7 @@ class GroupRemoteDataSource {
     }
   }
 
-    Future<Either<DioException, List<Device>>> getFreeDevices({
+  Future<Either<DioException, List<Device>>> getFreeDevices({
     String? name,
     int? page,
     int? size,
@@ -115,7 +115,7 @@ class GroupRemoteDataSource {
 
   Future<Either<DioException, Response>> createGroup({
     required Group group,
-    required List<String> listIdOfDevices
+    required List<String> listIdOfDevices,
   }) async {
     try {
       final result = await networkService.post(
@@ -452,4 +452,3 @@ class GroupRemoteDataSource {
     }
   }
 }
-

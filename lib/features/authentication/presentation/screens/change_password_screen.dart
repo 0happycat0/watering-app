@@ -387,7 +387,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(authProvider);
+    final userState = ref.watch(getUserLocalProvider);
     final sendOtpState = ref.watch(sendOtpProvider);
 
     final String userEmail = (userState is auth_state.Success)

@@ -347,7 +347,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(authProvider);
+    final userState = ref.watch(getUserLocalProvider);
     final sendOtpState = ref.watch(sendOtpProvider);
     final verifyEmailState = ref.watch(verifyEmailProvider);
 
@@ -373,7 +373,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
     ref.listen(verifyEmailProvider, (prev, next) async {
       //cập nhật trạng thái verify sau khi thành công
       if (next is auth_state.Success) {
-        await ref.read(authProvider.notifier).getUserInfo();
+        await ref.read(getUserLocalProvider.notifier).getUserLocal();
       }
       // Sửa: Dùng else if và đúng tên State
       else if (next is auth_state.VerifyEmailFailure) {
