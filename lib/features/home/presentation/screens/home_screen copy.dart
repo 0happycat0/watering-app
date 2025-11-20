@@ -6,7 +6,7 @@ import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/home/data/models/article_model.dart';
-import 'package:watering_app/features/home/presentation/widgets/artical_item_card.dart';
+import 'package:watering_app/features/home/presentation/widgets/article_item_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/info_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/schedule_item_card.dart';
 import 'package:watering_app/features/home/providers/home_provider.dart';
@@ -210,7 +210,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             itemCount: articles.length,
             itemBuilder: (context, index) {
               final article = articles[index];
-              return ArticleItemCard(theme: theme, article: Article());
+              return ArticleItemCard(theme: theme, article: Article(), onTap: () {},);
             },
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
@@ -11,8 +12,10 @@ import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/features/home/data/models/article_model.dart';
+import 'package:watering_app/features/home/presentation/screens/articles_screen.dart';
 import 'package:watering_app/features/home/presentation/screens/incoming_schedule_screen.dart';
-import 'package:watering_app/features/home/presentation/widgets/artical_item_card.dart';
+import 'package:watering_app/features/home/presentation/screens/webview_screen.dart';
+import 'package:watering_app/features/home/presentation/widgets/article_item_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/info_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/schedule_item_card.dart';
 import 'package:watering_app/features/home/providers/home_provider.dart';
@@ -32,10 +35,16 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  void _onSeeAllSchedule() {
+  void _onSeeAllSchedules() {
     Navigator.of(
       context,
     ).push(CupertinoPageRoute(builder: (ctx) => IncomingScheduleScreen()));
+  }
+
+  void _onSeeAllArticles() {
+    Navigator.of(
+      context,
+    ).push(CupertinoPageRoute(builder: (ctx) => ArticlesScreen()));
   }
 
   void _onTapSchedule(Device device) {
@@ -43,6 +52,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       CupertinoPageRoute(
         builder: (ctx) =>
             DeviceDetailScreen(device: device, isNavigetedFromHome: true),
+      ),
+    );
+  }
+
+  void _onTapArticle(Article article) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (ctx) => WebviewScreen(
+          url: '${ApiPath.newsDetailsUrl}${article.url}',
+        ),
       ),
     );
   }
@@ -226,7 +245,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: _SectionHeader(
             title: 'Lịch tưới sắp tới',
-            onSeeAll: _onSeeAllSchedule,
+            onSeeAll: _onSeeAllSchedules,
           ),
         ),
       ),
@@ -270,7 +289,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         )
-
       //Danh sách rỗng
       else if (devices.isEmpty)
         SliverPadding(
@@ -315,7 +333,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         )
-
       //Thành công
       else
         SliverPadding(
@@ -373,7 +390,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: _SectionHeader(
             title: 'Tin tức cây trồng',
             seeAllText: 'Xem thêm',
-            onSeeAll: () {},
+            onSeeAll: _onSeeAllArticles,
           ),
         ),
       ),
@@ -418,7 +435,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         )
-
       //Danh sách rỗng
       else if (articles.isEmpty)
         SliverPadding(
@@ -463,7 +479,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         )
-
       //Thành công
       else
         SliverPadding(
@@ -474,7 +489,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final article = articles[index];
-                  return ArticleItemCard(theme: theme, article: article);
+                  return ArticleItemCard(
+                    theme: theme,
+                    article: article,
+                    onTap: () {
+                      _onTapArticle(article);
+                    },
+                  );
                 },
                 childCount: numOfItemToDisplay,
               ),
