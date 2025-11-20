@@ -29,50 +29,6 @@ class ScheduleTabScreen extends ConsumerStatefulWidget {
 }
 
 class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
-  // final mockData = [
-  //   Schedule(
-  //     id: '1',
-  //     startTime: '07:00',
-  //     duration: 15, // 15 phút
-  //     repeatType: RepeatType.DAYS,
-  //     status: true,
-  //     daysOfWeek: [
-  //       DaysOfWeek.MON, // T2
-  //       DaysOfWeek.TUE, // T3
-  //       DaysOfWeek.WED, // T4
-  //       DaysOfWeek.THU, // T5
-  //       DaysOfWeek.FRI, // T6
-  //     ],
-  //   ),
-  //   Schedule(
-  //     id: '2',
-  //     startTime: '18:30',
-  //     duration: 5, // 5 phút
-  //     repeatType: RepeatType.EVERYDAY,
-  //     status: false,
-  //     daysOfWeek: null, // Sẽ không có ngày nào sáng
-  //   ),
-  //   Schedule(
-  //     id: '3',
-  //     startTime: '12:00',
-  //     duration: 10, // 10 phút
-  //     repeatType: RepeatType.DAYS,
-  //     status: true,
-  //     daysOfWeek: [
-  //       DaysOfWeek.SAT, // T7
-  //       DaysOfWeek.SUN, // CN
-  //     ],
-  //   ),
-  //   Schedule(
-  //     id: '4',
-  //     startTime: '09:15',
-  //     duration: 2, // 2 phút
-  //     repeatType: RepeatType.ONE_TIME,
-  //     status: true,
-  //     daysOfWeek: [], // Mảng rỗng
-  //   ),
-  // ];
-
   void _showScheduleSheet(Schedule? schedule) async {
     final shouldRefresh = await showModalBottomSheet(
       context: context,

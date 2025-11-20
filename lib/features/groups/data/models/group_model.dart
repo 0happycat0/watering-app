@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 
 class Group extends Equatable {
@@ -9,6 +10,8 @@ class Group extends Equatable {
   final String action;
   final int duration;
   final bool watering;
+    final Schedule? nextSchedule;
+
 
   const Group({
     this.id = '',
@@ -18,6 +21,7 @@ class Group extends Equatable {
     this.action = '',
     this.duration = 0,
     this.watering = false,
+    this.nextSchedule,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) => Group(
@@ -32,6 +36,9 @@ class Group extends Equatable {
     action: json['action'] ?? '',
     duration: (json['duration'] ?? 0) ~/ 60,
     watering: json['watering'] ?? false,
+    nextSchedule: json['nextSchedule'] != null
+        ? Schedule.fromJson(json['nextSchedule'])
+        : null,
   );
 
   Map<String, dynamic> toJson() {
@@ -43,6 +50,7 @@ class Group extends Equatable {
       'action': action,
       'duration': duration * 60,
       'watering': watering,
+      'nextSchedule': nextSchedule,
     };
   }
 
@@ -55,5 +63,6 @@ class Group extends Equatable {
     action,
     duration,
     watering,
+    nextSchedule,
   ];
 }

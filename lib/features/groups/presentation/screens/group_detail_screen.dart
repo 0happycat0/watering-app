@@ -16,11 +16,14 @@ import 'package:watering_app/features/groups/presentation/screens/group_devices_
 import 'package:watering_app/theme/theme.dart';
 
 class GroupDetailScreen extends ConsumerStatefulWidget {
-  const GroupDetailScreen({super.key, required this.group, this.isNavigetedFromHome = false});
+  const GroupDetailScreen({
+    super.key,
+    required this.group,
+    this.isNavigetedFromHome = false,
+  });
 
   final Group group;
   final bool isNavigetedFromHome;
-
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -143,7 +146,10 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
         body: TabBarView(
           children: <Widget>[
             GroupControlTabScreen(group: _currentGroup ?? widget.group),
-            GroupScheduleTabScreen(group: _currentGroup ?? widget.group),
+            GroupScheduleTabScreen(
+              group: _currentGroup ?? widget.group,
+              isNavigetedFromHome: widget.isNavigetedFromHome,
+            ),
             GroupDevicesTabScreen(group: _currentGroup ?? widget.group),
           ],
         ),

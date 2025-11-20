@@ -431,7 +431,7 @@ class GroupRemoteDataSource {
     try {
       final result = await networkService.post(
         endpoint: ApiPath.group.toggleSchedule(group.id, schedule.id),
-        data: {ApiStrings.status: schedule.status},
+        data: {ApiStrings.status: !schedule.status},
       );
       return result.fold(
         (exception) {

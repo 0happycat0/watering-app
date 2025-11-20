@@ -11,6 +11,9 @@ import 'package:watering_app/features/authentication/providers/auth_provider.dar
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
+import 'package:watering_app/features/groups/data/models/group_model.dart';
+import 'package:watering_app/features/groups/presentation/screens/group_detail_screen.dart';
+import 'package:watering_app/features/groups/providers/all_groups/groups_provider.dart';
 import 'package:watering_app/features/home/data/models/article_model.dart';
 import 'package:watering_app/features/home/presentation/screens/articles_screen.dart';
 import 'package:watering_app/features/home/presentation/screens/incoming_schedule_screen.dart';
@@ -26,6 +29,8 @@ import 'package:watering_app/features/authentication/providers/auth_state.dart'
     as auth_state;
 import 'package:watering_app/features/devices/providers/all_devices/devices_state.dart'
     as devices_state;
+import 'package:watering_app/features/groups/providers/all_groups/groups_state.dart'
+    as groups_state;
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -35,6 +40,12 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final List<Widget> _categories = <Widget>[
+    Text('Theo thiết bị'),
+    Text('Theo nhóm'),
+  ];
+  final List<bool> _selectedCategory = <bool>[true, false];
+
   void _onSeeAllSchedules() {
     Navigator.of(
       context,
@@ -47,11 +58,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ).push(CupertinoPageRoute(builder: (ctx) => ArticlesScreen()));
   }
 
-  void _onTapSchedule(Device device) {
+  void _onTapDeviceSchedule(Device device) {
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (ctx) =>
             DeviceDetailScreen(device: device, isNavigetedFromHome: true),
+      ),
+    );
+  }
+
+  void _onTapGroupSchedule(Group group) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (ctx) =>
+            GroupDetailScreen(group: group, isNavigetedFromHome: true),
       ),
     );
   }
@@ -74,6 +94,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       await ref.read(getUserLocalProvider.notifier).getUserLocal();
       await ref.read(quantitiesProvider.notifier).getQuantities();
       await ref.read(devicesProvider.notifier).getAllDevices();
+      await ref.read(groupsProvider.notifier).getAllGroups();
       await ref.read(articlesProvider.notifier).getArticles();
     });
   }
@@ -82,6 +103,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final userState = ref.watch(getUserLocalProvider);
     final devicesState = ref.watch(devicesProvider);
+    final groupsState = ref.watch(groupsProvider);
     final articlesState = ref.watch(articlesProvider);
     final username = userState is auth_state.Success
         ? userState.user?.username ?? ''
@@ -89,6 +111,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final statusHeight = MediaQuery.of(context).padding.top;
     final theme = Theme.of(context);
+
+    final isGroupSelected = _selectedCategory[1];
 
     return Scaffold(
       backgroundColor: AppColors.primarySurface.withAlpha(200),
@@ -101,6 +125,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         body: RefreshIndicator(
           onRefresh: () async {
             await ref.read(devicesProvider.notifier).getAllDevices();
+            await ref.read(groupsProvider.notifier).getAllGroups();
+            await ref.read(articlesProvider.notifier).getArticles();
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(
@@ -109,7 +135,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             slivers: [
               const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-              ..._buildScheduleSection(theme, devicesState),
+              ..._buildScheduleSection(
+                theme,
+                devicesState,
+                groupsState,
+                isGroupSelected,
+              ),
 
               ..._buildArticlesSection(theme, articlesState),
 
@@ -196,61 +227,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<Widget> _buildScheduleSection(
     ThemeData theme,
     devices_state.DevicesState devicesState,
+    groups_state.GroupsState groupsState,
+    bool isGroupSelected,
   ) {
-    final isLoading =
-        devicesState is devices_state.Loading ||
-        devicesState is devices_state.Initial;
-    final isFailure = devicesState is devices_state.Failure;
+    final isLoading = isGroupSelected
+        ? (groupsState is groups_state.Loading ||
+              groupsState is groups_state.Initial)
+        : (devicesState is devices_state.Loading ||
+              devicesState is devices_state.Initial);
+    final isFailure = isGroupSelected
+        ? (groupsState is groups_state.Failure)
+        : (devicesState is devices_state.Failure);
     // Mock data for schedule
-    List<Device> devices;
+    List<dynamic> items = [];
     if (isLoading) {
-      devices = [
-        Device(
-          name: 'Tên thiết bị',
-          nextSchedule: Schedule(
-            duration: 50,
-            startTime: '11:00:00',
-            runAfter: 3600,
-          ),
-        ),
-        Device(
-          name: 'Tên thiết bị',
-          nextSchedule: Schedule(
-            duration: 10,
-            startTime: '11:00:00',
-            runAfter: 3600,
-          ),
-        ),
-        Device(
-          name: 'Tên thiết bị',
-          nextSchedule: Schedule(
-            duration: 20,
-            startTime: '11:00:00',
-            runAfter: 3600,
-          ),
-        ),
-      ];
+      if (isGroupSelected) {
+        items = List.generate(3, (index) {
+          return Group(
+            name: BoneMock.title,
+            nextSchedule: Schedule(
+              duration: 50,
+              startTime: '11:00:00',
+              runAfter: 3600,
+            ),
+          );
+        });
+      } else {
+        items = List.generate(3, (index) {
+          return Device(
+            name: BoneMock.title,
+            nextSchedule: Schedule(
+              duration: 50,
+              startTime: '11:00:00',
+              runAfter: 3600,
+            ),
+          );
+        });
+      }
     } else if (isFailure) {
-      devices = [];
+      items = [];
     } else {
-      devices = (devicesState as devices_state.Success).devicesList
-          .where((device) => device.nextSchedule != null)
-          .toList();
+      if (isGroupSelected && groupsState is groups_state.Success) {
+        items = groupsState.groupsList
+            .where((group) => group.nextSchedule != null)
+            .toList();
+      } else if (!isGroupSelected && devicesState is devices_state.Success) {
+        items = devicesState.devicesList
+            .where((device) => device.nextSchedule != null)
+            .toList();
+      }
     }
-    final numOfItemToDisplay = (devices.length < 3) ? devices.length : 3;
+    final numOfItemToDisplay = (items.length < 3) ? items.length : 3;
 
     return [
       SliverToBoxAdapter(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-          child: _SectionHeader(
-            title: 'Lịch tưới sắp tới',
-            onSeeAll: _onSeeAllSchedules,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _SectionHeader(
+                title: 'Lịch tưới sắp tới',
+                onSeeAll: _onSeeAllSchedules,
+              ),
+              ToggleButtons(
+                onPressed: (int index) {
+                  setState(() {
+                    for (int i = 0; i < _selectedCategory.length; i++) {
+                      _selectedCategory[i] = i == index;
+                    }
+                  });
+                },
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                borderWidth: 1.5,
+                selectedBorderColor: AppColors.secondaryGreen[300],
+                selectedColor: Colors.white,
+                fillColor: AppColors.secondaryGreen[200],
+                color: AppColors.secondaryGreen[300],
+                constraints: BoxConstraints(minHeight: 30, minWidth: 182),
+                isSelected: _selectedCategory,
+                children: _categories,
+              ),
+            ],
           ),
         ),
       ),
       //Lỗi
-      if (devices.isEmpty && devicesState is devices_state.Failure)
+      if (items.isEmpty && isFailure)
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           sliver: Skeletonizer.sliver(
@@ -269,14 +332,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Icon(
-                        Symbols.event_busy,
+                        Symbols.error_circle_rounded,
                         size: 54,
                         weight: 700,
                         color: Colors.grey,
                       ),
                       SizedBox(height: 10),
                       Text(
-                        'Lỗi khi tải lịch tưới',
+                        isGroupSelected
+                            ? 'Lỗi khi tải lịch tưới nhóm'
+                            : 'Lỗi khi tải lịch tưới thiết bị',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18,
@@ -290,7 +355,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         )
       //Danh sách rỗng
-      else if (devices.isEmpty)
+      else if (items.isEmpty)
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           sliver: Skeletonizer.sliver(
@@ -311,14 +376,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Icon(
-                          Symbols.calendar_add_on_rounded,
+                          Symbols.event_busy_rounded,
                           size: 54,
                           weight: 700,
                           color: Colors.grey,
                         ),
                         SizedBox(height: 10),
                         Text(
-                          'Không có lịch tưới sắp tới',
+                          isGroupSelected
+                              ? 'Không có lịch tưới nhóm sắp tới'
+                              : 'Không có lịch tưới thiết bị sắp tới',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
@@ -342,12 +409,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: SliverList.builder(
               itemCount: numOfItemToDisplay,
               itemBuilder: (context, index) {
-                final device = devices[index];
+                final item = items[index];
                 return ScheduleItemCard(
                   theme: theme,
-                  device: device,
+                  device: isGroupSelected ? null : item,
+                  group: isGroupSelected ? item : null,
                   onTap: () {
-                    _onTapSchedule(device);
+                    isGroupSelected
+                        ? _onTapGroupSchedule(item)
+                        : _onTapDeviceSchedule(item);
                   },
                 );
               },

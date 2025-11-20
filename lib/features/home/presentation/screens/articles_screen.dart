@@ -48,11 +48,8 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
     if (isLoading) {
       articles = List.generate(
         8,
-        (index) => Article(
-          title: BoneMock.title,
-          description: BoneMock.paragraph,
-          thumb: '',
-        ),
+        (index) =>
+            Article(title: BoneMock.title, description: BoneMock.paragraph),
       );
     } else if (articlesState is home_state.Success) {
       articles = articlesState.articlesList ?? [];
@@ -72,13 +69,10 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          // Gọi lại API lấy tin tức khi kéo xuống
           await ref.read(articlesProvider.notifier).getArticles();
         },
         child: Skeletonizer(
           enabled: isLoading,
-          // Nếu danh sách trống và không phải đang load -> Hiển thị trạng thái Empty/Error
-          // Ngược lại hiển thị ListView
           child: articles.isEmpty && !isLoading
               ? _buildEmptyState(isFailure)
               : ListView.builder(
@@ -103,7 +97,6 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
     );
   }
 
-  // Widget hiển thị khi danh sách trống hoặc lỗi
   Widget _buildEmptyState(bool isFailure) {
     return Center(
       heightFactor: 0.8,

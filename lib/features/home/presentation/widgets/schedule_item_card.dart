@@ -4,17 +4,20 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
+import 'package:watering_app/features/groups/data/models/group_model.dart';
 
 class ScheduleItemCard extends StatelessWidget {
   const ScheduleItemCard({
     super.key,
     required this.theme,
-    required this.device,
+    this.device,
+    this.group,
     required this.onTap,
   });
 
   final ThemeData theme;
-  final Device device;
+  final Device? device;
+  final Group? group;
   final VoidCallback onTap;
 
   String _formatRunAfter(int? seconds) {
@@ -33,7 +36,10 @@ class ScheduleItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Schedule? nextSchedule = device.nextSchedule;
+    final isGroup = group != null;
+    final Schedule? nextSchedule = isGroup
+        ? group?.nextSchedule
+        : device?.nextSchedule;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -70,7 +76,7 @@ class ScheduleItemCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        device.name,
+                        isGroup ? group!.name : device!.name,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
