@@ -53,6 +53,9 @@ dependencies:
   toastification: ^2.3.0
   skeletonizer: ^2.1.0+1
   webview_flutter: ^4.13.0
+  firebase_core: ^4.2.1
+  firebase_ai: ^3.6.0
+  flutter_ai_toolkit: ^0.10.0
 
 dev_dependencies:
   flutter_test:

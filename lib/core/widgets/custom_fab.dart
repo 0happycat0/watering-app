@@ -36,8 +36,8 @@ class CustomFab extends StatelessWidget {
             width: 1,
           ),
         ),
-        foregroundColor: AppColors.primaryYellow[500],
-        backgroundColor: AppColors.primaryYellow[100],
+        foregroundColor: AppColors.secondaryYellow[500],
+        backgroundColor: AppColors.secondaryYellow[100],
         child: Icon(
           Symbols.add,
           size: 32,

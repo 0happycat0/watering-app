@@ -16,6 +16,7 @@ import 'package:watering_app/features/groups/presentation/screens/group_detail_s
 import 'package:watering_app/features/groups/providers/all_groups/groups_provider.dart';
 import 'package:watering_app/features/home/data/models/article_model.dart';
 import 'package:watering_app/features/home/presentation/screens/articles_screen.dart';
+import 'package:watering_app/features/home/presentation/screens/chat_bot_screen.dart';
 import 'package:watering_app/features/home/presentation/screens/incoming_schedule_screen.dart';
 import 'package:watering_app/features/home/presentation/screens/webview_screen.dart';
 import 'package:watering_app/features/home/presentation/widgets/article_item_card.dart';
@@ -86,6 +87,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  void _openChatScreen() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ChatBotScreen(),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -116,6 +125,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.primarySurface.withAlpha(200),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openChatScreen,
+        foregroundColor: Colors.white,
+        backgroundColor: AppColors.secondaryGreen[200],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        child: Icon(Symbols.smart_toy_rounded, size: 32),
+      ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [

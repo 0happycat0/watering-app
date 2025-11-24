@@ -14,7 +14,7 @@ class AppColors {
     10: Color.fromARGB(255, 235, 254, 234),
     50: Color.fromARGB(255, 215, 255, 215),
     100: Color.fromARGB(255, 156, 235, 137),
-    150: Color.fromARGB(255, 95, 212, 59),
+    150: Color.fromARGB(255, 100, 223, 62),
     200: Color.fromARGB(255, 84, 188, 53),
     300: Color.fromARGB(255, 53, 119, 35),
     400: Color.fromARGB(255, 42, 95, 28),
@@ -36,7 +36,7 @@ class AppColors {
     400: Color.fromARGB(255, 51, 128, 179),
     500: Color.fromARGB(255, 38, 99, 138),
   };
-  static const Map<int, Color> primaryYellow = {
+  static const Map<int, Color> secondaryYellow = {
     50: Color.fromARGB(255, 255, 231, 143),
     100: Color.fromARGB(255, 253, 213, 69),
     200: Color.fromARGB(255, 253, 198, 0),
