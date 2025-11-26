@@ -28,8 +28,12 @@ class ChatBotScreen extends StatelessWidget {
             ),
           ),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: Colors.white),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 0),
           child: Row(
             children: [
               // Icon robot
@@ -69,14 +73,6 @@ class ChatBotScreen extends StatelessWidget {
             ],
           ),
         ),
-        actions: [
-          // Nút đóng (X)
-          IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
 
       body: LlmChatView(

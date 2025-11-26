@@ -21,6 +21,7 @@ import 'package:watering_app/features/home/presentation/screens/incoming_schedul
 import 'package:watering_app/features/home/presentation/screens/webview_screen.dart';
 import 'package:watering_app/features/home/presentation/widgets/article_item_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/info_card.dart';
+import 'package:watering_app/features/home/presentation/widgets/plant_interaction_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/schedule_item_card.dart';
 import 'package:watering_app/features/home/providers/home_provider.dart';
 import 'package:watering_app/theme/theme.dart';
@@ -46,6 +47,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Text('Theo nhóm'),
   ];
   final List<bool> _selectedCategory = <bool>[true, false];
+  Device _selectedDevice = Device(name: 'Hãy chọn cây để tưới');
 
   void _onSeeAllSchedules() {
     Navigator.of(
@@ -150,7 +152,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             slivers: [
               const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
+              SliverToBoxAdapter(
+                child: PlantInteractionCard(
+                  device: _selectedDevice,
+                  initialSliderValue: 10,
+                  onDeviceChanged: (device) {
+                    print('Đang chọn cây ${device.name}');
+                    setState(() {
+                      _selectedDevice = device;
+                    });
+                  },
+                ),
+              ),
               ..._buildScheduleSection(
                 theme,
                 devicesState,
@@ -597,12 +610,12 @@ class _SectionHeader extends StatelessWidget {
   const _SectionHeader({
     required this.title,
     this.seeAllText = 'Xem tất cả',
-    required this.onSeeAll,
+    this.onSeeAll,
   });
 
   final String title;
   final String seeAllText;
-  final VoidCallback onSeeAll;
+  final VoidCallback? onSeeAll;
 
   @override
   Widget build(BuildContext context) {

@@ -8,6 +8,9 @@ class NormalTextFormField extends StatelessWidget {
     super.key,
     required this.textController,
     required this.hintText,
+    this.textStyle,
+    this.fillColor,
+    this.borderColor,
     this.suffixText,
     this.suffixIcon,
     this.label,
@@ -25,6 +28,9 @@ class NormalTextFormField extends StatelessWidget {
 
   final String? Function(String?)? validator;
   final TextEditingController textController;
+  final TextStyle? textStyle;
+  final Color? fillColor;
+  final Color? borderColor;
   final String? helperText;
   final String hintText;
   final String? suffixText;
@@ -60,23 +66,35 @@ class NormalTextFormField extends StatelessWidget {
         TextFormField(
           controller: textController,
           validator: validator,
-          style: TextStyle(
-            color: colorScheme.onSurface,
-          ),
+          style:
+              textStyle ??
+              TextStyle(
+                color: colorScheme.onSurface,
+              ),
           textAlign: textAlign,
           readOnly: readOnly,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           decoration: InputDecoration(
+            suffixStyle: textStyle,
             hintText: hintText,
             helperText: helperText,
             contentPadding: isDense
                 ? EdgeInsets.symmetric(vertical: 8, horizontal: 12)
                 : padding,
-            fillColor: AppColors.divider.withAlpha(150),
+            fillColor: fillColor ?? AppColors.divider.withAlpha(150),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            focusedBorder: borderColor != null
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: borderColor ?? Color(0xFF000000),
+                      width: 1.5,
+                    ),
+                  )
+                : null,
             suffixText: suffixText,
             suffixIcon: suffixIcon,
           ),

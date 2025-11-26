@@ -61,7 +61,7 @@ class CustomSnackBar extends SnackBar {
         linearTrackColor: AppColors.divider,
         linearMinHeight: 2,
       ),
-      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 36),
       borderRadius: BorderRadius.circular(16),
       borderSide: BorderSide.none,
       showIcon: false,

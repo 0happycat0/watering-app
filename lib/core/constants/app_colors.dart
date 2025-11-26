@@ -34,7 +34,7 @@ class AppColors {
     200: Color.fromARGB(255, 122, 187, 212),
     300: Color.fromARGB(255, 77, 153, 204),
     400: Color.fromARGB(255, 51, 128, 179),
-    500: Color.fromARGB(255, 38, 99, 138),
+    500: Color.fromARGB(255, 33, 88, 122),
   };
   static const Map<int, Color> secondaryYellow = {
     50: Color.fromARGB(255, 255, 231, 143),

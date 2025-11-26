@@ -42,6 +42,7 @@ class GroupsWateringNotifier extends StateNotifier<GroupsWateringState> {
           final bool isWatering = data['isWatering'];
 
           if (groupId.isEmpty) return;
+          if (!mounted) return;
 
           state = {
             ...state,

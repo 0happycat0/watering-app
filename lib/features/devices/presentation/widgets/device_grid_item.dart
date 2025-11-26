@@ -18,10 +18,12 @@ class DeviceGridItem extends ConsumerWidget {
     required this.onSelectDevice,
     required this.onSelectEdit,
     required this.onSelectDelete,
+    this.isPopup = false,
   });
 
   final Device device;
   final bool isInGroup;
+  final bool isPopup;
   final void Function() onSelectDevice;
   final void Function() onSelectEdit;
   final void Function() onSelectDelete;
@@ -266,7 +268,7 @@ class DeviceGridItem extends ConsumerWidget {
                 ),
 
               // Nút menu góc phải
-              Positioned(
+              if(!isPopup) Positioned(
                 right: -4,
                 top: 0,
                 child: PopupMenuButton<String>(

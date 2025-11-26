@@ -46,6 +46,7 @@ class DevicesSensorNotifier extends StateNotifier<DevicesSensorState> {
             final HistorySensor sensorData = HistorySensor.fromJson(data);
 
             if (deviceId.isEmpty) return;
+            if (!mounted) return;
 
             state = {
               ...state,
@@ -107,6 +108,7 @@ class DevicesStatusNotifier extends StateNotifier<DevicesStatusState> {
           final bool isOnline = data['isOnline'];
 
           if (deviceId.isEmpty) return;
+          if (!mounted) return;
 
           state = {
             ...state,
@@ -164,6 +166,7 @@ class DevicesWateringNotifier extends StateNotifier<DevicesWateringState> {
           final bool isWatering = data['isWatering'];
 
           if (deviceId.isEmpty) return;
+          if (!mounted) return;
 
           state = {
             ...state,
