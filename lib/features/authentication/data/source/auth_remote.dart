@@ -184,14 +184,16 @@ class AuthRemoteDataSource {
   }
 
   Future<Either<DioException, Response>> changePassword({
+    required String email,
     required String code,
     required String newPassword,
     required String confirmNewPassword,
   }) async {
     try {
-      final result = await networkService.post(
+      final result = await authNetworkService.post(
         endpoint: ApiPath.auth.changePassword,
         data: {
+          ApiStrings.email: email,
           ApiStrings.code: code,
           ApiStrings.newPassword: newPassword,
           ApiStrings.confirmNewPassword: confirmNewPassword,

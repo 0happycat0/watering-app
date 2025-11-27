@@ -28,6 +28,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   final _initialCountdownTime = 10;
   late int _countdownSeconds;
   Timer? _timer;
+  String _userEmail = '';
   String _enteredOtp = '';
   bool _isFirstSend = true;
   bool _canResend = false;
@@ -89,7 +90,10 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
   void _onConfirm() {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (ctx) => NewPasswordScreen(otp: _enteredOtp)),
+      CupertinoPageRoute(
+        builder: (ctx) =>
+            NewPasswordScreen(email: _userEmail, otp: _enteredOtp),
+      ),
     );
   }
 
@@ -273,7 +277,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
         ),
         const SizedBox(height: 32),
 
-        // Logic cũ của bạn (Gửi OTP hoặc Nhập OTP)
+        //Gửi OTP hoặc Nhập OTP
         if (_isFirstSend)
           ElevatedButton(
             style: AppStyles.elevatedButtonStyle(),
@@ -390,7 +394,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
     final userState = ref.watch(getUserLocalProvider);
     final sendOtpState = ref.watch(sendOtpProvider);
 
-    final String userEmail = (userState is auth_state.Success)
+    _userEmail = (userState is auth_state.Success)
         ? userState.user?.email ?? ''
         : '';
     final bool isVerified = (userState is auth_state.Success)
@@ -441,11 +445,11 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
                   child: Builder(
                     builder: (context) {
                       if (!isVerified) {
-                        return _buildUnverifiedView(userEmail);
+                        return _buildUnverifiedView(_userEmail);
                       } else {
                         return _buildOtpView(
                           sendOtpState,
-                          userEmail,
+                          _userEmail,
                           defaultPinTheme,
                         );
                       }

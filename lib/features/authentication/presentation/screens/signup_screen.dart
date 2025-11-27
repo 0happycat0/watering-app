@@ -115,7 +115,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                       },
                       textController: _emailTextController,
                       label: 'Email',
-                      hintText: 'abc@example.com',
+                      hintText: 'abc@example.com...',
                       helperText: 'Ví dụ: abc@example.com',
                     ),
                     NormalTextFormField(

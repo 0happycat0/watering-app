@@ -18,6 +18,7 @@ abstract class AuthRepository {
     required String otp,
   });
   Future<Either<Exception, Response>> changePassword({
+    required String email,
     required String code,
     required String newPassword,
     required String confirmNewPassword,

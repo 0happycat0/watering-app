@@ -161,11 +161,13 @@ class AuthRepositoryImpl extends AuthRepository {
 
   @override
   Future<Either<DioException, Response>> changePassword({
+    required String email,
     required String code,
     required String newPassword,
     required String confirmNewPassword,
   }) async {
     final response = await authRemoteDataSource.changePassword(
+      email: email,
       code: code,
       newPassword: newPassword,
       confirmNewPassword: confirmNewPassword,

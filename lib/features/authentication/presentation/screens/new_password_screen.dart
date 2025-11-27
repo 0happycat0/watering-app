@@ -13,9 +13,16 @@ import 'package:watering_app/features/authentication/providers/auth_state.dart'
     as auth_state;
 
 class NewPasswordScreen extends ConsumerStatefulWidget {
-  const NewPasswordScreen({super.key, required this.otp});
+  const NewPasswordScreen({
+    super.key,
+    required this.otp,
+    required this.email,
+    this.isForgotPassword = false,
+  });
 
   final String otp;
+  final String email;
+  final bool isForgotPassword;
 
   @override
   ConsumerState<NewPasswordScreen> createState() {
@@ -44,6 +51,7 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
       await ref
           .read(changePasswordProvider.notifier)
           .changePassword(
+            email: widget.email,
             code: widget.otp,
             newPassword: _passwordTextController.text,
             confirmNewPassword: _rePasswordTextController.text,
@@ -88,7 +96,9 @@ class _NewPasswordScreenState extends ConsumerState<NewPasswordScreen> {
           onPressed: () {
             Navigator.of(context).popUntil((route) => route.isFirst);
           },
-          child: Text('Quay về tài khoản'),
+          child: Text(
+            widget.isForgotPassword ? 'Quay về Đăng nhập' : 'Quay về tài khoản',
+          ),
         ),
         const SizedBox(height: 16),
 

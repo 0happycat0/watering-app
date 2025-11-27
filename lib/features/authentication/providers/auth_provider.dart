@@ -196,12 +196,14 @@ class ChangePasswordNotifier extends StateNotifier<auth_state.AuthState> {
   final AuthRepositoryImpl authRepository;
 
   Future<void> changePassword({
+    required String email,
     required String code,
     required String newPassword,
     required String confirmNewPassword,
   }) async {
     state = auth_state.Loading();
     final response = await authRepository.changePassword(
+      email: email,
       code: code,
       newPassword: newPassword,
       confirmNewPassword: confirmNewPassword,
