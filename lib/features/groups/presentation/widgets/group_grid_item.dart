@@ -40,7 +40,9 @@ class GroupGridItem extends ConsumerWidget {
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       child: InkWell(
         onTap: onSelectGroup,
-        splashColor: colorScheme.primaryContainer,
+        splashColor: isWatering
+            ? AppColors.mainBlue[150]!
+            : colorScheme.primaryContainer,
         child: Ink(
           decoration: BoxDecoration(
             gradient: LinearGradient(

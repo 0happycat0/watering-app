@@ -29,7 +29,12 @@ class ScheduleItemCard extends StatelessWidget {
       return 'Còn $minutes phút';
     } else {
       final hours = seconds / 3600;
-      final hoursStr = hours.toStringAsFixed(0);
+      final hoursStr = hours.floor().toString();
+      if (hours >= 24) {
+        final days = hours / 24;
+        final daysStr = days.toStringAsFixed(0);
+        return 'Còn $daysStr ngày';
+      }
       return 'Còn $hoursStr giờ';
     }
   }
@@ -40,6 +45,7 @@ class ScheduleItemCard extends StatelessWidget {
     final Schedule? nextSchedule = isGroup
         ? group?.nextSchedule
         : device?.nextSchedule;
+    final int duration = (nextSchedule?.duration ?? 0) ~/ 60;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -99,7 +105,7 @@ class ScheduleItemCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${nextSchedule?.duration.toString() ?? '--'} phút',
+                              '${duration.toString()} phút',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: Colors.grey[600],
                               ),

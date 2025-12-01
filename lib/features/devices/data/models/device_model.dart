@@ -33,7 +33,7 @@ class Device extends Equatable {
     topicSensor: json['topicSensor'] ?? '',
     topicWatering: json['topicWatering'] ?? '',
     action: json['action'] ?? '',
-    duration: (json['duration'] ?? 0) ~/ 60,
+    duration: json['duration'] ?? 0,
     online: json['online'] ?? true,
     watering: json['watering'] ?? false,
     nextSchedule: json['nextSchedule'] != null
@@ -49,7 +49,7 @@ class Device extends Equatable {
       'topicSensor': topicSensor,
       'topicWatering': topicWatering,
       'action': action,
-      'duration': duration * 60,
+      'duration': duration,
       'online': online,
       'watering': watering,
       'nextSchedule': nextSchedule,

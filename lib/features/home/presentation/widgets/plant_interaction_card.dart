@@ -275,6 +275,7 @@ class _PlantInteractionCardState extends ConsumerState<PlantInteractionCard>
                                     vertical: 0,
                                   ),
                                   value: _currentSliderValue,
+                                  min: 1,
                                   max: 60,
                                   onChanged: (value) {
                                     setState(() {

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/app.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:watering_app/core/utils/notification_service.dart';
 import 'package:watering_app/firebase_options.dart';
 
 void main() async {
@@ -22,6 +23,8 @@ void main() async {
   );
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  await NotificationService().initFCM();
 
   runApp(
     ProviderScope(

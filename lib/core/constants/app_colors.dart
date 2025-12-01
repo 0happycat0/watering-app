@@ -31,6 +31,7 @@ class AppColors {
     10: Color.fromARGB(255, 235, 249, 254),
     50: Color.fromARGB(255, 208, 244, 254),
     100: Color.fromARGB(255, 160, 233, 253),
+    150: Color.fromARGB(255, 141, 206, 224),
     200: Color.fromARGB(255, 122, 187, 212),
     300: Color.fromARGB(255, 77, 153, 204),
     400: Color.fromARGB(255, 51, 128, 179),

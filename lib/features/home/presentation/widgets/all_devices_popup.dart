@@ -113,7 +113,7 @@ class _AllDevicesPopupState extends ConsumerState<AllDevicesPopup> {
               ),
             ),
 
-            // Danh sách
+            // Danh sách (không hiển thị những cây đang tưới và offline)
             Expanded(
               child: Builder(
                 builder: (context) {
@@ -122,7 +122,7 @@ class _AllDevicesPopupState extends ConsumerState<AllDevicesPopup> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (devicesState is devices_state.Success) {
                     final devices = devicesState.devicesList
-                        .where((device) => !device.watering)
+                        .where((device) => (!device.watering && device.online))
                         .toList();
 
                     if (devices.isEmpty) {

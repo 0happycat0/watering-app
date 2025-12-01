@@ -16,7 +16,7 @@ class HistoryWatering extends Equatable {
   factory HistoryWatering.fromJson(Map<String, dynamic> json) =>
       HistoryWatering(
         action: json['action'] ?? '',
-        duration: (json['duration'] ?? 0) ~/ 60,
+        duration: json['duration'] ?? 0,
         startTime: DateTime.tryParse(json['startTime'] ?? ''),
         byGroup: json['byGroup'],
       );
@@ -24,7 +24,7 @@ class HistoryWatering extends Equatable {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'action': action,
-      'duration': duration * 60,
+      'duration': duration,
       'startTime': startTime?.toIso8601String(),
       'byGroup': byGroup,
     };

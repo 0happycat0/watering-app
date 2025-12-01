@@ -41,7 +41,6 @@ class _AppLifecycleObserverState extends ConsumerState<AppLifecycleObserver>
       case AppLifecycleState.paused:
         // APP BỊ ĐƯA XUỐNG NỀN
         print('[AppLifecycle] App paused');
-        // KHÔNG cần gọi disconnect() ở đây
         // Cứ để kết nối tự ngắt và logic _scheduleReconnect xử lý
         break;
       case AppLifecycleState.detached:

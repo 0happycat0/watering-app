@@ -59,7 +59,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     if (_isEditMode) {
       final schedule = widget.schedule!;
       _selectedTime = _parseTime(schedule.startTime);
-      _durationController.text = schedule.duration.toString();
+      _durationController.text = (schedule.duration ~/ 60).toString();
       _selectedDays = schedule.daysOfWeek?.toSet() ?? {};
       _selectedRepeatType = schedule.repeatType;
     } else {
@@ -134,7 +134,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     final schedule = widget.schedule;
     final timeStr =
         '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}:00';
-    final duration = int.tryParse(_durationController.text) ?? 0;
+    final duration = (int.tryParse(_durationController.text) ?? 0) * 60;
     final repeatType = _selectedRepeatType;
     final selectedDays = _selectedDays.toList();
 

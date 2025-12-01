@@ -87,15 +87,12 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final group = widget.group;
     final groupState = ref.watch(groupByIdProvider);
 
     // Cập nhật group khi có data mới
     if (groupState is group_state.Success && groupState.listDevices != null) {
-      _currentGroup = Group(
-        id: widget.group.id,
-        name: widget.group.name,
-        listDevices: groupState.listDevices!,
-      );
+      _currentGroup = group.copyWith(listDevices: groupState.listDevices);
     }
 
     ref.listen(deleteGroupProvider, (prev, next) {
@@ -114,44 +111,50 @@ class _GroupDetailScreenState extends ConsumerState<GroupDetailScreen> {
       }
     });
 
-    return DefaultTabController(
-      initialIndex: 0,
-      length: 3,
-      child: Scaffold(
-        appBar: CustomAppBar(
-          automaticallyImplyLeading: false,
-          title: 'Nhóm: ${widget.group.name}',
-          leading: BackIcon(),
-          actions: [
-            IconButton(
-              onPressed: _showAskDeleteDialog,
-              icon: Icon(
-                Symbols.delete,
-                size: 28,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: DefaultTabController(
+        initialIndex: 0,
+        length: 3,
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: CustomAppBar(
+            automaticallyImplyLeading: false,
+            title: 'Nhóm: ${widget.group.name}',
+            leading: BackIcon(),
+            actions: [
+              IconButton(
+                onPressed: _showAskDeleteDialog,
+                icon: Icon(
+                  Symbols.delete,
+                  size: 28,
+                ),
               ),
+            ],
+            bottom: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorWeight: 3,
+              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+              tabs: <Widget>[
+                Tab(text: 'Điều khiển'),
+                Tab(text: 'Lên lịch'),
+                Tab(text: 'Thiết bị'),
+              ],
             ),
-          ],
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorWeight: 3,
-            labelStyle: TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-            tabs: <Widget>[
-              Tab(text: 'Điều khiển'),
-              Tab(text: 'Lên lịch'),
-              Tab(text: 'Thiết bị'),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              GroupControlTabScreen(group: _currentGroup ?? widget.group),
+              GroupScheduleTabScreen(
+                group: _currentGroup ?? widget.group,
+                isNavigetedFromHome: widget.isNavigetedFromHome,
+              ),
+              GroupDevicesTabScreen(group: _currentGroup ?? widget.group),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            GroupControlTabScreen(group: _currentGroup ?? widget.group),
-            GroupScheduleTabScreen(
-              group: _currentGroup ?? widget.group,
-              isNavigetedFromHome: widget.isNavigetedFromHome,
-            ),
-            GroupDevicesTabScreen(group: _currentGroup ?? widget.group),
-          ],
         ),
       ),
     );

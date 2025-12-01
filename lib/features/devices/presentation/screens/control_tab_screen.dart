@@ -42,14 +42,14 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
       if (value != null) {
         if (value > 60) {
           newText = AppStrings.maxPumpDurationValue;
-        } else if (value < 0) {
+        } else if (value < 1) {
           newText = AppStrings.minPumpDurationValue;
         } else {
           //xóa số 0 đứng đầu
           newText = value.toStringAsFixed(0);
         }
       } else {
-        newText = '0';
+        newText = '1';
       }
 
       if (_durationController.text != newText) {
@@ -148,8 +148,8 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
     final historyWateringState = ref.watch(getHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;
 
-    double currentSliderValue = double.tryParse(_durationController.text) ?? 0;
-    double sliderValue = currentSliderValue.clamp(0.0, 60.0);
+    double currentSliderValue = double.tryParse(_durationController.text) ?? 1;
+    double sliderValue = currentSliderValue.clamp(1.0, 60.0);
 
     if (historyWateringState is device_state.Success) {
       historyWateringDataSource = HistoryWateringDataSource(
@@ -184,6 +184,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                               year2023: false,
                               padding: EdgeInsets.all(0),
                               value: sliderValue,
+                              min: 1,
                               max: 60,
                               onChanged: (value) {
                                 setState(() {
@@ -270,10 +271,11 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                                       _toggleDevice(
                                         id,
                                         'START',
-                                        int.tryParse(
-                                              _durationController.text,
-                                            ) ??
-                                            0,
+                                        (int.tryParse(
+                                                  _durationController.text,
+                                                ) ??
+                                                0) *
+                                            60,
                                       );
                                     }
                                   : null,

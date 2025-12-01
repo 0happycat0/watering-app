@@ -155,7 +155,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             SizedBox(height: 24),
                             NormalTextFormField(
                               textController: _usernameTextController,
-                              hintText: 'Email',
+                              hintText: 'Tên đăng nhập',
                             ),
                             SizedBox(height: 18),
                             PasswordTextFormField(

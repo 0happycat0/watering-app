@@ -34,7 +34,7 @@ class Group extends Equatable {
               .toList()
         : [],
     action: json['action'] ?? '',
-    duration: (json['duration'] ?? 0) ~/ 60,
+    duration: json['duration'] ?? 0,
     watering: json['watering'] ?? false,
     nextSchedule: json['nextSchedule'] != null
         ? Schedule.fromJson(json['nextSchedule'])
@@ -48,10 +48,32 @@ class Group extends Equatable {
       'devicesQuantity': devicesQuantity,
       'devices': listDevices.map((device) => device.toJson()).toList(),
       'action': action,
-      'duration': duration * 60,
+      'duration': duration,
       'watering': watering,
       'nextSchedule': nextSchedule,
     };
+  }
+
+  Group copyWith({
+    String? id,
+    String? name,
+    int? devicesQuantity,
+    List<Device>? listDevices,
+    String? action,
+    int? duration,
+    bool? watering,
+    Schedule? nextSchedule,
+  }) {
+    return Group(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      devicesQuantity: devicesQuantity ?? this.devicesQuantity,
+      listDevices: listDevices ?? this.listDevices,
+      action: action ?? this.action,
+      duration: duration ?? this.duration,
+      watering: watering ?? this.watering,
+      nextSchedule: nextSchedule ?? this.nextSchedule,
+    );
   }
 
   @override

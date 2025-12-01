@@ -93,47 +93,54 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
       }
     });
 
-    return DefaultTabController(
-      initialIndex: 0,
-      length: 3,
-      child: Scaffold(
-        appBar: CustomAppBar(
-          automaticallyImplyLeading: false,
-          title: 'Thiết bị: ${widget.device.name}',
-          leading: BackIcon(),
-          actions: [
-            IconButton(
-              onPressed: _showAskDeleteDialog,
-              icon: Icon(
-                Symbols.delete,
-                size: 28,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: DefaultTabController(
+        initialIndex: 0,
+        length: 3,
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: CustomAppBar(
+            automaticallyImplyLeading: false,
+            title: 'Thiết bị: ${widget.device.name}',
+            subTitle: device.online ? null : 'Không hoạt động',
+            leading: BackIcon(),
+            actions: [
+              IconButton(
+                onPressed: _showAskDeleteDialog,
+                icon: Icon(
+                  Symbols.delete,
+                  size: 28,
+                ),
               ),
+            ],
+            bottom: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorWeight: 3,
+              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+              tabs: <Widget>[
+                Tab(text: 'Điều khiển'),
+                Tab(text: 'Theo dõi'),
+                Tab(text: 'Lên lịch'),
+              ],
             ),
-          ],
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorWeight: 3,
-            labelStyle: TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-            tabs: <Widget>[
-              Tab(text: 'Điều khiển'),
-              Tab(text: 'Theo dõi'),
-              Tab(text: 'Lên lịch'),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              ControlTabScreen(device: device),
+              AnalyticsTabScreen(
+                device: device,
+                // realtimeDeviceSensor: realtimeDeviceSensor,
+              ),
+              ScheduleTabScreen(
+                device: device,
+                isNavigetedFromHome: widget.isNavigetedFromHome,
+              ),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            ControlTabScreen(device: device),
-            AnalyticsTabScreen(
-              device: device,
-              // realtimeDeviceSensor: realtimeDeviceSensor,
-            ),
-            ScheduleTabScreen(
-              device: device,
-              isNavigetedFromHome: widget.isNavigetedFromHome,
-            ),
-          ],
         ),
       ),
     );

@@ -8,6 +8,6 @@ class AppStrings {
   static final String registerNow = 'Đăng ký ngay';
   static final String tryAgain = 'Thử lại';
 
-  static final String minPumpDurationValue = '0';
+  static final String minPumpDurationValue = '1';
   static final String maxPumpDurationValue = '60';
 }

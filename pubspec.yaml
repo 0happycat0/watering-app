@@ -58,6 +58,9 @@ dependencies:
   flutter_ai_toolkit: ^0.10.0
   lottie: ^3.3.2
   flutter_launcher_icons: ^0.14.4
+  firebase_messaging: ^16.0.4
+  rxdart: ^0.28.0
+  local_auth: ^3.0.0
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -65,7 +68,7 @@ flutter_launcher_icons:
   image_path: "assets/icon/app_icon_with_background.png"
   adaptive_icon_background: "#a2cb79"
   adaptive_icon_foreground: "assets/icon/app_icon_without_background.png"
-  adaptive_icon_foreground_inset: 16
+  adaptive_icon_foreground_inset: 8
   min_sdk_android: 21 # android min sdk min:16, default 21
   remove_alpha_ios: true
   background_color_ios: "#a2cb79"

@@ -48,7 +48,7 @@ class Schedule extends Equatable {
     return Schedule(
       id: json['id'] ?? '',
       startTime: json['startTime'] ?? '',
-      duration: (json['duration'] ?? 0) ~/ 60,
+      duration: json['duration'] ?? 0,
       repeatType: parsedRepeatType,
       status: json['status'] ?? false,
       daysOfWeek: parsedDays,
@@ -60,7 +60,7 @@ class Schedule extends Equatable {
     return <String, dynamic>{
       'id': id,
       'startTime': startTime,
-      'duration': duration * 60,
+      'duration': duration,
       'repeatType': repeatType.name,
       'status': status,
       if (daysOfWeek != null)
