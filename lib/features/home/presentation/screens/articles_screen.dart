@@ -69,6 +69,7 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
+          if (!mounted) return;
           await ref.read(articlesProvider.notifier).getArticles();
         },
         child: Skeletonizer(

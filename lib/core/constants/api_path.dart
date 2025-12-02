@@ -2,7 +2,7 @@ class ApiPath {
   static const String baseUrl =
       'https://be-smart-watering-production.up.railway.app';
   // static const String baseUrl =
-  //     'https://unmoaned-dale-nonspherical.ngrok-free.dev'; //work on emulator (not physical device)
+  //     'https://unmoaned-dale-nonspherical.ngrok-free.dev';
 
   static const String newsUrl = 'https://w-api.baomoi.com/api/v1';
   static const String newsDetailsUrl = 'https://baomoi.com';

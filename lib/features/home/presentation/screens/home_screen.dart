@@ -102,12 +102,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await ref.read(authProvider.notifier).isLoggedIn();
-      await ref.read(getUserLocalProvider.notifier).getUserLocal();
-      await ref.read(quantitiesProvider.notifier).getQuantities();
-      await ref.read(devicesProvider.notifier).getAllDevices();
-      await ref.read(groupsProvider.notifier).getAllGroups();
-      await ref.read(articlesProvider.notifier).getArticles();
+      await Future.wait([
+        ref.read(authProvider.notifier).isLoggedIn(),
+        ref.read(getUserLocalProvider.notifier).getUserLocal(),
+        ref.read(quantitiesProvider.notifier).getQuantities(),
+        ref.read(devicesProvider.notifier).getAllDevices(),
+        ref.read(groupsProvider.notifier).getAllGroups(),
+        ref.read(articlesProvider.notifier).getArticles(),
+      ]);
     });
   }
 
@@ -143,9 +145,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         },
         body: RefreshIndicator(
           onRefresh: () async {
-            await ref.read(devicesProvider.notifier).getAllDevices();
-            await ref.read(groupsProvider.notifier).getAllGroups();
-            await ref.read(articlesProvider.notifier).getArticles();
+            if (!mounted) return;
+            await Future.wait([
+              ref.read(devicesProvider.notifier).getAllDevices(),
+              ref.read(groupsProvider.notifier).getAllGroups(),
+              ref.read(articlesProvider.notifier).getArticles(),
+            ]);
           },
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(

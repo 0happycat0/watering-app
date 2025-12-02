@@ -17,9 +17,9 @@ final groupsWateringProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          throw Exception('StompService is null');
+          print('StompService is null');
         }
-        return GroupsWateringNotifier(stompService);
+        return GroupsWateringNotifier(stompService ?? StompService());
       },
     );
 

@@ -125,6 +125,7 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
 
     return RefreshIndicator(
       onRefresh: () async {
+        if(!mounted) return;
         await ref
             .read(getHistorySensorProvider.notifier)
             .getHistorySensor(id: widget.device.id);

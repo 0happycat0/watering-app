@@ -19,9 +19,9 @@ final devicesSensorProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          throw Exception('StompService is null');
+          print('StompService is null');
         }
-        return DevicesSensorNotifier(stompService);
+        return DevicesSensorNotifier(stompService ?? StompService());
       },
     );
 
@@ -83,9 +83,9 @@ final devicesStatusProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          throw Exception('StompService is null');
+          print('StompService is null');
         }
-        return DevicesStatusNotifier(stompService);
+        return DevicesStatusNotifier(stompService ?? StompService());
       },
     );
 
@@ -141,9 +141,9 @@ final devicesWateringProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          throw Exception('StompService is null');
+          print('StompService is null');
         }
-        return DevicesWateringNotifier(stompService);
+        return DevicesWateringNotifier(stompService ?? StompService());
       },
     );
 

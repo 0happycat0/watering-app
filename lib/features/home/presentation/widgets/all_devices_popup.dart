@@ -195,7 +195,7 @@ class _AllDevicesPopupState extends ConsumerState<AllDevicesPopup> {
                                   .read(devicesProvider.notifier)
                                   .refresh();
                             },
-                            child: const Text('Refresh'),
+                            child: const Text('Thử lại'),
                           ),
                         ],
                       ),

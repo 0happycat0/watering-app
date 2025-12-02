@@ -249,6 +249,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
                 displacement: 40,
                 edgeOffset: 0,
                 onRefresh: () async {
+                  if(!mounted) return;
                   await ref
                       .read(groupsProvider.notifier)
                       .getAllGroups(name: _currentSearchQuery);

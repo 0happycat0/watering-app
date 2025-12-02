@@ -368,6 +368,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 displacement: 40,
                 edgeOffset: 0,
                 onRefresh: () async {
+                  if(!mounted) return;
                   await ref
                       .read(devicesProvider.notifier)
                       .getAllDevices(

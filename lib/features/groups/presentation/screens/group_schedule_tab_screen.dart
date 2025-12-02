@@ -166,6 +166,7 @@ class _GroupScheduleTabScreenState
                     ? RefreshIndicator(
                         displacement: 30,
                         onRefresh: () async {
+                          if(!mounted) return;
                           await ref
                               .read(getGroupListScheduleProvider.notifier)
                               .refresh(id: id);

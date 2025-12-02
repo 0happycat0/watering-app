@@ -157,6 +157,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                     ? RefreshIndicator(
                         displacement: 30,
                         onRefresh: () async {
+                          if(!mounted) return;
                           await ref
                               .read(getListScheduleProvider.notifier)
                               .refresh(id: id);

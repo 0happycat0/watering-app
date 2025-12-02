@@ -41,8 +41,10 @@ class AuthInterceptor extends Interceptor {
   //tuy nhiên không cần set _refreshToken, vì nếu _refreshToken hết hạn sẽ yêu cầu logout
   //việc set _refreshToken đã được thực hiện ở auth_repository_imp
   Future<String?> _getRefreshToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    _refreshToken = prefs.getString(SharedPreferenceKey.refreshToken);
+    final secureStorage = FlutterSecureStorage();
+    _refreshToken = await secureStorage.read(
+      key: SharedPreferenceKey.refreshToken,
+    );
     return _refreshToken;
   }
 
