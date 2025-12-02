@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
@@ -66,9 +66,10 @@ class StompService {
   Future<bool> _refreshToken() async {
     try {
       print('[WebSocket] Attempting to refresh token...');
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString(SharedPreferenceKey.accessToken);
-      final refreshToken = prefs.getString(SharedPreferenceKey.refreshToken);
+
+      final secureStorage = FlutterSecureStorage();
+      final accessToken = await secureStorage.read(key: SharedPreferenceKey.accessToken);
+      final refreshToken = await secureStorage.read(key: SharedPreferenceKey.refreshToken);
 
       if (accessToken == null || refreshToken == null) {
         print('[WebSocket] No tokens found, cannot refresh');
@@ -86,7 +87,7 @@ class StompService {
 
       if (response.statusCode == 200) {
         final newAccessToken = response.data['data'][ApiStrings.accessToken];
-        await prefs.setString(SharedPreferenceKey.accessToken, newAccessToken);
+        await secureStorage.write(key: SharedPreferenceKey.accessToken, value: newAccessToken);
         print('[WebSocket] ✅ Token refreshed successfully');
         print('[WebSocket] new access token: $newAccessToken');
         return true;
@@ -130,10 +131,15 @@ class StompService {
 
   Future<void> _initializeAndConnect() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString(SharedPreferenceKey.accessToken);
+      //change from SharedPreferences to SecureStorage
+      // final prefs = await SharedPreferences.getInstance();
+      // final String? token = prefs.getString(SharedPreferenceKey.accessToken);
+      final secureStorage = FlutterSecureStorage();
+      final accessToken = await secureStorage.read(
+        key: SharedPreferenceKey.accessToken,
+      );
 
-      if (token == null) {
+      if (accessToken == null) {
         print('[WebSocket] No token found, cannot connect');
         _updateStatus(ConnectionStatus.disconnected);
         return;
@@ -145,7 +151,7 @@ class StompService {
         config: StompConfig.sockJS(
           url: StompPath.websocketUrl,
           stompConnectHeaders: {
-            'Authorization': 'Bearer $token',
+            'Authorization': 'Bearer $accessToken',
           },
           onConnect: _onConnect,
           beforeConnect: () async {

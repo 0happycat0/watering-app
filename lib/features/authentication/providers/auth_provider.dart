@@ -52,6 +52,11 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
     print('Da dang xuat');
   }
 
+  Future<void> deleteUser() async {
+    await authRepository.deleteUser();
+    state = auth_state.UnAuthenticated();
+  }
+
   Future<bool> isLoggedIn() {
     return authRepository.isLoggedIn;
   }

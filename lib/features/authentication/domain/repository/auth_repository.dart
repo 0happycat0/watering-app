@@ -23,4 +23,6 @@ abstract class AuthRepository {
     required String newPassword,
     required String confirmNewPassword,
   });
+  Future<bool> get isEnabledBiometric;
+  Future<void> setEnabledBiometric(bool isEnabledBiometric);
 }

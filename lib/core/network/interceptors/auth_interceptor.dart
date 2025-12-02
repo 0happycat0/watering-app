@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
@@ -14,17 +15,24 @@ class AuthInterceptor extends Interceptor {
 
   AuthInterceptor(this._dio, this._ref);
 
-  //lấy access_token từ SharedPreferences và gán vào biến _accessToken
+  //lấy access_token từ Secure storage và gán vào biến _accessToken
   Future<String?> _getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    _accessToken = prefs.getString(SharedPreferenceKey.accessToken);
+    // final prefs = await SharedPreferences.getInstance();
+    final secureStorage = FlutterSecureStorage();
+    _accessToken = await secureStorage.read(
+      key: SharedPreferenceKey.accessToken,
+    );
     return _accessToken;
   }
 
   //cần set token ở cả local và RAM (gán vào _accessToken)
   Future<void> _setAccessToken(String accessToken) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(SharedPreferenceKey.accessToken, accessToken);
+    // final prefs = await SharedPreferences.getInstance();
+    final secureStorage = FlutterSecureStorage();
+    await secureStorage.write(
+      key: SharedPreferenceKey.accessToken,
+      value: accessToken,
+    );
     print('Accesstoken is saved');
     _accessToken = accessToken;
   }

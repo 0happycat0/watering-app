@@ -10,6 +10,7 @@ class PasswordTextFormField extends StatefulWidget {
     this.label,
     this.helperText,
     this.validator,
+    this.keyboardType,
   });
 
   final TextEditingController textController;
@@ -17,6 +18,7 @@ class PasswordTextFormField extends StatefulWidget {
   final String? label;
   final String? helperText;
   final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
 
   @override
   State<PasswordTextFormField> createState() {
@@ -56,6 +58,7 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
         TextFormField(
           controller: widget.textController,
           validator: widget.validator,
+          keyboardType: widget.keyboardType,
           obscureText: _isObscure,
           style: TextStyle(
             color: colorScheme.onSurface,
