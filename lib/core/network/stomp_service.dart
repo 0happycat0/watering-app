@@ -6,6 +6,7 @@ import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
 import 'package:watering_app/core/constants/stomp_path.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 
 //Định nghĩa kiểu cho hàm Unsubscribe
 typedef StompUnsubscribeTopic = void Function();
@@ -58,21 +59,25 @@ class StompService {
     if (_status != newStatus) {
       _status = newStatus;
       _statusController.add(newStatus);
-      print('[WebSocket] Status changed: $newStatus');
+      printDebug('[WebSocket] Status changed: $newStatus');
     }
   }
 
   // Helper method để refresh token
   Future<bool> _refreshToken() async {
     try {
-      print('[WebSocket] Attempting to refresh token...');
+      printDebug('[WebSocket] Attempting to refresh token...');
 
       final secureStorage = FlutterSecureStorage();
-      final accessToken = await secureStorage.read(key: SharedPreferenceKey.accessToken);
-      final refreshToken = await secureStorage.read(key: SharedPreferenceKey.refreshToken);
+      final accessToken = await secureStorage.read(
+        key: SharedPreferenceKey.accessToken,
+      );
+      final refreshToken = await secureStorage.read(
+        key: SharedPreferenceKey.refreshToken,
+      );
 
       if (accessToken == null || refreshToken == null) {
-        print('[WebSocket] No tokens found, cannot refresh');
+        printDebug('[WebSocket] No tokens found, cannot refresh');
         return false;
       }
 
@@ -87,16 +92,19 @@ class StompService {
 
       if (response.statusCode == 200) {
         final newAccessToken = response.data['data'][ApiStrings.accessToken];
-        await secureStorage.write(key: SharedPreferenceKey.accessToken, value: newAccessToken);
-        print('[WebSocket] ✅ Token refreshed successfully');
-        print('[WebSocket] new access token: $newAccessToken');
+        await secureStorage.write(
+          key: SharedPreferenceKey.accessToken,
+          value: newAccessToken,
+        );
+        printDebug('[WebSocket] ✅ Token refreshed successfully');
+        printDebug('[WebSocket] new access token: $newAccessToken');
         return true;
       }
 
-      print('[WebSocket] ❌ Token refresh failed: ${response.statusCode}');
+      printDebug('[WebSocket] ❌ Token refresh failed: ${response.statusCode}');
       return false;
     } catch (e) {
-      print('[WebSocket] ❌ Error refreshing token: $e');
+      printDebug('[WebSocket] ❌ Error refreshing token: $e');
       return false;
     }
   }
@@ -105,7 +113,7 @@ class StompService {
     if (_isDisposed) return;
     if (_status == ConnectionStatus.connected ||
         _status == ConnectionStatus.connecting) {
-      print(
+      printDebug(
         '[WebSocket] Already ${_status == ConnectionStatus.connected ? "connected" : "connecting"}',
       );
       return;
@@ -117,12 +125,12 @@ class StompService {
     // Luôn tạo client mới để lấy token mới nhất từ SharedPreferences
     // (trong trường hợp token đã được refresh)
     if (_stompClient != null) {
-      print('[WebSocket] Deactivating old client...');
+      printDebug('[WebSocket] Deactivating old client...');
       _stompClient!.deactivate();
       _stompClient = null;
     }
 
-    print('[WebSocket] Starting connection process...');
+    printDebug('[WebSocket] Starting connection process...');
     _updateStatus(ConnectionStatus.connecting);
 
     // Lấy token và tạo client
@@ -140,12 +148,12 @@ class StompService {
       );
 
       if (accessToken == null) {
-        print('[WebSocket] No token found, cannot connect');
+        printDebug('[WebSocket] No token found, cannot connect');
         _updateStatus(ConnectionStatus.disconnected);
         return;
       }
 
-      print('[WebSocket] Token found, creating client...');
+      printDebug('[WebSocket] Token found, creating client...');
 
       _stompClient = StompClient(
         config: StompConfig.sockJS(
@@ -155,7 +163,7 @@ class StompService {
           },
           onConnect: _onConnect,
           beforeConnect: () async {
-            print('[WebSocket] Before connect delay...');
+            printDebug('[WebSocket] Before connect delay...');
             await Future.delayed(const Duration(milliseconds: 300));
           },
           onWebSocketError: _onError,
@@ -166,14 +174,14 @@ class StompService {
 
       _stompClient!.activate();
     } catch (e) {
-      print('[WebSocket] Error during initialization: $e');
+      printDebug('[WebSocket] Error during initialization: $e');
       _updateStatus(ConnectionStatus.disconnected);
       _scheduleReconnect();
     }
   }
 
   void _onConnect(StompFrame frame) {
-    print('[WebSocket] ✅ Connected successfully');
+    printDebug('[WebSocket] ✅ Connected successfully');
     _updateStatus(ConnectionStatus.connected);
     _reconnectAttempts = 0; // Reset reconnect counter
 
@@ -188,7 +196,7 @@ class StompService {
   }
 
   void _onError(dynamic error) {
-    print('[WebSocket] ❌ Error: $error');
+    printDebug('[WebSocket] ❌ Error: $error');
     _updateStatus(ConnectionStatus.disconnected);
     _stompClient?.deactivate();
     _stompClient = null;
@@ -196,7 +204,7 @@ class StompService {
   }
 
   void _onStompError(StompFrame frame) async {
-    print('[WebSocket] ❌ STOMP Error: $frame');
+    printDebug('[WebSocket] ❌ STOMP Error: $frame');
 
     _updateStatus(ConnectionStatus.disconnected);
 
@@ -204,7 +212,7 @@ class StompService {
     _stompClient?.deactivate();
     _stompClient = null;
 
-    // print('[WebSocket] Token/Auth error detected. Refreshing token...');
+    // printDebug('[WebSocket] Token/Auth error detected. Refreshing token...');
     // // Notify listeners cần refresh token
     // _tokenRefreshController.add(null);
 
@@ -220,7 +228,7 @@ class StompService {
   }
 
   void _onDisconnect(StompFrame frame) {
-    print('[WebSocket] 🔌 Disconnected');
+    printDebug('[WebSocket] 🔌 Disconnected');
     _updateStatus(ConnectionStatus.disconnected);
     _stompClient?.deactivate();
     _stompClient = null;
@@ -238,7 +246,7 @@ class StompService {
 
     // Don't reconnect if manually disconnected or already scheduling
     if (_reconnectTimer != null && _reconnectTimer!.isActive) {
-      print('[WebSocket] ⚠️ Reconnect timer already active, skipping');
+      printDebug('[WebSocket] ⚠️ Reconnect timer already active, skipping');
       return;
     }
 
@@ -250,18 +258,20 @@ class StompService {
       _maxReconnectDelay,
     );
 
-    print(
+    printDebug(
       '[WebSocket] 🔄 Reconnecting in $delay seconds (attempt $_reconnectAttempts)...',
     );
 
     _reconnectTimer = Timer(Duration(seconds: delay), () {
-      print('[WebSocket] Attempting reconnection...');
+      printDebug('[WebSocket] Attempting reconnection...');
       connect();
     });
   }
 
   void _resubscribeAll() {
-    print('[WebSocket] Re-subscribing to ${_subscriptions.length} topics...');
+    printDebug(
+      '[WebSocket] Re-subscribing to ${_subscriptions.length} topics...',
+    );
     for (var sub in _subscriptions.values) {
       _doSubscribe(sub);
     }
@@ -269,20 +279,20 @@ class StompService {
 
   void _doSubscribe(_Subscription sub) {
     if (_stompClient == null || _status != ConnectionStatus.connected) {
-      print(
+      printDebug(
         '[WebSocket] Cannot subscribe (not connected): ${sub.destination}',
       );
       return;
     }
 
-    print('[WebSocket] 📡 Subscribing: ${sub.destination}');
+    printDebug('[WebSocket] 📡 Subscribing: ${sub.destination}');
     sub.unsubscribeCallback = _stompClient!.subscribe(
       destination: sub.destination,
       callback: (StompFrame frame) {
         // Log message details
-        print('\n[WebSocket] 📨 Message received on: ${sub.destination}');
-        print('[WebSocket] Headers: ${frame.headers}');
-        print('[WebSocket] Body: ${frame.body ?? "(empty)"}');
+        printDebug('\n[WebSocket] 📨 Message received on: ${sub.destination}');
+        printDebug('[WebSocket] Headers: ${frame.headers}');
+        printDebug('[WebSocket] Body: ${frame.body ?? "(empty)"}');
         sub.onMessage(frame);
       },
     );
@@ -295,7 +305,7 @@ class StompService {
   }) {
     // Kiểm tra nếu đã subscribe topic này rồi
     if (_subscriptions.containsKey(destination)) {
-      print('[WebSocket] ⚠️ Already subscribed to: $destination');
+      printDebug('[WebSocket] ⚠️ Already subscribed to: $destination');
       return _subscriptions[destination]!.unsubscribeCallback ?? () {};
     }
 
@@ -310,7 +320,7 @@ class StompService {
     if (_status == ConnectionStatus.connected) {
       _doSubscribe(subscription);
     } else {
-      print('[WebSocket] ⏳ Queued subscription: $destination');
+      printDebug('[WebSocket] ⏳ Queued subscription: $destination');
       // Add to queue if not connected yet
       _onConnectCallbacks.add(() => _doSubscribe(subscription));
 
@@ -322,7 +332,7 @@ class StompService {
 
     // Return unsubscribe function
     return () {
-      print('[WebSocket] 🚫 Unsubscribing: $destination');
+      printDebug('[WebSocket] 🚫 Unsubscribing: $destination');
       if (subscription.unsubscribeCallback != null) {
         subscription.unsubscribeCallback!();
       }
@@ -331,7 +341,7 @@ class StompService {
   }
 
   void disconnect() {
-    print('[WebSocket] Manual disconnect requested');
+    printDebug('[WebSocket] Manual disconnect requested');
     _reconnectTimer?.cancel();
     _reconnectAttempts = 0;
 

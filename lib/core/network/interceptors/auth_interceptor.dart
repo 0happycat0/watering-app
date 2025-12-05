@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 
 class AuthInterceptor extends Interceptor {
@@ -33,7 +34,7 @@ class AuthInterceptor extends Interceptor {
       key: SharedPreferenceKey.accessToken,
       value: accessToken,
     );
-    print('Accesstoken is saved');
+    printDebug('Accesstoken is saved');
     _accessToken = accessToken;
   }
 
@@ -58,11 +59,11 @@ class AuthInterceptor extends Interceptor {
     final refreshToken = await _getRefreshToken();
 
     //TODO: remove this
-    print('access token: $accessToken');
-    print('refresh token: $refreshToken');
+    printDebug('access token: $accessToken');
+    printDebug('refresh token: $refreshToken');
     if (accessToken != null && options.extra['skipAuth'] != true) {
       options.headers['Authorization'] = 'Bearer $accessToken';
-      print(
+      printDebug(
         'Added access token to header (or refreshed access token successfully)',
       );
     }
@@ -75,12 +76,12 @@ class AuthInterceptor extends Interceptor {
     final reqOpt = err.requestOptions;
     final bool isCheckingAuth = reqOpt.extra['isCheckingAuth'] == true;
 
-    print('error when requesting something: ${err.response}');
+    printDebug('error when requesting something: ${err.response}');
     if (errRes?.statusCode == 401 &&
         errRes?.data[ApiStrings.message] == ApiStrings.tokenExpired &&
         reqOpt.path != ApiPath.auth.refresh) {
       try {
-        print('refreshing token...');
+        printDebug('refreshing token...');
         final res = await _dio.post(
           ApiPath.auth.refresh,
           data: {
@@ -95,11 +96,11 @@ class AuthInterceptor extends Interceptor {
           ),
         );
         final String newAccessToken = res.data['data'][ApiStrings.accessToken];
-        print('get new access token successfully!');
+        printDebug('get new access token successfully!');
         await _setAccessToken(newAccessToken);
 
         //retry request
-        print('Retrying request...');
+        printDebug('Retrying request...');
         final headers = Map<String, dynamic>.from(reqOpt.headers);
         headers['Authorization'] = 'Bearer $newAccessToken';
 
@@ -107,20 +108,20 @@ class AuthInterceptor extends Interceptor {
         final retryResponse = await _dio.fetch(
           reqOpt.copyWith(headers: headers),
         );
-        print('Retrying completed');
+        printDebug('Retrying completed');
         return handler.resolve(retryResponse);
       } on DioException catch (e) {
-        print(
+        printDebug(
           'Error in requesting new access token\nmessage: ${e.response?.data[ApiStrings.message]}',
         );
         return handler.next(err);
       } catch (e) {
-        print('Loi khac khi refresh token: $e');
+        printDebug('Loi khac khi refresh token: $e');
       }
     } else if (errRes?.statusCode == 401 &&
         errRes?.data[ApiStrings.message] == ApiStrings.tokenExpired &&
         reqOpt.path == ApiPath.auth.refresh) {
-      print('Token is expired when requesting refresh');
+      printDebug('Token is expired when requesting refresh');
 
       //if is not checking auth -> call provider to log out if refresh fail
       if (!isCheckingAuth) {

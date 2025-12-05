@@ -5,6 +5,7 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:watering_app/core/constants/stomp_path.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
 import 'package:watering_app/core/network/stomp_service_provider.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 
 typedef GroupsWateringState = Map<String, bool>;
 
@@ -17,7 +18,7 @@ final groupsWateringProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          print('StompService is null');
+          printDebug('StompService is null');
         }
         return GroupsWateringNotifier(stompService ?? StompService());
       },
@@ -49,7 +50,7 @@ class GroupsWateringNotifier extends StateNotifier<GroupsWateringState> {
             groupId: isWatering,
           };
         } catch (e) {
-          print('[GroupsWateringNotifier] Lỗi parse JSON: $e');
+          printDebug('[GroupsWateringNotifier] Lỗi parse JSON: $e');
         }
       },
     );
@@ -57,7 +58,7 @@ class GroupsWateringNotifier extends StateNotifier<GroupsWateringState> {
 
   @override
   void dispose() {
-    print(
+    printDebug(
       '[GroupsWateringNotifier] Đang hủy. Đang unsubscribe /user/groups/watering...',
     );
     _unsubscribe!();

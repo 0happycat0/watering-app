@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/network/stomp_service_provider.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 
 class AppLifecycleObserver extends ConsumerStatefulWidget {
   final Widget child;
@@ -32,7 +33,9 @@ class _AppLifecycleObserverState extends ConsumerState<AppLifecycleObserver>
     switch (state) {
       case AppLifecycleState.resumed:
         // KHI APP ĐƯỢC MỞ LẠI
-        print('[AppLifecycle] App resumed, ensuring STOMP is connected...');
+        printDebug(
+          '[AppLifecycle] App resumed, ensuring STOMP is connected...',
+        );
         _triggerConnect();
         break;
       case AppLifecycleState.inactive:
@@ -40,7 +43,7 @@ class _AppLifecycleObserverState extends ConsumerState<AppLifecycleObserver>
         break;
       case AppLifecycleState.paused:
         // APP BỊ ĐƯA XUỐNG NỀN
-        print('[AppLifecycle] App paused');
+        printDebug('[AppLifecycle] App paused');
         // Cứ để kết nối tự ngắt và logic _scheduleReconnect xử lý
         break;
       case AppLifecycleState.detached:

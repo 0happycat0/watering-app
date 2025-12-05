@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/search_bar.dart';
@@ -174,7 +175,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
     ref.watch(deleteGroupProvider);
 
     ref.listen(groupsProvider, (prev, next) {
-      print(
+      printDebug(
         'All groups transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
     });
@@ -249,7 +250,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
                 displacement: 40,
                 edgeOffset: 0,
                 onRefresh: () async {
-                  if(!mounted) return;
+                  if (!mounted) return;
                   await ref
                       .read(groupsProvider.notifier)
                       .getAllGroups(name: _currentSearchQuery);

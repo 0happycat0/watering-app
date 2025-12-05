@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
@@ -21,7 +22,7 @@ class DeviceRemoteDataSource {
     AllDevicesSortField? sortField,
     bool? isAscending,
   }) async {
-    print('fetching device data...');
+    printDebug('fetching device data...');
     try {
       final queryParameters = <String, dynamic>{};
       if (name != null) {
@@ -59,7 +60,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getAllDevices) $e');
+      printDebug('Loi khac (getAllDevices) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -86,7 +87,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (createDevice) $e');
+      printDebug('Loi khac (createDevice) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -112,7 +113,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (deleteDevice) $e');
+      printDebug('Loi khac (deleteDevice) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -139,7 +140,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (updateDevice) $e');
+      printDebug('Loi khac (updateDevice) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -166,7 +167,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (toggleDevice) $e');
+      printDebug('Loi khac (toggleDevice) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -179,7 +180,7 @@ class DeviceRemoteDataSource {
   Future<Either<DioException, List<HistoryWatering>>> getHistoryWatering({
     required Device device,
   }) async {
-    print('fetching watering history...');
+    printDebug('fetching watering history...');
     try {
       final result = await networkService.get(
         endpoint: ApiPath.device.getHistoryWatering(device.id),
@@ -197,7 +198,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getHistoryWatering) $e');
+      printDebug('Loi khac (getHistoryWatering) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -214,7 +215,7 @@ class DeviceRemoteDataSource {
     HistorySensorSortField? sortField,
     bool? isAscending,
   }) async {
-    print('fetching sensor history...');
+    printDebug('fetching sensor history...');
     try {
       final queryParameters = <String, dynamic>{};
 
@@ -249,7 +250,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getHistorySensor) $e');
+      printDebug('Loi khac (getHistorySensor) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -264,7 +265,7 @@ class DeviceRemoteDataSource {
     int? page,
     int? size,
   }) async {
-    print('fetching list schedule...');
+    printDebug('fetching list schedule...');
     try {
       final queryParameters = <String, dynamic>{};
 
@@ -292,7 +293,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getListSchedule) $e');
+      printDebug('Loi khac (getListSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -320,7 +321,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (toggleSchedule) $e');
+      printDebug('Loi khac (toggleSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -348,7 +349,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (createSchedule) $e');
+      printDebug('Loi khac (createSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -376,7 +377,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (updateSchedule) $e');
+      printDebug('Loi khac (updateSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -403,7 +404,7 @@ class DeviceRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (updateSchedule) $e');
+      printDebug('Loi khac (updateSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

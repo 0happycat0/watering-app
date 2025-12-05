@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
@@ -133,7 +134,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
     ref.watch(deleteScheduleProvider);
 
     ref.listen(getListScheduleProvider, (prev, next) {
-      print(
+      printDebug(
         'Schedule list transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
     });
@@ -157,7 +158,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                     ? RefreshIndicator(
                         displacement: 30,
                         onRefresh: () async {
-                          if(!mounted) return;
+                          if (!mounted) return;
                           await ref
                               .read(getListScheduleProvider.notifier)
                               .refresh(id: id);

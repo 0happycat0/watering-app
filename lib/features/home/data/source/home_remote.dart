@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/home/data/models/article_model.dart';
 
 class HomeRemoteDataSource {
@@ -24,7 +25,7 @@ class HomeRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getDevicesQuantity) $e');
+      printDebug('Loi khac (getDevicesQuantity) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -48,7 +49,7 @@ class HomeRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getOnlineDevicesQuantity) $e');
+      printDebug('Loi khac (getOnlineDevicesQuantity) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -59,7 +60,7 @@ class HomeRemoteDataSource {
   }
 
   Future<Either<DioException, List<Article>>> getArticles() async {
-    print('fetching articles data...');
+    printDebug('fetching articles data...');
     try {
       final result = await newsNetworkService.get(
         endpoint: ApiPath.news.getArticles,
@@ -77,7 +78,7 @@ class HomeRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getArticles) $e');
+      printDebug('Loi khac (getArticles) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
@@ -121,7 +122,7 @@ class _GroupDevicesTabScreenState extends ConsumerState<GroupDevicesTabScreen> {
 
     ref.watch(updateGroupProvider);
     ref.listen(groupByIdProvider, (prev, next) {
-      print(
+      printDebug(
         'Group devices transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
     });

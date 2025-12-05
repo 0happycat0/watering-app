@@ -120,12 +120,12 @@ class AnalyticsTabScreenState extends ConsumerState<AnalyticsTabScreen> {
       //     .toList();
       // minDate = listTime.reduce((a, b) => a.isBefore(b) ? a : b);
       // maxDate = listTime.reduce((a, b) => a.isAfter(b) ? a : b);
-      // print('debug: $minDate, $maxDate');
+      // printDebug('debug: $minDate, $maxDate');
     }
 
     return RefreshIndicator(
       onRefresh: () async {
-        if(!mounted) return;
+        if (!mounted) return;
         await ref
             .read(getHistorySensorProvider.notifier)
             .getHistorySensor(id: widget.device.id);

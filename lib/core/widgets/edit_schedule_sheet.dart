@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -138,16 +139,16 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     final repeatType = _selectedRepeatType;
     final selectedDays = _selectedDays.toList();
 
-    print('--- ĐANG LƯU LỊCH ---');
-    print('Mode: ${_isEditMode ? 'Sửa' : 'Thêm'}');
-    print('Type: ${widget.isGroup ? 'Group' : 'Device'}');
-    print('Time: $timeStr');
-    print('Duration: $duration phút');
-    print('Days: $_selectedDays');
+    printDebug('--- ĐANG LƯU LỊCH ---');
+    printDebug('Mode: ${_isEditMode ? 'Sửa' : 'Thêm'}');
+    printDebug('Type: ${widget.isGroup ? 'Group' : 'Device'}');
+    printDebug('Time: $timeStr');
+    printDebug('Duration: $duration phút');
+    printDebug('Days: $_selectedDays');
     if (widget.isGroup) {
       // Group schedule
       if (_isEditMode) {
-        print('ID (Sửa): ${schedule!.id}');
+        printDebug('ID (Sửa): ${schedule!.id}');
         await ref
             .read(updateGroupScheduleProvider.notifier)
             .updateSchedule(
@@ -173,7 +174,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     } else {
       // Device schedule
       if (_isEditMode) {
-        print('ID (Sửa): ${schedule!.id}');
+        printDebug('ID (Sửa): ${schedule!.id}');
         await ref
             .read(updateScheduleProvider.notifier)
             .updateSchedule(
@@ -217,7 +218,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
         final groupState = ref.watch(updateGroupScheduleProvider);
         isLoading = groupState is group_state.Loading;
         ref.listen(updateGroupScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Update group schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is group_state.Failure) {
@@ -234,7 +235,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
         final groupState = ref.watch(createGroupScheduleProvider);
         isLoading = groupState is group_state.Loading;
         ref.listen(createGroupScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Create group schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is group_state.Failure) {
@@ -254,7 +255,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
         final deviceState = ref.watch(updateScheduleProvider);
         isLoading = deviceState is device_state.Loading;
         ref.listen(updateScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Update schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is device_state.Failure) {
@@ -271,7 +272,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
         final deviceState = ref.watch(createScheduleProvider);
         isLoading = deviceState is device_state.Loading;
         ref.listen(createScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Create schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is device_state.Failure) {

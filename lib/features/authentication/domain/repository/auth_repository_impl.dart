@@ -6,6 +6,7 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
 import 'package:watering_app/core/network/stomp_service_provider.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/features/authentication/data/source/auth_local.dart';
 import 'package:watering_app/features/authentication/data/source/auth_remote.dart';
@@ -126,7 +127,7 @@ class AuthRepositoryImpl extends AuthRepository {
     final email = local.email;
     final verified = local.verified;
     final user = User(username: username, email: email, verified: verified);
-    print('DEBUG: user = $user');
+    printDebug('DEBUG: user = $user');
     return user;
   }
 

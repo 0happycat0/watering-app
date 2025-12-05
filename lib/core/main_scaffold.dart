@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/bottom_nav_bar.dart';
 import 'package:watering_app/core/widgets/custom_fab.dart';
 import 'package:watering_app/features/authentication/presentation/screens/account_screen.dart';
@@ -88,7 +89,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     ref.listen(requestLogoutProvider, (prev, next) {
-      print('Request logout transition: $prev -> $next');
+      printDebug('Request logout transition: $prev -> $next');
       if (next == true) {
         ref.read(authProvider.notifier).logout(ref);
         //reset

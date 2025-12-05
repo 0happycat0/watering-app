@@ -1,19 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}");
-  print('Message data: ${message.data}');
-  print('Message notification: ${message.notification?.title}');
-  print('Message notification: ${message.notification?.body}');
+  printDebug("Handling a background message: ${message.messageId}");
+  printDebug('Message data: ${message.data}');
+  printDebug('Message notification: ${message.notification?.title}');
+  printDebug('Message notification: ${message.notification?.body}');
 }
 
 class NotificationService {
   final _firebaseMesaging = FirebaseMessaging.instance;
   static final NotificationService _instance = NotificationService._internal();
-  
+
   //singleton
   factory NotificationService() {
     return _instance;
@@ -31,17 +32,17 @@ class NotificationService {
       provisional: true,
       sound: true,
     );
-    print('Permission granted: ${settings.authorizationStatus}');
+    printDebug('Permission granted: ${settings.authorizationStatus}');
 
     String? token = await _firebaseMesaging.getToken();
-    print('Registration Token=$token');
+    printDebug('Registration Token=$token');
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Message received Foreground: ${message.notification?.title}');
+      printDebug('Message received Foreground: ${message.notification?.title}');
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print(
+      printDebug(
         'Message received Background and tapped: ${message.notification?.title}',
       );
     });

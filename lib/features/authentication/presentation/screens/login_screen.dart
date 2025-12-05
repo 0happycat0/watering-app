@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
 import 'package:watering_app/core/network/stomp_service_provider.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -86,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               username: username,
               password: password,
             );
-        print("Đăng nhập vân tay thành công -> Chuyển màn hình");
+        printDebug("Đăng nhập vân tay thành công -> Chuyển màn hình");
       }
     } else {
       showDialog(
@@ -237,7 +238,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
 
     ref.listen(authProvider, (prev, next) {
-      print('Auth transition: ${prev.runtimeType} -> ${next.runtimeType}');
+      printDebug('Auth transition: ${prev.runtimeType} -> ${next.runtimeType}');
       if (next is auth_state.LoginFailure) {
         CustomSnackBar.showSnackBar(
           text: 'Đăng nhập thất bại. ${next.message}',

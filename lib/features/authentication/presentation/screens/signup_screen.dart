@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
@@ -56,7 +57,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final isLoading = signupState is auth_state.Loading;
 
     ref.listen(authProvider, (prev, next) {
-      print('Auth transition: ${prev.runtimeType} -> ${next.runtimeType}');
+      printDebug('Auth transition: ${prev.runtimeType} -> ${next.runtimeType}');
       if (next is auth_state.SignupFailure) {
         CustomSnackBar.showSnackBar(text: 'Đăng ký thất bại. ${next.message}');
       } else if (next is auth_state.SignupSuccess) {

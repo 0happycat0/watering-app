@@ -4,6 +4,7 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:watering_app/core/constants/stomp_path.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
 import 'package:watering_app/core/network/stomp_service_provider.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 
 typedef DevicesSensorState = Map<String, HistorySensor>;
@@ -19,7 +20,7 @@ final devicesSensorProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          print('StompService is null');
+          printDebug('StompService is null');
         }
         return DevicesSensorNotifier(stompService ?? StompService());
       },
@@ -53,18 +54,18 @@ class DevicesSensorNotifier extends StateNotifier<DevicesSensorState> {
               deviceId: sensorData,
             };
           } catch (e) {
-            print('[DevicesSensorNotifier] Lỗi parse JSON: $e');
+            printDebug('[DevicesSensorNotifier] Lỗi parse JSON: $e');
           }
         },
       );
     } catch (e) {
-      print('DevicesSensorNotifier Lỗi subscribe: $e');
+      printDebug('DevicesSensorNotifier Lỗi subscribe: $e');
     }
   }
 
   @override
   void dispose() {
-    print(
+    printDebug(
       '[DevicesSensorNotifier] Đang hủy. Đang unsubscribe /user/devices/sensor...',
     );
     _unsubscribe!();
@@ -83,7 +84,7 @@ final devicesStatusProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          print('StompService is null');
+          printDebug('StompService is null');
         }
         return DevicesStatusNotifier(stompService ?? StompService());
       },
@@ -115,7 +116,7 @@ class DevicesStatusNotifier extends StateNotifier<DevicesStatusState> {
             deviceId: isOnline,
           };
         } catch (e) {
-          print('[DevicesStatusNotifier] Lỗi parse JSON: $e');
+          printDebug('[DevicesStatusNotifier] Lỗi parse JSON: $e');
         }
       },
     );
@@ -123,7 +124,7 @@ class DevicesStatusNotifier extends StateNotifier<DevicesStatusState> {
 
   @override
   void dispose() {
-    print(
+    printDebug(
       '[DevicesStatusNotifier] Đang hủy. Đang unsubscribe /user/devices/status...',
     );
     _unsubscribe!();
@@ -141,7 +142,7 @@ final devicesWateringProvider =
       (ref) {
         final stompService = ref.watch(stompServiceProvider);
         if (stompService == null) {
-          print('StompService is null');
+          printDebug('StompService is null');
         }
         return DevicesWateringNotifier(stompService ?? StompService());
       },
@@ -173,7 +174,7 @@ class DevicesWateringNotifier extends StateNotifier<DevicesWateringState> {
             deviceId: isWatering,
           };
         } catch (e) {
-          print('[DevicesWateringNotifier] Lỗi parse JSON: $e');
+          printDebug('[DevicesWateringNotifier] Lỗi parse JSON: $e');
         }
       },
     );
@@ -181,7 +182,7 @@ class DevicesWateringNotifier extends StateNotifier<DevicesWateringState> {
 
   @override
   void dispose() {
-    print(
+    printDebug(
       '[DevicesWateringNotifier] Đang hủy. Đang unsubscribe /user/devices/watering...',
     );
     _unsubscribe!();

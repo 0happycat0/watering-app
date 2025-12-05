@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/network/auth_dio_network_service.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 
@@ -32,7 +33,7 @@ class AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (loginUser): $e');
+      printDebug('Loi khac (loginUser): $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -47,7 +48,7 @@ class AuthRemoteDataSource {
   }) async {
     try {
       //TODO: remove this
-      print('logging out...');
+      printDebug('logging out...');
       final result = await authNetworkService.post(
         endpoint: ApiPath.auth.logout,
         data: user.toJson(),
@@ -61,7 +62,7 @@ class AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (logoutUser) $e');
+      printDebug('Loi khac (logoutUser) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -73,7 +74,7 @@ class AuthRemoteDataSource {
 
   Future<Either<DioException, User>> getMe({Options? options}) async {
     try {
-      print('getting user data...');
+      printDebug('getting user data...');
       final result = await networkService.get(
         endpoint: ApiPath.auth.getUser,
         options: options,
@@ -88,7 +89,7 @@ class AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getUser) $e');
+      printDebug('Loi khac (getUser) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -115,7 +116,7 @@ class AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (createUser) $e');
+      printDebug('Loi khac (createUser) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -142,7 +143,7 @@ class AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (sendOtp) $e');
+      printDebug('Loi khac (sendOtp) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -173,7 +174,7 @@ class AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (verifyEmail) $e');
+      printDebug('Loi khac (verifyEmail) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -208,7 +209,7 @@ class AuthRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (changePassword) $e');
+      printDebug('Loi khac (changePassword) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

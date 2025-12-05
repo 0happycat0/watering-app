@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 
 class AuthDioNetworkService {
   AuthDioNetworkService(this._dio) {
@@ -57,7 +58,7 @@ class AuthDioNetworkService {
     Response res;
     try {
       res = await _dio.post(endpoint, data: data);
-      // print('post response: ${res.data}');
+      // printDebug('post response: ${res.data}');
 
       return Right(
         Response(
@@ -67,7 +68,7 @@ class AuthDioNetworkService {
         ),
       );
     } on DioException catch (e) {
-      print('loi post: ${e}');
+      printDebug('loi post: ${e}');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

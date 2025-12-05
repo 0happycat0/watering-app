@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 
 //don't use this, instead use provider to inject all dependencies
 // final networkService = DioNetworkService(Dio());
@@ -60,7 +61,7 @@ class DioNetworkService {
     Response res;
     try {
       res = await _dio.post(endpoint, data: data);
-      // print('post response: ${res.data}');
+      // printDebug('post response: ${res.data}');
 
       return Right(
         Response(
@@ -70,7 +71,7 @@ class DioNetworkService {
         ),
       );
     } on DioException catch (e) {
-      print('loi post: ${e}');
+      printDebug('loi post: ${e}');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
 import 'package:local_auth_darwin/local_auth_darwin.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_impl.dart';
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_provider.dart';
 
@@ -68,7 +69,7 @@ class BiometricNotifier extends StateNotifier<BiometricState> {
         persistAcrossBackgrounding: true,
       );
     } catch (e) {
-      print('Lỗi xác thực: $e');
+      printDebug('Lỗi xác thực: $e');
       return false;
     }
   }

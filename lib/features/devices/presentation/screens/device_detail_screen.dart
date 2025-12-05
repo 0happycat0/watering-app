@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
@@ -78,7 +79,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
     // );
 
     ref.listen(deleteDeviceProvider, (prev, next) {
-      print(
+      printDebug(
         'Delete device transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
       if (next is device_state.Failure) {

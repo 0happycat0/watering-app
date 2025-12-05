@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
@@ -58,12 +59,12 @@ class GetListScheduleNotifier extends StateNotifier<device_state.DeviceState> {
 
     return response.fold(
       (exception) {
-        print('Toggle thất bại, revert state: $exception');
+        printDebug('Toggle thất bại, revert state: $exception');
         state = originalState; // Revert
         return false; // Trả về false để UI biết và hiển thị SnackBar
       },
       (success) {
-        print('Toggle thành công');
+        printDebug('Toggle thành công');
         return true;
       },
     );

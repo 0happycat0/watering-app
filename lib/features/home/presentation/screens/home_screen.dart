@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/presentation/screens/device_detail_screen.dart';
@@ -163,7 +164,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   device: _selectedDevice,
                   initialSliderValue: 10,
                   onDeviceChanged: (device) {
-                    print('Đang chọn cây ${device.name}');
+                    printDebug('Đang chọn cây ${device.name}');
                     setState(() {
                       _selectedDevice = device;
                     });

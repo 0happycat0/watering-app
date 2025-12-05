@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_impl.dart';
 import 'package:watering_app/features/authentication/domain/repository/auth_repository_provider.dart';
@@ -39,7 +40,7 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
         return auth_state.LoginFailure(exeption);
       },
       (user) {
-        print('Da dang nhap');
+        printDebug('Da dang nhap');
         return auth_state.Success(user);
       },
     );
@@ -49,7 +50,7 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
   Future<void> logout(WidgetRef ref) async {
     await authRepository.logout(ref);
     state = auth_state.UnAuthenticated();
-    print('Da dang xuat');
+    printDebug('Da dang xuat');
   }
 
   Future<void> deleteUser() async {
@@ -86,7 +87,7 @@ class AuthNotifier extends StateNotifier<auth_state.AuthState> {
         return auth_state.SignupFailure(exeption);
       },
       (user) {
-        print('Da dang ky');
+        printDebug('Da dang ky');
         return auth_state.SignupSuccess();
       },
     );
@@ -117,7 +118,7 @@ class GetUserLocalNotifier extends StateNotifier<auth_state.AuthState> {
       if (!mounted) return;
       state = auth_state.Success(user);
     } catch (e) {
-      print('Loi getUserLocal');
+      printDebug('Loi getUserLocal');
     }
   }
 }
