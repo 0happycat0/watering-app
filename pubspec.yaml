@@ -64,6 +64,8 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   local_auth_android: ^2.0.3
   local_auth_darwin: ^2.0.1
+  app_settings: ^7.0.0
+  package_info_plus: ^9.0.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

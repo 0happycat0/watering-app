@@ -8,13 +8,25 @@ import 'package:watering_app/features/authentication/domain/repository/auth_repo
 
 class BiometricState {
   final bool isDeviceSupported; // Thiết bị có hỗ trợ không?
-  final bool isEnabled; // User đã bật trong cài đặt chưa?
+  final bool
+  hasEnrolledBiometrics; // User đã bật trong cài đặt (trong máy) chưa?
+  final bool isEnabled; // User đã bật trong cài đặt (app) chưa?
 
-  BiometricState({this.isDeviceSupported = false, this.isEnabled = false});
+  BiometricState({
+    this.isDeviceSupported = false,
+    this.hasEnrolledBiometrics = false,
+    this.isEnabled = false,
+  });
 
-  BiometricState copyWith({bool? isDeviceSupported, bool? isEnabled}) {
+  BiometricState copyWith({
+    bool? isDeviceSupported,
+    bool? hasEnrolledBiometrics,
+    bool? isEnabled,
+  }) {
     return BiometricState(
       isDeviceSupported: isDeviceSupported ?? this.isDeviceSupported,
+      hasEnrolledBiometrics:
+          hasEnrolledBiometrics ?? this.hasEnrolledBiometrics,
       isEnabled: isEnabled ?? this.isEnabled,
     );
   }
@@ -36,15 +48,21 @@ class BiometricNotifier extends StateNotifier<BiometricState> {
   Future<void> _init() async {
     // Kiểm tra thiết bị có phần cứng không
     final bool canCheckBiometrics = await auth.canCheckBiometrics;
-    final bool isSupported = await auth.isDeviceSupported();
-    final bool deviceHasHardware = canCheckBiometrics && isSupported;
+    // final bool isSupported = await auth.isDeviceSupported();
+    final bool deviceHasHardware = canCheckBiometrics;
+
+    // Kiểm tra đã bật trong cài đặt hệ thống chưa
+    final List<BiometricType> availableBiometrics = await auth
+        .getAvailableBiometrics();
+    final bool hasEnrolled = availableBiometrics.isNotEmpty;
 
     // Kiểm tra user đã bật trong cài đặt trước đó chưa
-    final bool enabled = await authRepository.isEnabledBiometric;
+    final bool enabledInApp = await authRepository.isEnabledBiometric;
 
     state = state.copyWith(
       isDeviceSupported: deviceHasHardware,
-      isEnabled: enabled,
+      hasEnrolledBiometrics: hasEnrolled,
+      isEnabled: enabledInApp,
     );
   }
 
@@ -52,6 +70,16 @@ class BiometricNotifier extends StateNotifier<BiometricState> {
   Future<void> setEnabled(bool value) async {
     await authRepository.setEnabledBiometric(value);
     state = state.copyWith(isEnabled: value);
+  }
+
+  // Cập nhật trạng thái cài đặt hệ thống hiện tại
+  Future<bool> updateEnrolled() async {
+    final List<BiometricType> availableBiometrics = await auth
+        .getAvailableBiometrics();
+    final bool hasEnrolled = availableBiometrics.isNotEmpty;
+    printDebug('[DEBUG]: hasEnrolled = $hasEnrolled');
+    state = state.copyWith(hasEnrolledBiometrics: hasEnrolled);
+    return hasEnrolled;
   }
 
   // Hàm gọi xác thực (hiện popup vân tay/face id)

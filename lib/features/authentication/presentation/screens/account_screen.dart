@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/authentication/presentation/screens/change_password_screen.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/authentication/presentation/screens/verify_email_screen.dart';
@@ -47,9 +49,13 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
 
     final biometricNotifier = ref.read(biometricProvider.notifier);
 
-    if (value) {
-      // muốn bật
-      if (!biometricState.isDeviceSupported) {
+    if (value == true) {
+      // Muốn bật
+      final hasEnrolled = await biometricNotifier.updateEnrolled();
+      printDebug(
+        '[DEBUG] biometricState.isDeviceSupported = ${biometricState.isDeviceSupported} \n mounted = $mounted \n biometricState.hasEnrolledBiometrics = ${biometricState.hasEnrolledBiometrics}',
+      );
+      if (!biometricState.isDeviceSupported && mounted) {
         // Nếu thiết bị không hỗ trợ -> Hiện Dialog
         showDialog(
           context: context,
@@ -70,6 +76,39 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
         return; // Thoát, không bật switch
       }
 
+      // Thiết bị hỗ trợ nhưng chưa bật cài đặt vân tay
+      if (!hasEnrolled && mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Thông báo'),
+            content: Text(
+              'Bạn chưa bật cài đặt Khuôn mặt/ Vân tay.',
+              style: TextStyle(fontSize: 16),
+            ),
+            actions: [
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Đóng'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.pop(context);
+
+                  // Mở cài đặt
+                  AppSettings.openAppSettings(
+                    type: AppSettingsType.security,
+                    asAnotherTask: true,
+                  );
+                },
+                child: Text('Mở Cài đặt'),
+              ),
+            ],
+          ),
+        );
+        return; // Thoát, không bật switch
+      }
+
       // Nếu thiết bị hỗ trợ -> Yêu cầu xác thực 1 lần để xác nhận chính chủ
       final bool authenticated = await biometricNotifier.authenticate();
       if (authenticated) {
@@ -77,7 +116,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
         biometricNotifier.setEnabled(true);
       }
     } else {
-      // muốn tắt
+      // Muốn tắt
       biometricNotifier.setEnabled(false);
     }
   }
@@ -87,7 +126,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      //đọc từ local
+      // Đọc từ local
       await ref.read(getUserLocalProvider.notifier).getUserLocal();
     });
   }
