@@ -10,4 +10,9 @@ class AppStrings {
 
   static final String minPumpDurationValue = '1';
   static final String maxPumpDurationValue = '60';
+
+  static final String supportEmail = 'support@smartwatering.vn';
+  static final String hotline = '1900 1009';
+  static final String address = 'Số 1 Đại Cồ Việt, Phường Bạch Mai, TP.Hà Nội';
+  static final String website = 'smartwatering.vn';
 }

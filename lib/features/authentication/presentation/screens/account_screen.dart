@@ -7,6 +7,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
 import 'package:watering_app/core/utils/debug_print.dart';
+import 'package:watering_app/features/authentication/presentation/screens/app_info_screen.dart';
 import 'package:watering_app/features/authentication/presentation/screens/change_password_screen.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/authentication/presentation/screens/verify_email_screen.dart';
@@ -41,7 +42,11 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   }
 
   void _onAppInforTap() {
-    //TODO: implement this
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (ctx) => AppInfoScreen(),
+      ),
+    );
   }
 
   void _toggleBioMetric(bool value) async {
