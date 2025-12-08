@@ -19,7 +19,7 @@ import 'package:watering_app/features/home/data/models/article_model.dart';
 import 'package:watering_app/features/home/presentation/screens/articles_screen.dart';
 import 'package:watering_app/features/home/presentation/screens/chat_bot_screen.dart';
 import 'package:watering_app/features/home/presentation/screens/incoming_schedule_screen.dart';
-import 'package:watering_app/features/home/presentation/screens/webview_screen.dart';
+import 'package:watering_app/core/screens/webview_screen.dart';
 import 'package:watering_app/features/home/presentation/widgets/article_item_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/info_card.dart';
 import 'package:watering_app/features/home/presentation/widgets/plant_interaction_card.dart';
@@ -85,6 +85,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       CupertinoPageRoute(
         builder: (ctx) => WebviewScreen(
           url: '${ApiPath.newsDetailsUrl}${article.url}',
+          title: 'Tin tức',
         ),
       ),
     );

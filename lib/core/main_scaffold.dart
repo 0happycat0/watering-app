@@ -10,7 +10,7 @@ import 'package:watering_app/features/authentication/presentation/screens/accoun
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/all_devices_screen.dart';
-import 'package:watering_app/features/devices/presentation/widgets/add_new_device.dart';
+import 'package:watering_app/features/devices/presentation/widgets/add_new_device_stepper.dart';
 import 'package:watering_app/features/groups/presentation/screens/all_groups_screen.dart';
 import 'package:watering_app/features/groups/presentation/widgets/add_or_edit_group.dart';
 import 'package:watering_app/features/home/presentation/screens/home_screen.dart';
@@ -39,7 +39,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       barrierColor: AppColors.mainGreen[300]?.withValues(alpha: 0.5),
       clipBehavior: Clip.antiAlias,
       builder: (ctx) {
-        return AddNewDevice();
+        return AddNewDeviceStepper();
       },
     );
   }

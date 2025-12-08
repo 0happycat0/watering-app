@@ -9,7 +9,7 @@ import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
 import 'package:watering_app/features/home/data/models/article_model.dart';
-import 'package:watering_app/features/home/presentation/screens/webview_screen.dart';
+import 'package:watering_app/core/screens/webview_screen.dart';
 import 'package:watering_app/features/home/presentation/widgets/article_item_card.dart';
 import 'package:watering_app/features/home/providers/home_provider.dart';
 import 'package:watering_app/features/home/providers/home_state.dart'
@@ -28,6 +28,7 @@ class _ArticlesScreenState extends ConsumerState<ArticlesScreen> {
       CupertinoPageRoute(
         builder: (ctx) => WebviewScreen(
           url: '${ApiPath.newsDetailsUrl}${article.url}',
+          title: 'Tin tức',
         ),
       ),
     );

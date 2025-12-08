@@ -21,11 +21,15 @@ class AppStyles {
     }),
   );
 
-  static ButtonStyle elevatedButtonStyle({double? elevation}) =>
-      ElevatedButton.styleFrom(
-        backgroundColor: colorScheme.primaryContainer,
-        foregroundColor: colorScheme.onPrimaryContainer,
-        elevation: elevation,
-      );
-
+  static ButtonStyle elevatedButtonStyle({
+    double? elevation,
+    Color? backgroundColor,
+    Color? foregroundColor,
+    EdgeInsetsGeometry? padding,
+  }) => ElevatedButton.styleFrom(
+    backgroundColor: backgroundColor ?? colorScheme.primaryContainer,
+    foregroundColor: foregroundColor ?? colorScheme.onPrimaryContainer,
+    padding: padding,
+    elevation: elevation,
+  );
 }

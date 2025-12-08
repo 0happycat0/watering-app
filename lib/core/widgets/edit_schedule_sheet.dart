@@ -423,7 +423,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
                       splashFactory: NoSplash.splashFactory,
                       foregroundColor: colorScheme.onSurfaceVariant,
                       side: BorderSide(color: colorScheme.outline),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                   ),
                 ),
@@ -438,7 +438,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.mainGreen[200],
                       foregroundColor: colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                   ),
                 ),

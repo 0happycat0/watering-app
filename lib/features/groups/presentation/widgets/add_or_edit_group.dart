@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
@@ -170,7 +171,8 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                                   ? 'Sửa thiết bị'
                                   : 'Sửa nhóm'
                             : 'Thêm nhóm thiết bị',
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                     Align(
@@ -238,7 +240,7 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                       child: OutlinedButton(
                         onPressed: () => Navigator.of(context).pop(false),
                         style: OutlinedButton.styleFrom(
-                          splashFactory: NoSplash.splashFactory,
+                          textStyle: TextStyle(fontSize: 14),
                         ),
                         child: const Text('Hủy'),
                       ),
@@ -247,12 +249,15 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: isLoading ? null : _handleSubmit,
-                        style: AppStyles.elevatedButtonStyle(),
+                        style: AppStyles.elevatedButtonStyle(
+                          backgroundColor: AppColors.mainGreen[200],
+                          foregroundColor: Colors.white,
+                        ),
                         child: isLoading
                             ? CustomCircularProgress()
                             : Text(
                                 _isEditMode ? 'Lưu' : 'Tạo nhóm',
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: TextStyle(fontSize: 14),
                               ),
                       ),
                     ),
@@ -361,27 +366,32 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Checkbox "Chọn tất cả"
-        CheckboxListTile(
-          title: const Text('Chọn tất cả'),
-          secondary: Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text('$selectedCount/$totalDevices'),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          color: Colors.white,
+          elevation: 0,
+          child: CheckboxListTile(
+            title: const Text('Chọn tất cả'),
+            secondary: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Text('$selectedCount/$totalDevices'),
+            ),
+            value: allSelected,
+            onChanged: (bool? value) {
+              setState(() {
+                if (value == true) {
+                  // Chọn tất cả: thêm ID của tất cả thiết bị vào Set
+                  _selectedIds.addAll(devices.map((device) => device.id));
+                } else {
+                  // Bỏ chọn tất cả
+                  _selectedIds.clear();
+                }
+              });
+            },
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+            activeColor: Theme.of(context).primaryColor,
           ),
-          value: allSelected,
-          onChanged: (bool? value) {
-            setState(() {
-              if (value == true) {
-                // Chọn tất cả: thêm ID của tất cả thiết bị vào Set
-                _selectedIds.addAll(devices.map((device) => device.id));
-              } else {
-                // Bỏ chọn tất cả
-                _selectedIds.clear();
-              }
-            });
-          },
-          controlAffinity: ListTileControlAffinity.leading,
-          contentPadding: EdgeInsets.zero,
-          activeColor: Theme.of(context).primaryColor,
         ),
 
         ListView.builder(
@@ -395,6 +405,7 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Card(
+                clipBehavior: Clip.antiAlias,
                 margin: EdgeInsets.zero,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
