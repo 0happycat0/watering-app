@@ -7,10 +7,13 @@ class ApiPath {
   static const String newsUrl = 'https://w-api.baomoi.com/api/v1';
   static const String newsDetailsUrl = 'https://baomoi.com';
 
+  static const String deviceUrl = 'http://192.168.4.1';
+
   static final auth = _AuthPath();
   static final device = _DevicePath();
   static final group = _GroupPath();
   static final news = _NewsPath();
+  static final hardware = _HardwarePath();
 }
 
 class _AuthPath {
@@ -75,4 +78,9 @@ class _NewsPath {
   _NewsPath();
   final String getArticles =
       '/content/get/list-by-custom?listType=tag&keyword=C%C3%A2y%20tr%E1%BB%93ng&page=4&ctime=1763528630&version=0.7.53&sig=119944343615326522a980f8beb359663fd08f0cb0c973abbacaa86764d41e5c&apiKey=kI44ARvPwaqL7v0KuDSM0rGORtdY1nnw';
+}
+
+class _HardwarePath {
+  _HardwarePath();
+  final String getDevceId = '/info';
 }

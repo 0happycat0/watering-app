@@ -10,5 +10,6 @@ final deviceRepositoryProvider = Provider<DeviceRepositoryImpl>((ref) {
 
 final deviceRemoteDataSourceProvider = Provider<DeviceRemoteDataSource>((ref) {
   final networkService = ref.watch(networkServiceProvider);
-  return DeviceRemoteDataSource(networkService);
+  final hardwareNetworkService = ref.watch(hardwareNetworkProvider);
+  return DeviceRemoteDataSource(networkService, hardwareNetworkService);
 });

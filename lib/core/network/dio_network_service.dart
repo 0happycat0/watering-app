@@ -44,6 +44,7 @@ class DioNetworkService {
         ),
       );
     } on DioException catch (e) {
+      printDebug('loi get: ${e}');
       return Left(
         DioException(
           requestOptions: e.requestOptions,
@@ -104,6 +105,7 @@ class DioNetworkService {
         ),
       );
     } on DioException catch (e) {
+      printDebug('loi put: ${e}');
       return Left(
         DioException(
           requestOptions: e.requestOptions,
@@ -134,6 +136,7 @@ class DioNetworkService {
         ),
       );
     } on DioException catch (e) {
+      printDebug('loi delete: ${e}');
       return Left(
         DioException(
           requestOptions: e.requestOptions,

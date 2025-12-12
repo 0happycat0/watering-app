@@ -43,4 +43,5 @@ abstract class DeviceRepository {
     required Device device,
     required Schedule schedule,
   });
+  Future<Either<Exception, String>> getDeviceIdFromHardware();
 }

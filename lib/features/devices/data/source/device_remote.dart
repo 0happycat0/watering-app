@@ -12,8 +12,9 @@ import 'package:watering_app/core/data/models/schedule_model.dart';
 
 class DeviceRemoteDataSource {
   final DioNetworkService networkService;
+  final DioNetworkService hardwareNetworkService;
 
-  DeviceRemoteDataSource(this.networkService);
+  DeviceRemoteDataSource(this.networkService, this.hardwareNetworkService);
 
   Future<Either<DioException, List<Device>>> getAllDevices({
     String? name,
@@ -405,6 +406,32 @@ class DeviceRemoteDataSource {
       );
     } catch (e) {
       printDebug('Loi khac (updateSchedule) $e');
+      return Left(
+        DioException(
+          requestOptions: RequestOptions(),
+          message: 'Unknown exception',
+        ),
+      );
+    }
+  }
+
+  Future<Either<DioException, String>> getDeviceIdFromHardware() async {
+    try {
+      final result = await hardwareNetworkService.get(
+        endpoint: ApiPath.hardware.getDevceId,
+      );
+      return result.fold(
+        (exception) {
+          printDebug('exception when getting deviceId: $exception');
+          return Left(exception);
+        },
+        (response) {
+          final String deviceId = response.data;
+          return Right(deviceId);
+        },
+      );
+    } catch (e) {
+      printDebug('Loi khac (getDeviceIdFromHardware) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),

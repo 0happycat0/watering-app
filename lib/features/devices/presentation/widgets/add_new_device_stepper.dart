@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
 import 'package:watering_app/core/screens/webview_screen.dart';
@@ -67,12 +68,14 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
 
   // Hàm mở trang Config WiFi
   Future<void> _launchConfigUrl() async {
-    final String url = 'http://192.168.4.1';
+    ref.read(getDeviceIdProvider.notifier).getDeviceIdFromHardware();
+    // _getDeviceIdDirectly();
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (ctx) => WebviewScreen(
-          url: url,
+          url: ApiPath.deviceUrl,
           title: 'Cấu hình WiFi',
+          onFinishSetupWiFi: _nextStep,
         ),
       ),
     );
@@ -101,6 +104,26 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
   @override
   Widget build(BuildContext context) {
     final addDeviceState = ref.watch(createDeviceProvider);
+
+    ref.listen<AsyncValue<String?>>(getDeviceIdProvider, (prev, next) {
+      next.when(
+        data: (deviceId) {
+          if (deviceId != null && deviceId.isNotEmpty) {
+            _deviceIdController.text = deviceId;
+
+            CustomSnackBar.showSnackBar(
+              text: 'Đã tìm thấy thiết bị: $deviceId',
+            );
+          }
+        },
+        error: (err, stack) {
+          CustomSnackBar.showSnackBar(text: 'Không lấy được thông tin thiết bị');
+          printDebug('Không lấy được Device ID tự động: $err');
+        },
+        loading: () {
+        },
+      );
+    });
 
     ref.listen<device_state.DeviceState>(createDeviceProvider, (prev, next) {
       printDebug(
@@ -361,6 +384,12 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
               hintText: 'Ví dụ: ESP_123456',
               label: 'Mã thiết bị (Device ID)',
             ),
+            ElevatedButton(
+              onPressed: () {
+                printDebug('deviceId = ${_deviceIdController.text}');
+              },
+              child: Text('Test'),
+            ),
           ],
         );
       default:
@@ -368,7 +397,7 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
     }
   }
 
-  // --- HELPER: GIAO DIỆN HƯỚNG DẪN CHUNG ---
+  // Giao diện hướng dẫn
   Widget _buildInstructionView({
     required IconData icon,
     required String title,
@@ -434,7 +463,7 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
     );
   }
 
-  // --- CUSTOM STEPPER WIDGET ---
+  // Stepper
   Widget _buildCustomStepper() {
     return Row(
       children: [

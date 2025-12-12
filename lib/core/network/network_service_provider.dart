@@ -64,4 +64,24 @@ final newsBaseOptionsProvider = Provider<BaseOptions>((ref) {
   );
 });
 
+//provider to get device id from device (via http request)
+final hardwareNetworkProvider = Provider<DioNetworkService>((ref) {
+  final dio = ref.watch(hardwareDioProvider);
+  return DioNetworkService(dio);
+});
+
+final hardwareDioProvider = Provider<Dio>((ref) {
+  final options = ref.watch(hardwareOptionsProvider);
+  return Dio(options);
+});
+
+final hardwareOptionsProvider = Provider<BaseOptions>((ref) {
+  return BaseOptions(
+    baseUrl: ApiPath.deviceUrl,
+    headers: {
+      'accept': 'application/json',
+      'content-type': 'application/json',
+    },
+  );
+});
 

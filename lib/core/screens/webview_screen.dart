@@ -7,10 +7,11 @@ import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
 
 class WebviewScreen extends StatefulWidget {
-  const WebviewScreen({super.key, required this.url, required this.title});
+  const WebviewScreen({super.key, required this.url, required this.title, this.onFinishSetupWiFi});
 
   final String url;
   final String title;
+  final VoidCallback? onFinishSetupWiFi;
 
   @override
   State<WebviewScreen> createState() => _WebviewScreenState();
@@ -33,6 +34,7 @@ class _WebviewScreenState extends State<WebviewScreen> {
         'Close',
         onMessageReceived: (message) {
           if (message.message == 'close') {
+            widget.onFinishSetupWiFi?.call();
             Navigator.of(context).pop(); 
           }
         },
