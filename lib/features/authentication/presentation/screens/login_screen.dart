@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
 import 'package:watering_app/core/network/stomp_service_provider.dart';
 import 'package:watering_app/core/utils/debug_print.dart';
+import 'package:watering_app/core/utils/secure_storage_service.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -72,14 +72,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (bioMetricState.isEnabled) {
       final success = await ref.read(biometricProvider.notifier).authenticate();
       if (success) {
-        // Logic khi xác thực thành công
-        // QUAN TRỌNG: Ở đây bạn cần lấy token đã lưu (secure storage) để đăng nhập vào app
-        // Ví dụ:
+        // Lấy token đã lưu (secure storage) để đăng nhập vào app
         final prefs = await SharedPreferences.getInstance();
-        final secureStorage = FlutterSecureStorage();
+
         final username = prefs.getString(SharedPreferenceKey.username) ?? '';
         final password =
-            await secureStorage.read(key: SharedPreferenceKey.password) ?? '';
+            await SecureStorageService.instance.read(key: SharedPreferenceKey.password) ?? '';
         ref
             .read(authProvider.notifier)
             .loginUser(

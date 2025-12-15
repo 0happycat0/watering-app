@@ -1,24 +1,23 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
+import 'package:watering_app/core/utils/secure_storage_service.dart';
 import 'package:watering_app/features/authentication/data/models/user_model.dart';
 
 class AuthLocalDataSource {
   final SharedPreferences _prefs;
-  final FlutterSecureStorage _secureStorage;
-  AuthLocalDataSource(this._prefs, this._secureStorage);
+  AuthLocalDataSource(this._prefs);
 
   Future<void> loginUser(User user) async {
-    await _secureStorage.write(
+    await SecureStorageService.instance.write(
       key: SharedPreferenceKey.accessToken,
       value: user.accessToken,
     );
-    await _secureStorage.write(
+    await SecureStorageService.instance.write(
       key: SharedPreferenceKey.refreshToken,
       value: user.refreshToken,
     );
 
-    await _secureStorage.write(
+    await SecureStorageService.instance.write(
       key: SharedPreferenceKey.password,
       value: user.password,
     );
@@ -58,15 +57,15 @@ class AuthLocalDataSource {
 
   //Sensitive data
   Future<String?> get accessToken async {
-    return await _secureStorage.read(key: SharedPreferenceKey.accessToken);
+    return await SecureStorageService.instance.read(key: SharedPreferenceKey.accessToken);
   }
 
   Future<String?> get refreshToken async {
-    return await _secureStorage.read(key: SharedPreferenceKey.refreshToken);
+    return await SecureStorageService.instance.read(key: SharedPreferenceKey.refreshToken);
   }
 
   Future<String?> get password async {
-    return await _secureStorage.read(key: SharedPreferenceKey.password);
+    return await SecureStorageService.instance.read(key: SharedPreferenceKey.password);
   }
   //-----
 
@@ -75,15 +74,15 @@ class AuthLocalDataSource {
   String get email => _prefs.getString(SharedPreferenceKey.email) ?? '';
 
   Future<void> logout() async {
-    await _secureStorage.delete(key: SharedPreferenceKey.accessToken);
-    await _secureStorage.delete(key: SharedPreferenceKey.refreshToken);
+    await SecureStorageService.instance.delete(key: SharedPreferenceKey.accessToken);
+    await SecureStorageService.instance.delete(key: SharedPreferenceKey.refreshToken);
     await _prefs.remove(SharedPreferenceKey.isLoggedIn);
   }
 
   Future<void> deleteUser() async {
-    await _secureStorage.delete(key: SharedPreferenceKey.accessToken);
-    await _secureStorage.delete(key: SharedPreferenceKey.refreshToken);
-    await _secureStorage.delete(key: SharedPreferenceKey.password);
+    await SecureStorageService.instance.delete(key: SharedPreferenceKey.accessToken);
+    await SecureStorageService.instance.delete(key: SharedPreferenceKey.refreshToken);
+    await SecureStorageService.instance.delete(key: SharedPreferenceKey.password);
     // await _prefs.remove(SharedPreferenceKey.accessToken);
     // await _prefs.remove(SharedPreferenceKey.refreshToken);
     await _prefs.remove(SharedPreferenceKey.isLoggedIn);

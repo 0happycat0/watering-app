@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:watering_app/core/network/stomp_service.dart';
@@ -17,10 +16,9 @@ class AuthRepositoryImpl extends AuthRepository {
 
   AuthRepositoryImpl(this.authRemoteDataSource);
 
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   Future<AuthLocalDataSource> _getLocalDataSource() async {
     final prefs = await SharedPreferences.getInstance();
-    return AuthLocalDataSource(prefs, _secureStorage);
+    return AuthLocalDataSource(prefs);
   }
 
   @override
@@ -29,8 +27,8 @@ class AuthRepositoryImpl extends AuthRepository {
     required User user,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    final secureStorage = FlutterSecureStorage();
-    final local = AuthLocalDataSource(prefs, secureStorage);
+
+    final local = AuthLocalDataSource(prefs);
 
     // Remove access token before log in
     // await prefs.remove(SharedPreferenceKey.accessToken);

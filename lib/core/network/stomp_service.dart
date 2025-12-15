@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
 import 'package:watering_app/core/constants/stomp_path.dart';
 import 'package:watering_app/core/utils/debug_print.dart';
+import 'package:watering_app/core/utils/secure_storage_service.dart';
 
 //Định nghĩa kiểu cho hàm Unsubscribe
 typedef StompUnsubscribeTopic = void Function();
@@ -68,11 +68,10 @@ class StompService {
     try {
       printDebug('[WebSocket] Attempting to refresh token...');
 
-      final secureStorage = FlutterSecureStorage();
-      final accessToken = await secureStorage.read(
+      final accessToken = await SecureStorageService.instance.read(
         key: SharedPreferenceKey.accessToken,
       );
-      final refreshToken = await secureStorage.read(
+      final refreshToken = await SecureStorageService.instance.read(
         key: SharedPreferenceKey.refreshToken,
       );
 
@@ -92,7 +91,7 @@ class StompService {
 
       if (response.statusCode == 200) {
         final newAccessToken = response.data['data'][ApiStrings.accessToken];
-        await secureStorage.write(
+        await SecureStorageService.instance.write(
           key: SharedPreferenceKey.accessToken,
           value: newAccessToken,
         );
@@ -142,8 +141,8 @@ class StompService {
       //change from SharedPreferences to SecureStorage
       // final prefs = await SharedPreferences.getInstance();
       // final String? token = prefs.getString(SharedPreferenceKey.accessToken);
-      final secureStorage = FlutterSecureStorage();
-      final accessToken = await secureStorage.read(
+
+      final accessToken = await SecureStorageService.instance.read(
         key: SharedPreferenceKey.accessToken,
       );
 

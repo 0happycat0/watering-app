@@ -6,6 +6,7 @@ import 'package:watering_app/core/constants/api_path.dart';
 import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/constants/shared_preference_key.dart';
 import 'package:watering_app/core/utils/debug_print.dart';
+import 'package:watering_app/core/utils/secure_storage_service.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 
 class AuthInterceptor extends Interceptor {
@@ -19,8 +20,8 @@ class AuthInterceptor extends Interceptor {
   //lấy access_token từ Secure storage và gán vào biến _accessToken
   Future<String?> _getAccessToken() async {
     // final prefs = await SharedPreferences.getInstance();
-    final secureStorage = FlutterSecureStorage();
-    _accessToken = await secureStorage.read(
+
+    _accessToken = await SecureStorageService.instance.read(
       key: SharedPreferenceKey.accessToken,
     );
     return _accessToken;
@@ -29,8 +30,7 @@ class AuthInterceptor extends Interceptor {
   //cần set token ở cả local và RAM (gán vào _accessToken)
   Future<void> _setAccessToken(String accessToken) async {
     // final prefs = await SharedPreferences.getInstance();
-    final secureStorage = FlutterSecureStorage();
-    await secureStorage.write(
+    await SecureStorageService.instance.write(
       key: SharedPreferenceKey.accessToken,
       value: accessToken,
     );
@@ -42,8 +42,7 @@ class AuthInterceptor extends Interceptor {
   //tuy nhiên không cần set _refreshToken, vì nếu _refreshToken hết hạn sẽ yêu cầu logout
   //việc set _refreshToken đã được thực hiện ở auth_repository_imp
   Future<String?> _getRefreshToken() async {
-    final secureStorage = FlutterSecureStorage();
-    _refreshToken = await secureStorage.read(
+    _refreshToken = await SecureStorageService.instance.read(
       key: SharedPreferenceKey.refreshToken,
     );
     return _refreshToken;
