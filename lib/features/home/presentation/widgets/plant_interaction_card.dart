@@ -103,8 +103,8 @@ class _PlantInteractionCardState extends ConsumerState<PlantInteractionCard>
     if (!mounted) return result;
 
     if (success) {
-      // API thành công, đợi 300ms để nhận realtime
-      await Future.delayed(const Duration(milliseconds: 300));
+      // API thành công, đợi 1000ms để nhận realtime
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       if (!mounted) return result;
 
@@ -347,10 +347,11 @@ class _PlantInteractionCardState extends ConsumerState<PlantInteractionCard>
                           _isSuccess = await _toggleDevice(
                             widget.device.id,
                             'START',
-                            int.tryParse(
-                                  _durationController.text,
-                                ) ??
-                                0,
+                            (int.tryParse(
+                                      _durationController.text,
+                                    ) ??
+                                    0) *
+                                60,
                           );
                           setState(() {
                             _isLoading = false;
