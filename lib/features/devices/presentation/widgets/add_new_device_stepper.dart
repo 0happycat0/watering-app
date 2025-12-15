@@ -41,14 +41,14 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
   void _nextStep() {
     if (_currentStep < 3) {
       if (_currentStep == 1) {
-        //TODO: config wifi
+        // config wifi
       }
       if (_currentStep == 2) {
-        //TODO: navigation to web view
+        // navigation to web view
       }
       setState(() => _currentStep++);
     } else {
-      _submitDevice(); // Ở bước cuối gọi API
+      _submitDevice(); // gọi API
     }
   }
 
@@ -97,7 +97,8 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
         );
 
     // Refresh danh sách và reset sort
-    ref.read(devicesProvider.notifier).refresh();
+    // ref.read(devicesProvider.notifier).refresh(); // không gọi hàm này, 
+    //vì khi set shouldResetSortAndSearchProvider = true, search bar sẽ lắng nghe và load lại all devices 
     ref.read(shouldResetSortAndSearchProvider.notifier).state = true;
   }
 
@@ -117,11 +118,12 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
           }
         },
         error: (err, stack) {
-          CustomSnackBar.showSnackBar(text: 'Không lấy được thông tin thiết bị');
+          CustomSnackBar.showSnackBar(
+            text: 'Không lấy được thông tin thiết bị',
+          );
           printDebug('Không lấy được Device ID tự động: $err');
         },
-        loading: () {
-        },
+        loading: () {},
       );
     });
 
@@ -224,7 +226,7 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
                           foregroundColor: Colors.white,
                         ),
                         child: addDeviceState is device_state.Loading
-                            ? const CustomCircularProgress(color: Colors.white)
+                            ? CustomCircularProgress()
                             : Text(
                                 _currentStep == 3 ? 'Hoàn tất' : 'Tiếp theo',
                                 style: const TextStyle(
@@ -383,12 +385,6 @@ class _AddNewDeviceStepperState extends ConsumerState<AddNewDeviceStepper> {
               textController: _deviceIdController,
               hintText: 'Ví dụ: ESP_123456',
               label: 'Mã thiết bị (Device ID)',
-            ),
-            ElevatedButton(
-              onPressed: () {
-                printDebug('deviceId = ${_deviceIdController.text}');
-              },
-              child: Text('Test'),
             ),
           ],
         );

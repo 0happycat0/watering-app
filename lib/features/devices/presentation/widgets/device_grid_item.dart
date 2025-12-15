@@ -24,21 +24,27 @@ class DeviceGridItem extends ConsumerWidget {
   final Device device;
   final bool isInGroup;
   final bool isPopup;
-  final void Function() onSelectDevice;
+  final void Function(Device) onSelectDevice;
   final void Function() onSelectEdit;
   final void Function() onSelectDelete;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isOnline;
+    bool isWatering;
+
     final Map<String, HistorySensor> sensorMap = ref.watch(
       devicesSensorProvider,
     );
     final HistorySensor? sensorData = sensorMap[device.deviceId];
 
-    final Map<String, bool> statusMap = ref.watch(devicesStatusProvider);
-    final bool isOnline = statusMap[device.deviceId] ?? device.online;
-    final Map<String, bool> wateringMap = ref.watch(devicesWateringProvider);
-    final bool isWatering = wateringMap[device.deviceId] ?? device.watering;
+    final statusMap = ref.watch(devicesStatusProvider);
+    isOnline = statusMap[device.deviceId] ?? device.online;
+
+    final wateringMap = ref.watch(devicesWateringProvider);
+    isWatering = wateringMap[device.deviceId] ?? device.watering;
+
+    // printDebug('device: ${device.name}, _isOnline: ${device.online}');
 
     return Card(
       elevation: isOnline ? 2 : 0,
@@ -48,7 +54,13 @@ class DeviceGridItem extends ConsumerWidget {
       ),
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       child: InkWell(
-        onTap: onSelectDevice,
+        onTap: () {
+          final Device currentDevice = device.copyWith(
+            online: isOnline,
+            watering: isWatering,
+          );
+          onSelectDevice(currentDevice);
+        },
 
         splashColor: colorScheme.primaryContainer,
         child: Ink(
@@ -268,62 +280,65 @@ class DeviceGridItem extends ConsumerWidget {
                 ),
 
               // Nút menu góc phải
-              if(!isPopup) Positioned(
-                right: -4,
-                top: 0,
-                child: PopupMenuButton<String>(
-                  icon: Icon(
-                    Symbols.more_vert,
-                    size: 22,
-                    weight: 1000,
-                    color: isWatering
-                        ? AppColors.mainBlue[400]
-                        : colorScheme.primary,
-                  ),
-                  splashRadius: 20,
-                  color: Colors.white,
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  onSelected: (value) {
-                    switch (value) {
-                      case 'edit':
-                        onSelectEdit();
-                        break;
-                      case 'delete':
-                        onSelectDelete();
-                        break;
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    if (!isInGroup)
+              if (!isPopup)
+                Positioned(
+                  right: -4,
+                  top: 0,
+                  child: PopupMenuButton<String>(
+                    icon: Icon(
+                      Symbols.more_vert,
+                      size: 22,
+                      weight: 1000,
+                      color: isWatering
+                          ? AppColors.mainBlue[400]
+                          : colorScheme.primary,
+                    ),
+                    splashRadius: 20,
+                    color: Colors.white,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'edit':
+                          onSelectEdit();
+                          break;
+                        case 'delete':
+                          onSelectDelete();
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      if (!isInGroup)
+                        PopupMenuItem(
+                          value: 'edit',
+                          height: 40,
+                          child: Row(
+                            children: [
+                              Icon(Symbols.edit),
+                              SizedBox(width: 12),
+                              Text('Sửa thông tin'),
+                            ],
+                          ),
+                        ),
                       PopupMenuItem(
-                        value: 'edit',
+                        value: 'delete',
                         height: 40,
                         child: Row(
                           children: [
-                            Icon(Symbols.edit),
+                            Icon(Symbols.delete, color: colorScheme.error),
                             SizedBox(width: 12),
-                            Text('Sửa thông tin'),
+                            Text(
+                              isInGroup ? 'Xóa khỏi nhóm' : 'Xóa thiết bị',
+                            ),
                           ],
                         ),
                       ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      height: 40,
-                      child: Row(
-                        children: [
-                          Icon(Symbols.delete, color: colorScheme.error),
-                          SizedBox(width: 12),
-                          Text(isInGroup ? 'Xóa khỏi nhóm' : 'Xóa thiết bị'),
-                        ],
-                      ),
-                    ),
-                  ],
-                  offset: Offset(-8, 8),
+                    ],
+                    offset: Offset(-8, 8),
+                  ),
                 ),
-              ),
             ],
           ),
         ),

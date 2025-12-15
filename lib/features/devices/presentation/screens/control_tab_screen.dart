@@ -32,7 +32,9 @@ class ControlTabScreen extends ConsumerStatefulWidget {
 class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   final _durationController = TextEditingController(text: '10');
   bool _isToggling = false;
-  bool _isWatering = false;
+
+  late bool _isWatering;
+  late bool _isOnline;
 
   // final _rowPerPage = 5;
 
@@ -139,7 +141,9 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   @override
   void initState() {
     super.initState();
+    // Ưu tiên API
     _isWatering = widget.device.watering;
+    _isOnline = widget.device.online;
     //chạy sau khi initstate hoàn tất
     Future.microtask(() async {
       if (!mounted) return;
@@ -153,16 +157,29 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   Widget build(BuildContext context) {
     final id = widget.device.id;
 
-    // Lấy trạng thái watering từ realtime hoặc device
-    final wateringMap = ref.watch(devicesWateringProvider);
-    _isWatering = wateringMap[widget.device.deviceId] ?? widget.device.watering;
+    // Trạng thái tưới
+    ref.listen<Map<String, bool>>(devicesWateringProvider, (prev, next) {
+      final newWatering = next[widget.device.deviceId];
+      if (newWatering != null && newWatering != _isWatering) {
+        setState(() {
+          _isWatering = newWatering;
+        });
+      }
+    });
+
+    // Trạng thái Online/Offline
+    ref.listen<Map<String, bool>>(devicesStatusProvider, (prev, next) {
+      final newStatus = next[widget.device.deviceId];
+      if (newStatus != null && newStatus != _isOnline) {
+        setState(() {
+          _isOnline = newStatus;
+        });
+      }
+    });
+
     printDebug(
       '_isWatering = $_isWatering, widget.device.watering = ${widget.device.watering}',
     );
-
-    // Lấy trạng thái online từ realtime hoặc device
-    final statusMap = ref.watch(devicesStatusProvider);
-    final isOnline = statusMap[widget.device.deviceId] ?? widget.device.online;
 
     final historyWateringState = ref.watch(getHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;
@@ -264,7 +281,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                       width: 150,
                       child: _isWatering
                           ? ElevatedButton(
-                              onPressed: (isOnline && !_isToggling)
+                              onPressed: (_isOnline && !_isToggling)
                                   ? () {
                                       _toggleDevice(id, 'STOP', 0);
                                     }
@@ -275,7 +292,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                                   : Text('Hủy'),
                             )
                           : ElevatedButton(
-                              onPressed: (isOnline && !_isToggling)
+                              onPressed: (_isOnline && !_isToggling)
                                   ? () {
                                       _toggleDevice(
                                         id,

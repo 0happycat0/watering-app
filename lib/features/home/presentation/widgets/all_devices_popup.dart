@@ -172,8 +172,8 @@ class _AllDevicesPopupState extends ConsumerState<AllDevicesPopup> {
                           // bằng cách truyền hàm rỗng hoặc null (tùy vào implementation của DeviceGridItem)
                           return DeviceGridItem(
                             device: device,
-                            onSelectDevice: () {
-                              _onDeviceSelected(device);
+                            onSelectDevice: (currentDevice) {
+                              _onDeviceSelected(currentDevice);
                             },
                             onSelectDelete: () async {},
                             onSelectEdit: () {},

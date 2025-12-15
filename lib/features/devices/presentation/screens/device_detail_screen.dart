@@ -8,6 +8,7 @@ import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
 import 'package:watering_app/features/devices/presentation/screens/schedule_tab_screen.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
+import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
@@ -32,6 +33,8 @@ class DeviceDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
+  late bool _isOnline;
+
   void _showAskDeleteDialog() {
     showDialog(
       context: context,
@@ -72,11 +75,27 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _isOnline = widget.device.online;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final device = widget.device;
     // final realtimeDeviceSensor = ref.watch(
     //   deviceSensorProvider(device.deviceId),
     // );
+
+        // Trạng thái Online/Offline
+    ref.listen<Map<String, bool>>(devicesStatusProvider, (prev, next) {
+      final newStatus = next[widget.device.deviceId];
+      if (newStatus != null && newStatus != _isOnline) {
+        setState(() {
+          _isOnline = newStatus;
+        });
+      }
+    });
 
     ref.listen(deleteDeviceProvider, (prev, next) {
       printDebug(
@@ -106,7 +125,7 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
           appBar: CustomAppBar(
             automaticallyImplyLeading: false,
             title: 'Thiết bị: ${widget.device.name}',
-            subTitle: device.online ? null : 'Không hoạt động',
+            subTitle: _isOnline ? null : 'Không hoạt động',
             leading: BackIcon(),
             actions: [
               IconButton(

@@ -56,6 +56,32 @@ class Device extends Equatable {
     };
   }
 
+  Device copyWith({
+    String? id,
+    String? deviceId,
+    String? name,
+    String? topicSensor,
+    String? topicWatering,
+    String? action,
+    int? duration,
+    bool? online,
+    bool? watering,
+    Schedule? nextSchedule,
+  }) {
+    return Device(
+      id: id ?? this.id,
+      deviceId: deviceId ?? this.deviceId,
+      name: name ?? this.name,
+      topicSensor: topicSensor ?? this.topicSensor,
+      topicWatering: topicWatering ?? this.topicWatering,
+      action: action ?? this.action,
+      duration: duration ?? this.duration,
+      online: online ?? this.online,
+      watering: watering ?? this.watering,
+      nextSchedule: nextSchedule ?? this.nextSchedule,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

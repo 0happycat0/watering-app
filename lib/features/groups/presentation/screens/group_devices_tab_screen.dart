@@ -179,11 +179,11 @@ class _GroupDevicesTabScreenState extends ConsumerState<GroupDevicesTabScreen> {
                         return DeviceGridItem(
                           device: device,
                           isInGroup: true,
-                          onSelectDevice: () {
+                          onSelectDevice: (currentDevice) {
                             Navigator.of(context).push(
                               CupertinoPageRoute(
                                 builder: (ctx) =>
-                                    DeviceDetailScreen(device: device),
+                                    DeviceDetailScreen(device: currentDevice),
                               ),
                             );
                           },

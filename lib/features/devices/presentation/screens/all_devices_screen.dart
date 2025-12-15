@@ -180,12 +180,12 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 isDense: true,
               ),
               SizedBox(height: 10),
-              NormalTextFormField(
-                textController: idController,
-                hintText: '',
-                label: 'Mã thiết bị',
-                isDense: true,
-              ),
+              // NormalTextFormField(
+              //   textController: idController,
+              //   hintText: '',
+              //   label: 'Mã thiết bị',
+              //   isDense: true,
+              // ),
               SizedBox(height: 16),
               Row(
                 children: [
@@ -258,8 +258,8 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     ref.watch(deleteDeviceProvider);
 
     ref.watch(devicesSensorProvider);
-    ref.watch(devicesStatusProvider);
-    ref.watch(devicesWateringProvider);
+    // ref.watch(devicesStatusProvider);
+    // ref.watch(devicesWateringProvider);
 
     ref.listen(devicesProvider, (prev, next) {
       printDebug(
@@ -396,8 +396,8 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                       final device = devices[index];
                       return DeviceGridItem(
                         device: device,
-                        onSelectDevice: () {
-                          _onSelectDevice(device);
+                        onSelectDevice: (currentDevice) {
+                          _onSelectDevice(currentDevice);
                         },
                         onSelectDelete: () async {
                           _showAskDeleteDialog(device);
