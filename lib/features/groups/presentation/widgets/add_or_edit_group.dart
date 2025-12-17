@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -15,9 +17,10 @@ import 'package:watering_app/features/devices/providers/all_devices/devices_stat
 import 'package:watering_app/theme/styles.dart';
 
 class AddOrEditGroup extends ConsumerStatefulWidget {
-  const AddOrEditGroup({super.key, this.groupToEdit});
+  const AddOrEditGroup({super.key, this.groupToEdit, this.isInTab = false});
 
   final Group? groupToEdit; //null: thêm, != null: sửa
+  final bool isInTab;
 
   @override
   ConsumerState<AddOrEditGroup> createState() => _AddOrEditGroupState();
@@ -35,31 +38,30 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
     group_state.GroupState next,
     String action,
   ) {
-    print(
+    printDebug(
       '$action group transition: ${prev.runtimeType} -> ${next.runtimeType}',
     );
 
     // Hiển thị snack bar khi có lỗi
     if (next is group_state.Failure) {
       final message = next.message;
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(text: message),
-      );
+      CustomSnackBar.showSnackBar(text: message);
     }
 
     // Đóng dialog khi thành công
     if (next is group_state.Success && prev is group_state.Loading) {
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
     }
   }
 
   void _handleSubmit() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          text: 'Vui lòng nhập tên nhóm',
-        ),
-      );
+      CustomSnackBar.showSnackBar(text: 'Vui lòng nhập tên nhóm');
+      return;
+    }
+
+    if (_selectedIds.isEmpty) {
+      CustomSnackBar.showSnackBar(text: 'Vui lòng chọn ít nhất 1 thiết bị');
       return;
     }
 
@@ -83,7 +85,9 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
     }
 
     // Reset search
-    ref.read(shouldResetGroupSearchProvider.notifier).state = true;
+    if (!widget.isInTab && !_isEditMode) {
+      ref.read(shouldResetGroupSearchProvider.notifier).state = true;
+    }
   }
 
   @override
@@ -162,8 +166,13 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                   children: [
                     Center(
                       child: Text(
-                        _isEditMode ? 'Sửa nhóm' : 'Thêm nhóm thiết bị',
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        _isEditMode
+                            ? widget.isInTab
+                                  ? 'Sửa thiết bị'
+                                  : 'Sửa nhóm'
+                            : 'Thêm nhóm thiết bị',
+                        style: Theme.of(context).textTheme.headlineSmall!
+                            .copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                     Align(
@@ -174,26 +183,32 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                           weight: 700,
                           color: Colors.grey,
                         ),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(false),
                       ),
                     ),
                   ],
                 ),
                 Center(
                   child: _isEditMode
-                      ? null
+                      ? widget.isInTab
+                            ? Text(
+                                'Chọn hoặc bỏ chọn thiết bị trong nhóm',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              )
+                            : null
                       : Text(
                           'Tạo tên nhóm và chọn thiết bị để thêm vào nhóm',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                 ),
-                const SizedBox(height: 24),
 
-                NormalTextFormField(
-                  textController: _nameController,
-                  hintText: 'Nhập tên nhóm...',
-                  label: 'Tên nhóm',
-                ),
+                if (!widget.isInTab) const SizedBox(height: 24),
+                if (!widget.isInTab)
+                  NormalTextFormField(
+                    textController: _nameController,
+                    hintText: 'Nhập tên nhóm...',
+                    label: 'Tên nhóm',
+                  ),
                 const SizedBox(height: 16),
                 Text(
                   'Chọn thiết bị',
@@ -223,9 +238,9 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(false),
                         style: OutlinedButton.styleFrom(
-                          splashFactory: NoSplash.splashFactory,
+                          textStyle: TextStyle(fontSize: 14),
                         ),
                         child: const Text('Hủy'),
                       ),
@@ -234,12 +249,15 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: isLoading ? null : _handleSubmit,
-                        style: AppStyles.elevatedButtonStyle(),
+                        style: AppStyles.elevatedButtonStyle(
+                          backgroundColor: AppColors.mainGreen[200],
+                          foregroundColor: Colors.white,
+                        ),
                         child: isLoading
                             ? CustomCircularProgress()
                             : Text(
                                 _isEditMode ? 'Lưu' : 'Tạo nhóm',
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: TextStyle(fontSize: 14),
                               ),
                       ),
                     ),
@@ -348,27 +366,32 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Checkbox "Chọn tất cả"
-        CheckboxListTile(
-          title: const Text('Chọn tất cả'),
-          secondary: Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text('$selectedCount/$totalDevices'),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          color: Colors.white,
+          elevation: 0,
+          child: CheckboxListTile(
+            title: const Text('Chọn tất cả'),
+            secondary: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Text('$selectedCount/$totalDevices'),
+            ),
+            value: allSelected,
+            onChanged: (bool? value) {
+              setState(() {
+                if (value == true) {
+                  // Chọn tất cả: thêm ID của tất cả thiết bị vào Set
+                  _selectedIds.addAll(devices.map((device) => device.id));
+                } else {
+                  // Bỏ chọn tất cả
+                  _selectedIds.clear();
+                }
+              });
+            },
+            controlAffinity: ListTileControlAffinity.leading,
+            contentPadding: EdgeInsets.zero,
+            activeColor: Theme.of(context).primaryColor,
           ),
-          value: allSelected,
-          onChanged: (bool? value) {
-            setState(() {
-              if (value == true) {
-                // Chọn tất cả: thêm ID của tất cả thiết bị vào Set
-                _selectedIds.addAll(devices.map((device) => device.id));
-              } else {
-                // Bỏ chọn tất cả
-                _selectedIds.clear();
-              }
-            });
-          },
-          controlAffinity: ListTileControlAffinity.leading,
-          contentPadding: EdgeInsets.zero,
-          activeColor: Theme.of(context).primaryColor,
         ),
 
         ListView.builder(
@@ -382,6 +405,7 @@ class _AddOrEditGroupState extends ConsumerState<AddOrEditGroup> {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Card(
+                clipBehavior: Clip.antiAlias,
                 margin: EdgeInsets.zero,
                 elevation: 0,
                 shape: RoundedRectangleBorder(

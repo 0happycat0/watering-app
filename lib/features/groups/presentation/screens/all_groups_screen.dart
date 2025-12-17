@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/search_bar.dart';
@@ -14,8 +15,11 @@ import 'package:watering_app/features/groups/presentation/screens/group_detail_s
 import 'package:watering_app/features/groups/presentation/widgets/add_or_edit_group.dart';
 import 'package:watering_app/features/groups/providers/all_groups/groups_provider.dart';
 import 'package:watering_app/features/groups/presentation/widgets/group_grid_item.dart';
+import 'package:watering_app/features/groups/providers/group/group_state.dart'
+    as group_state;
 import 'package:watering_app/features/groups/providers/all_groups/groups_state.dart'
     as groups_state;
+import 'package:watering_app/features/groups/providers/all_groups/realtime_groups_provider.dart';
 import 'package:watering_app/features/groups/providers/group/group_provider.dart';
 import 'package:watering_app/theme/styles.dart';
 
@@ -93,9 +97,14 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
               groupsNotifier.setLoading();
               await deleteGroupNotifier.deleteGroup(id: group.id);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  CustomSnackBar(text: 'Đã xóa nhóm "${group.name}"'),
-                );
+                final deleteState = ref.read(deleteGroupProvider);
+                if (deleteState is group_state.Failure) {
+                  CustomSnackBar.showSnackBar(text: deleteState.message);
+                } else if (deleteState is group_state.Success) {
+                  CustomSnackBar.showSnackBar(
+                    text: 'Đã xóa nhóm "${group.name}"',
+                  );
+                }
                 groupsNotifier.getAllGroups(name: _currentSearchQuery);
               }
             },
@@ -106,8 +115,8 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
     );
   }
 
-  void _showEditDialog(Group group) {
-    showModalBottomSheet(
+  void _showEditDialog(Group group) async {
+    final isSuccess = await showModalBottomSheet(
       context: context,
       useSafeArea: true,
       isScrollControlled: true,
@@ -117,6 +126,10 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
         return AddOrEditGroup(groupToEdit: group);
       },
     );
+
+    if (isSuccess && mounted) {
+      ref.read(groupsProvider.notifier).getAllGroups(name: _currentSearchQuery);
+    }
   }
 
   @override
@@ -130,15 +143,16 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
   @override
   void initState() {
     super.initState();
-    if (!mounted) return;
     Future.microtask(() async {
-      ref.read(groupsProvider.notifier).getAllGroups();
+      if (!mounted) return;
+      await ref.read(groupsProvider.notifier).getAllGroups();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final groupsState = ref.watch(groupsProvider);
+    ref.watch(groupsWateringProvider);
 
     ref.listen(shouldResetGroupSearchProvider, (prev, next) {
       if (next == true) {
@@ -146,12 +160,22 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
         ref.read(shouldResetGroupSearchProvider.notifier).state = false;
       }
     });
+    ref.listen(shouldRefreshGroupsListProvider, (prev, next) {
+      if (next == true) {
+        ref
+            .read(groupsProvider.notifier)
+            .getAllGroups(
+              name: _currentSearchQuery,
+            );
+        ref.read(shouldRefreshGroupsListProvider.notifier).state = false;
+      }
+    });
 
     ref.watch(updateGroupProvider);
     ref.watch(deleteGroupProvider);
 
     ref.listen(groupsProvider, (prev, next) {
-      print(
+      printDebug(
         'All groups transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
     });
@@ -226,6 +250,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
                 displacement: 40,
                 edgeOffset: 0,
                 onRefresh: () async {
+                  if (!mounted) return;
                   await ref
                       .read(groupsProvider.notifier)
                       .getAllGroups(name: _currentSearchQuery);
@@ -239,7 +264,7 @@ class _AllGroupsScreenState extends ConsumerState<AllGroupsScreen> {
                     padding: EdgeInsets.only(bottom: 42),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 5 / 4,
+                      childAspectRatio: 4 / 4,
                       mainAxisSpacing: 0,
                       crossAxisSpacing: 0,
                     ),

@@ -2,20 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/core/widgets/edit_schedule_sheet.dart';
 import 'package:watering_app/core/widgets/schedule_list_item.dart';
+import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
 import 'package:watering_app/features/devices/providers/device/schedule_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
 import 'package:watering_app/theme/styles.dart';
 
 class ScheduleTabScreen extends ConsumerStatefulWidget {
-  const ScheduleTabScreen({super.key, required this.device});
+  const ScheduleTabScreen({
+    super.key,
+    required this.device,
+    this.isNavigetedFromHome = false,
+  });
 
   final Device device;
+  final bool isNavigetedFromHome;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -23,52 +30,8 @@ class ScheduleTabScreen extends ConsumerStatefulWidget {
 }
 
 class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
-  // final mockData = [
-  //   Schedule(
-  //     id: '1',
-  //     startTime: '07:00',
-  //     duration: 15, // 15 phút
-  //     repeatType: RepeatType.DAYS,
-  //     status: true,
-  //     daysOfWeek: [
-  //       DaysOfWeek.MON, // T2
-  //       DaysOfWeek.TUE, // T3
-  //       DaysOfWeek.WED, // T4
-  //       DaysOfWeek.THU, // T5
-  //       DaysOfWeek.FRI, // T6
-  //     ],
-  //   ),
-  //   Schedule(
-  //     id: '2',
-  //     startTime: '18:30',
-  //     duration: 5, // 5 phút
-  //     repeatType: RepeatType.EVERYDAY,
-  //     status: false,
-  //     daysOfWeek: null, // Sẽ không có ngày nào sáng
-  //   ),
-  //   Schedule(
-  //     id: '3',
-  //     startTime: '12:00',
-  //     duration: 10, // 10 phút
-  //     repeatType: RepeatType.DAYS,
-  //     status: true,
-  //     daysOfWeek: [
-  //       DaysOfWeek.SAT, // T7
-  //       DaysOfWeek.SUN, // CN
-  //     ],
-  //   ),
-  //   Schedule(
-  //     id: '4',
-  //     startTime: '09:15',
-  //     duration: 2, // 2 phút
-  //     repeatType: RepeatType.ONE_TIME,
-  //     status: true,
-  //     daysOfWeek: [], // Mảng rỗng
-  //   ),
-  // ];
-
-  void _showScheduleSheet(Schedule? schedule) {
-    showModalBottomSheet(
+  void _showScheduleSheet(Schedule? schedule) async {
+    final shouldRefresh = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -81,6 +44,9 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
         return EditScheduleSheet(id: widget.device.id, schedule: schedule);
       },
     );
+    if (widget.isNavigetedFromHome && shouldRefresh) {
+      await ref.read(devicesProvider.notifier).getAllDevices();
+    }
   }
 
   void _toggleSchedule(bool newState, Schedule schedule) async {
@@ -91,14 +57,17 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
           scheduleToToggle: schedule,
           newStatus: newState,
         );
+    if (widget.isNavigetedFromHome) {
+      await ref.read(devicesProvider.notifier).getAllDevices();
+    }
     if (!success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(text: 'Đặt lịch thất bại.'),
-      );
+      CustomSnackBar.showSnackBar(text: 'Đặt lịch thất bại.');
     }
   }
 
   void _showAskDeleteDialog(Schedule schedule) {
+    final deleteScheduleState = ref.watch(deleteScheduleProvider);
+
     final deleteScheduleNotifier = ref.read(deleteScheduleProvider.notifier);
     final listScheduleNotifier = ref.read(getListScheduleProvider.notifier);
 
@@ -126,11 +95,16 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                 scheduleId: schedule.id,
               );
               if (mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(CustomSnackBar(text: 'Đã xóa lịch'));
+                if (deleteScheduleState is device_state.Success) {
+                  CustomSnackBar.showSnackBar(text: 'Đã xóa lịch');
+                } else if (deleteScheduleState is device_state.Failure) {
+                  CustomSnackBar.showSnackBar(text: 'Xóa lịch thất bại');
+                }
               }
               listScheduleNotifier.refresh(id: widget.device.id);
+              if (widget.isNavigetedFromHome) {
+                await ref.read(devicesProvider.notifier).getAllDevices();
+              }
             },
             child: Text('Xóa'),
           ),
@@ -160,7 +134,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
     ref.watch(deleteScheduleProvider);
 
     ref.listen(getListScheduleProvider, (prev, next) {
-      print(
+      printDebug(
         'Schedule list transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
     });
@@ -184,6 +158,7 @@ class _ScheduleTabScreenState extends ConsumerState<ScheduleTabScreen> {
                     ? RefreshIndicator(
                         displacement: 30,
                         onRefresh: () async {
+                          if (!mounted) return;
                           await ref
                               .read(getListScheduleProvider.notifier)
                               .refresh(id: id);

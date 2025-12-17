@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/groups/data/models/group_model.dart';
 import 'package:watering_app/features/groups/domain/repository/group_repository_impl.dart';
@@ -13,7 +14,8 @@ final getGroupListScheduleProvider = StateNotifierProvider(
   (ref) => GetGroupListScheduleNotifier(ref.watch(groupRepositoryProvider)),
 );
 
-class GetGroupListScheduleNotifier extends StateNotifier<group_state.GroupState> {
+class GetGroupListScheduleNotifier
+    extends StateNotifier<group_state.GroupState> {
   GetGroupListScheduleNotifier(this.groupRepository)
     : super(group_state.Initial());
   final GroupRepositoryImpl groupRepository;
@@ -58,12 +60,12 @@ class GetGroupListScheduleNotifier extends StateNotifier<group_state.GroupState>
 
     return response.fold(
       (exception) {
-        print('Toggle thất bại, revert state: $exception');
+        printDebug('Toggle thất bại, revert state: $exception');
         state = originalState; // Revert
         return false; // Trả về false để UI biết và hiển thị SnackBar
       },
       (success) {
-        print('Toggle thành công');
+        printDebug('Toggle thành công');
         return true;
       },
     );
@@ -88,8 +90,10 @@ final createGroupScheduleProvider =
       (ref) => CreateGroupScheduleNotifier(ref.watch(groupRepositoryProvider)),
     );
 
-class CreateGroupScheduleNotifier extends StateNotifier<group_state.GroupState> {
-  CreateGroupScheduleNotifier(this.groupRepository) : super(group_state.Initial());
+class CreateGroupScheduleNotifier
+    extends StateNotifier<group_state.GroupState> {
+  CreateGroupScheduleNotifier(this.groupRepository)
+    : super(group_state.Initial());
   final GroupRepositoryImpl groupRepository;
 
   Future<void> createSchedule({
@@ -109,6 +113,7 @@ class CreateGroupScheduleNotifier extends StateNotifier<group_state.GroupState> 
         daysOfWeek: daysOfWeek,
       ),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => group_state.Failure(exception),
       (_) => group_state.Success(),
@@ -126,8 +131,10 @@ final updateGroupScheduleProvider =
       (ref) => UpdateGroupScheduleNotifier(ref.watch(groupRepositoryProvider)),
     );
 
-class UpdateGroupScheduleNotifier extends StateNotifier<group_state.GroupState> {
-  UpdateGroupScheduleNotifier(this.groupRepository) : super(group_state.Initial());
+class UpdateGroupScheduleNotifier
+    extends StateNotifier<group_state.GroupState> {
+  UpdateGroupScheduleNotifier(this.groupRepository)
+    : super(group_state.Initial());
   final GroupRepositoryImpl groupRepository;
 
   Future<void> updateSchedule({
@@ -149,6 +156,7 @@ class UpdateGroupScheduleNotifier extends StateNotifier<group_state.GroupState> 
         daysOfWeek: daysOfWeek,
       ),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => group_state.Failure(exception),
       (_) => group_state.Success(),
@@ -166,8 +174,10 @@ final deleteGroupScheduleProvider =
       (ref) => DeleteGroupScheduleNotifier(ref.watch(groupRepositoryProvider)),
     );
 
-class DeleteGroupScheduleNotifier extends StateNotifier<group_state.GroupState> {
-  DeleteGroupScheduleNotifier(this.groupRepository) : super(group_state.Initial());
+class DeleteGroupScheduleNotifier
+    extends StateNotifier<group_state.GroupState> {
+  DeleteGroupScheduleNotifier(this.groupRepository)
+    : super(group_state.Initial());
   final GroupRepositoryImpl groupRepository;
 
   Future<void> deleteSchedule({
@@ -179,10 +189,10 @@ class DeleteGroupScheduleNotifier extends StateNotifier<group_state.GroupState> 
       group: Group(id: id),
       schedule: Schedule(id: scheduleId),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => group_state.Failure(exception),
       (_) => group_state.Success(),
     );
   }
 }
-

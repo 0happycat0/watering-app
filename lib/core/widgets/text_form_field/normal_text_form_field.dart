@@ -8,9 +8,13 @@ class NormalTextFormField extends StatelessWidget {
     super.key,
     required this.textController,
     required this.hintText,
+    this.textStyle,
+    this.fillColor,
+    this.borderColor,
     this.suffixText,
     this.suffixIcon,
     this.label,
+    this.helperText,
     this.validator,
     this.isDense = false,
     this.padding,
@@ -24,6 +28,10 @@ class NormalTextFormField extends StatelessWidget {
 
   final String? Function(String?)? validator;
   final TextEditingController textController;
+  final TextStyle? textStyle;
+  final Color? fillColor;
+  final Color? borderColor;
+  final String? helperText;
   final String hintText;
   final String? suffixText;
   final Icon? suffixIcon;
@@ -45,7 +53,7 @@ class NormalTextFormField extends StatelessWidget {
       children: [
         if (label != null)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+            padding: const EdgeInsets.only(left: 6, bottom: 6),
             child: Text(
               label!,
               style: TextStyle(
@@ -58,22 +66,35 @@ class NormalTextFormField extends StatelessWidget {
         TextFormField(
           controller: textController,
           validator: validator,
-          style: TextStyle(
-            color: colorScheme.onSurface,
-          ),
+          style:
+              textStyle ??
+              TextStyle(
+                color: colorScheme.onSurface,
+              ),
           textAlign: textAlign,
           readOnly: readOnly,
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           decoration: InputDecoration(
+            suffixStyle: textStyle,
             hintText: hintText,
+            helperText: helperText,
             contentPadding: isDense
                 ? EdgeInsets.symmetric(vertical: 8, horizontal: 12)
                 : padding,
-            fillColor: AppColors.divider.withAlpha(150),
+            fillColor: fillColor ?? AppColors.divider.withAlpha(150),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
             ),
+            focusedBorder: borderColor != null
+                ? OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide(
+                      color: borderColor ?? Color(0xFF000000),
+                      width: 1.5,
+                    ),
+                  )
+                : null,
             suffixText: suffixText,
             suffixIcon: suffixIcon,
           ),

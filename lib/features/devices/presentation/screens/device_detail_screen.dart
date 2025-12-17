@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/icons/back_icon.dart';
 import 'package:watering_app/features/devices/presentation/screens/schedule_tab_screen.dart';
 import 'package:watering_app/features/devices/providers/all_devices/devices_provider.dart';
+import 'package:watering_app/features/devices/providers/all_devices/realtime_devices_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_provider.dart';
 import 'package:watering_app/features/devices/providers/device/device_state.dart'
     as device_state;
@@ -16,9 +18,14 @@ import 'package:watering_app/features/devices/presentation/screens/control_tab_s
 import 'package:watering_app/theme/theme.dart';
 
 class DeviceDetailScreen extends ConsumerStatefulWidget {
-  const DeviceDetailScreen({super.key, required this.device});
+  const DeviceDetailScreen({
+    super.key,
+    required this.device,
+    this.isNavigetedFromHome = false,
+  });
 
   final Device device;
+  final bool isNavigetedFromHome;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -26,6 +33,8 @@ class DeviceDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
+  late bool _isOnline;
+
   void _showAskDeleteDialog() {
     showDialog(
       context: context,
@@ -66,70 +75,92 @@ class _DeviceDetailScreenState extends ConsumerState<DeviceDetailScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _isOnline = widget.device.online;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final device = widget.device;
     // final realtimeDeviceSensor = ref.watch(
     //   deviceSensorProvider(device.deviceId),
     // );
 
+        // Trạng thái Online/Offline
+    ref.listen<Map<String, bool>>(devicesStatusProvider, (prev, next) {
+      final newStatus = next[widget.device.deviceId];
+      if (newStatus != null && newStatus != _isOnline) {
+        setState(() {
+          _isOnline = newStatus;
+        });
+      }
+    });
+
     ref.listen(deleteDeviceProvider, (prev, next) {
-      print(
+      printDebug(
         'Delete device transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
       if (next is device_state.Failure) {
         final message = next.message;
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: message));
+        CustomSnackBar.showSnackBar(text: message);
       }
       if (next is device_state.Success && prev is device_state.Loading) {
         Navigator.of(context).pop();
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${widget.device.name}"'));
+        CustomSnackBar.showSnackBar(text: 'Đã xóa "${widget.device.name}"');
       }
     });
 
-    return DefaultTabController(
-      initialIndex: 0,
-      length: 3,
-      child: Scaffold(
-        appBar: CustomAppBar(
-          automaticallyImplyLeading: false,
-          title: 'Thiết bị: ${widget.device.name}',
-          leading: BackIcon(),
-          actions: [
-            IconButton(
-              onPressed: _showAskDeleteDialog,
-              icon: Icon(
-                Symbols.delete,
-                size: 28,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: DefaultTabController(
+        initialIndex: 0,
+        length: 3,
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          appBar: CustomAppBar(
+            automaticallyImplyLeading: false,
+            title: 'Thiết bị: ${widget.device.name}',
+            subTitle: _isOnline ? null : 'Không hoạt động',
+            leading: BackIcon(),
+            actions: [
+              IconButton(
+                onPressed: _showAskDeleteDialog,
+                icon: Icon(
+                  Symbols.delete,
+                  size: 28,
+                ),
               ),
+            ],
+            bottom: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorWeight: 3,
+              labelStyle: TextStyle(fontWeight: FontWeight.bold),
+              unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
+              tabs: <Widget>[
+                Tab(text: 'Điều khiển'),
+                Tab(text: 'Theo dõi'),
+                Tab(text: 'Lên lịch'),
+              ],
             ),
-          ],
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorWeight: 3,
-            labelStyle: TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-            tabs: <Widget>[
-              Tab(text: 'Điều khiển'),
-              Tab(text: 'Theo dõi'),
-              Tab(text: 'Lên lịch'),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              ControlTabScreen(device: device),
+              AnalyticsTabScreen(
+                device: device,
+                // realtimeDeviceSensor: realtimeDeviceSensor,
+              ),
+              ScheduleTabScreen(
+                device: device,
+                isNavigetedFromHome: widget.isNavigetedFromHome,
+              ),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: <Widget>[
-            ControlTabScreen(device: device),
-            AnalyticsTabScreen(
-              device: device,
-              // realtimeDeviceSensor: realtimeDeviceSensor,
-            ),
-            ScheduleTabScreen(device: device),
-          ],
         ),
       ),
     );

@@ -11,6 +11,12 @@ final theme = ThemeData(
       splashFactory: NoSplash.splashFactory,
     ),
   ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: ButtonStyle(
+      splashFactory: NoSplash.splashFactory,
+      side: WidgetStatePropertyAll(BorderSide(color: Colors.grey.shade400)),
+    ),
+  ),
   iconButtonTheme: IconButtonThemeData(
     style: ButtonStyle(
       splashFactory: NoSplash.splashFactory,

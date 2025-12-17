@@ -1,0 +1,72 @@
+Date : 2025-11-27 16:22:27
+Directory : d:\VSCode\Flutter\watering_app\lib
+Total : 22 files,  1087 codes, 49 comments, 98 blanks, all 1234 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         22 |      1,087 |         49 |         98 |      1,234 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                        | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                           |         22 |      1,087 |         49 |         98 |      1,234 |
+| . (Files)                                                                                                   |          2 |         72 |         12 |          9 |         93 |
+| core                                                                                                        |          2 |         29 |          0 |          3 |         32 |
+| core\constants                                                                                              |          1 |         11 |          0 |          3 |         14 |
+| core\widgets                                                                                                |          1 |         18 |          0 |          0 |         18 |
+| core\widgets\text_form_field                                                                                |          1 |         18 |          0 |          0 |         18 |
+| features                                                                                                    |         18 |        986 |         37 |         86 |      1,109 |
+| features\authentication                                                                                     |          8 |        302 |          4 |         26 |        332 |
+| features\authentication\data                                                                                |          1 |          2 |          0 |          0 |          2 |
+| features\authentication\data\source                                                                         |          1 |          2 |          0 |          0 |          2 |
+| features\authentication\domain                                                                              |          2 |          3 |          0 |          0 |          3 |
+| features\authentication\domain\repository                                                                   |          2 |          3 |          0 |          0 |          3 |
+| features\authentication\presentation                                                                        |          4 |        295 |          4 |         26 |        325 |
+| features\authentication\presentation\screens                                                                |          4 |        295 |          4 |         26 |        325 |
+| features\authentication\providers                                                                           |          1 |          2 |          0 |          0 |          2 |
+| features\devices                                                                                            |          2 |          5 |          0 |          0 |          5 |
+| features\devices\presentation                                                                               |          1 |          2 |          0 |          0 |          2 |
+| features\devices\presentation\widgets                                                                       |          1 |          2 |          0 |          0 |          2 |
+| features\devices\providers                                                                                  |          1 |          3 |          0 |          0 |          3 |
+| features\devices\providers\all_devices                                                                      |          1 |          3 |          0 |          0 |          3 |
+| features\groups                                                                                             |          1 |          1 |          0 |          1 |          2 |
+| features\groups\providers                                                                                   |          1 |          1 |          0 |          1 |          2 |
+| features\groups\providers\all_groups                                                                        |          1 |          1 |          0 |          1 |          2 |
+| features\home                                                                                               |          7 |        678 |         33 |         59 |        770 |
+| features\home\presentation                                                                                  |          7 |        678 |         33 |         59 |        770 |
+| features\home\presentation\screens                                                                          |          3 |        -34 |         -4 |        -13 |        -51 |
+| features\home\presentation\widgets                                                                          |          4 |        712 |         37 |         72 |        821 |
++-------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                    | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| d:\VSCode\Flutter\watering_app\lib\core\constants\app_assets.dart                                           | Dart     |         11 |          0 |          3 |         14 |
+| d:\VSCode\Flutter\watering_app\lib\core\widgets\text_form_field\normal_text_form_field.dart                 | Dart     |         18 |          0 |          0 |         18 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\data\source\auth_remote.dart                     | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\domain\repository\auth_repository.dart           | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\domain\repository\auth_repository_impl.dart      | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\change_password_screen.dart | Dart     |          4 |          0 |          0 |          4 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\forgot_password_screen.dart | Dart     |        273 |          4 |         27 |        304 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\login_screen.dart           | Dart     |          8 |          0 |         -1 |          7 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\new_password_screen.dart    | Dart     |         10 |          0 |          0 |         10 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\providers\auth_provider.dart                     | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\presentation\widgets\device_grid_item.dart              | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\providers\all_devices\realtime_devices_provider.dart    | Dart     |          3 |          0 |          0 |          3 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\providers\all_groups\realtime_groups_provider.dart       | Dart     |          1 |          0 |          1 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\chat_bot_screen.dart                  | Dart     |        167 |          4 |          6 |        177 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\home_screen copy.dart                 | Dart     |       -231 |         -8 |        -19 |       -258 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\home_screen.dart                      | Dart     |         30 |          0 |          0 |         30 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\all_devices_popup.dart                | Dart     |        193 |          5 |         16 |        214 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\plant_interaction_card.dart           | Dart     |        423 |         24 |         39 |        486 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\slider_thumb_shape.dart               | Dart     |         47 |          3 |          9 |         59 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\slider_track_shape.dart               | Dart     |         49 |          5 |          8 |         62 |
+| d:\VSCode\Flutter\watering_app\lib\firebase_options.dart                                                    | Dart     |         68 |         12 |          7 |         87 |
+| d:\VSCode\Flutter\watering_app\lib\main.dart                                                                | Dart     |          4 |          0 |          2 |          6 |
+| Total                                                                                                       |          |      1,087 |         49 |         98 |      1,234 |
++-------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

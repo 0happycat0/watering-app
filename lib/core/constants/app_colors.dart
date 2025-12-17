@@ -10,6 +10,15 @@ class AppColors {
     300: Color.fromARGB(255, 85, 113, 56),
     400: Color.fromARGB(255, 60, 80, 39),
   };
+  static const Map<int, Color> secondaryGreen = {
+    10: Color.fromARGB(255, 235, 254, 234),
+    50: Color.fromARGB(255, 215, 255, 215),
+    100: Color.fromARGB(255, 156, 235, 137),
+    150: Color.fromARGB(255, 100, 223, 62),
+    200: Color.fromARGB(255, 84, 188, 53),
+    300: Color.fromARGB(255, 53, 119, 35),
+    400: Color.fromARGB(255, 42, 95, 28),
+  };
   static const Map<int, Color> mainYellow = {
     50: Color(0xFFFFFD8F),
     100: Color.fromARGB(255, 224, 223, 130),
@@ -22,12 +31,13 @@ class AppColors {
     10: Color.fromARGB(255, 235, 249, 254),
     50: Color.fromARGB(255, 208, 244, 254),
     100: Color.fromARGB(255, 160, 233, 253),
+    150: Color.fromARGB(255, 141, 206, 224),
     200: Color.fromARGB(255, 122, 187, 212),
     300: Color.fromARGB(255, 77, 153, 204),
     400: Color.fromARGB(255, 51, 128, 179),
-    500: Color.fromARGB(255, 38, 99, 138),
+    500: Color.fromARGB(255, 33, 88, 122),
   };
-  static const Map<int, Color> primaryYellow = {
+  static const Map<int, Color> secondaryYellow = {
     50: Color.fromARGB(255, 255, 231, 143),
     100: Color.fromARGB(255, 253, 213, 69),
     200: Color.fromARGB(255, 253, 198, 0),

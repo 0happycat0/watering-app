@@ -117,7 +117,7 @@ class ScheduleListItem extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${schedule.duration} phút • $repeatText',
+                          '${schedule.duration ~/ 60} phút • $repeatText',
                           style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),

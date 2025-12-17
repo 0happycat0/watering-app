@@ -10,7 +10,8 @@ final getGroupHistoryWateringProvider =
       GetGroupHistoryWateringNotifier,
       group_state.GroupState
     >(
-      (ref) => GetGroupHistoryWateringNotifier(ref.watch(groupRepositoryProvider)),
+      (ref) =>
+          GetGroupHistoryWateringNotifier(ref.watch(groupRepositoryProvider)),
     );
 
 class GetGroupHistoryWateringNotifier
@@ -18,14 +19,20 @@ class GetGroupHistoryWateringNotifier
   GetGroupHistoryWateringNotifier(this.groupRepository)
     : super(group_state.Initial());
   final GroupRepositoryImpl groupRepository;
-  
-  Future<void> getHistoryWatering({required String id}) async {
+
+  Future<void> getHistoryWatering({
+    required String id,
+    int? page,
+    int? size = 100,
+  }) async {
     state = group_state.Loading();
 
     final response = await groupRepository.getHistoryWatering(
       group: Group(id: id),
+      page: page,
+      size: size,
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return group_state.Failure(exception);
@@ -40,4 +47,3 @@ class GetGroupHistoryWateringNotifier
     return getHistoryWatering(id: id);
   }
 }
-

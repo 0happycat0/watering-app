@@ -27,13 +27,13 @@
 //     _unsubscribe = StompService().subscribe(
 //       StompPath.topic.deviceSensor(deviceId),
 //       onMessage: (StompFrame frame) {
-//         print('bắt đầu try');
+//         printDebug('bắt đầu try');
 //         if (frame.body != null) {
 //           try {
 //             final data = jsonDecode(frame.body!);
 //             state = HistorySensor.fromJson(data);
 //           } catch (e) {
-//             print('[DeviceSensorNotifier] Lỗi parse JSON: $e');
+//             printDebug('[DeviceSensorNotifier] Lỗi parse JSON: $e');
 //           }
 //         }
 //       },
@@ -42,7 +42,7 @@
 
 //   @override
 //   void dispose() {
-//     print('[DeviceSensorNotifier] Disposing. Unsubscribing $deviceId...');
+//     printDebug('[DeviceSensorNotifier] Disposing. Unsubscribing $deviceId...');
 //     _unsubscribe!();
 //     super.dispose();
 //   }

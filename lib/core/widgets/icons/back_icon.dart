@@ -3,7 +3,9 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 
 class BackIcon extends StatelessWidget {
-  const BackIcon({super.key});
+  const BackIcon({super.key, this.color});
+
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,7 @@ class BackIcon extends StatelessWidget {
         Navigator.of(context).pop();
       },
       icon: Icon(Symbols.arrow_back_ios_rounded, weight: 700),
-      color: AppColors.mainGreen[200],
+      color: color ?? AppColors.mainGreen[200],
     );
   }
 }

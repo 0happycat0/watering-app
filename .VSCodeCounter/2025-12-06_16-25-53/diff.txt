@@ -1,0 +1,102 @@
+Date : 2025-12-06 16:25:53
+Directory : d:\VSCode\Flutter\watering_app\lib
+Total : 38 files,  622 codes, 18 comments, 31 blanks, all 671 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         38 |        622 |         18 |         31 |        671 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                     | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                        |         38 |        622 |         18 |         31 |        671 |
+| core                                                                                                     |         10 |         31 |          0 |          3 |         34 |
+| core (Files)                                                                                             |          2 |          4 |          0 |          0 |          4 |
+| core\constants                                                                                           |          1 |          4 |          0 |          1 |          5 |
+| core\network                                                                                             |          4 |         15 |          0 |          0 |         15 |
+| core\network (Files)                                                                                     |          3 |         12 |          0 |          0 |         12 |
+| core\network\interceptors                                                                                |          1 |          3 |          0 |          0 |          3 |
+| core\utils                                                                                               |          2 |          7 |          0 |          2 |          9 |
+| core\widgets                                                                                             |          1 |          1 |          0 |          0 |          1 |
+| features                                                                                                 |         28 |        591 |         18 |         28 |        637 |
+| features\authentication                                                                                  |          8 |        556 |         18 |         28 |        602 |
+| features\authentication\data                                                                             |          1 |          1 |          0 |          0 |          1 |
+| features\authentication\data\source                                                                      |          1 |          1 |          0 |          0 |          1 |
+| features\authentication\domain                                                                           |          1 |          1 |          0 |          0 |          1 |
+| features\authentication\domain\repository                                                                |          1 |          1 |          0 |          0 |          1 |
+| features\authentication\presentation                                                                     |          4 |        529 |         15 |         26 |        570 |
+| features\authentication\presentation\screens                                                             |          4 |        529 |         15 |         26 |        570 |
+| features\authentication\providers                                                                        |          2 |         25 |          3 |          2 |         30 |
+| features\devices                                                                                         |          9 |         10 |          0 |          1 |         11 |
+| features\devices\data                                                                                    |          1 |          1 |          0 |          0 |          1 |
+| features\devices\data\source                                                                             |          1 |          1 |          0 |          0 |          1 |
+| features\devices\presentation                                                                            |          5 |          7 |          0 |          0 |          7 |
+| features\devices\presentation\screens                                                                    |          4 |          6 |          0 |          0 |          6 |
+| features\devices\presentation\widgets                                                                    |          1 |          1 |          0 |          0 |          1 |
+| features\devices\providers                                                                               |          3 |          2 |          0 |          1 |          3 |
+| features\devices\providers\all_devices                                                                   |          1 |          1 |          0 |          0 |          1 |
+| features\devices\providers\device                                                                        |          2 |          1 |          0 |          1 |          2 |
+| features\groups                                                                                          |          8 |         17 |          0 |         -1 |         16 |
+| features\groups\data                                                                                     |          1 |          1 |          0 |          0 |          1 |
+| features\groups\data\source                                                                              |          1 |          1 |          0 |          0 |          1 |
+| features\groups\presentation                                                                             |          5 |          7 |          0 |          0 |          7 |
+| features\groups\presentation\screens                                                                     |          4 |          6 |          0 |          0 |          6 |
+| features\groups\presentation\widgets                                                                     |          1 |          1 |          0 |          0 |          1 |
+| features\groups\providers                                                                                |          2 |          9 |          0 |         -1 |          8 |
+| features\groups\providers\all_groups                                                                     |          1 |          1 |          0 |          0 |          1 |
+| features\groups\providers\group                                                                          |          1 |          8 |          0 |         -1 |          7 |
+| features\home                                                                                            |          3 |          8 |          0 |          0 |          8 |
+| features\home\data                                                                                       |          1 |          1 |          0 |          0 |          1 |
+| features\home\data\source                                                                                |          1 |          1 |          0 |          0 |          1 |
+| features\home\presentation                                                                               |          2 |          7 |          0 |          0 |          7 |
+| features\home\presentation\screens                                                                       |          2 |          7 |          0 |          0 |          7 |
++----------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                 | language | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| d:\VSCode\Flutter\watering_app\lib\core\app_lifecycle_observer.dart                                      | Dart     |          3 |          0 |          0 |          3 |
+| d:\VSCode\Flutter\watering_app\lib\core\constants\app_strings.dart                                       | Dart     |          4 |          0 |          1 |          5 |
+| d:\VSCode\Flutter\watering_app\lib\core\main_scaffold.dart                                               | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\core\network\auth_dio_network_service.dart                            | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\core\network\dio_network_service.dart                                 | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\core\network\interceptors\auth_interceptor.dart                       | Dart     |          3 |          0 |          0 |          3 |
+| d:\VSCode\Flutter\watering_app\lib\core\network\stomp_service.dart                                       | Dart     |         10 |          0 |          0 |         10 |
+| d:\VSCode\Flutter\watering_app\lib\core\utils\debug_print.dart                                           | Dart     |          6 |          0 |          2 |          8 |
+| d:\VSCode\Flutter\watering_app\lib\core\utils\notification_service.dart                                  | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\core\widgets\edit_schedule_sheet.dart                                 | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\data\source\auth_remote.dart                  | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\domain\repository\auth_repository_impl.dart   | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\account_screen.dart      | Dart     |         41 |          1 |          2 |         44 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\app_info_screen.dart     | Dart     |        486 |         14 |         24 |        524 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\login_screen.dart        | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\signup_screen.dart       | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\providers\auth_provider.dart                  | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\authentication\providers\biometric_provider.dart             | Dart     |         24 |          3 |          2 |         29 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\data\source\device_remote.dart                       | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\presentation\screens\all_devices_screen.dart         | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\presentation\screens\analytics_tab_screen.dart       | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\presentation\screens\device_detail_screen.dart       | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\presentation\screens\schedule_tab_screen.dart        | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\presentation\widgets\add_new_device.dart             | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\providers\all_devices\realtime_devices_provider.dart | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\providers\device\realtime_device_provider.dart       | Dart     |          0 |          0 |          1 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\devices\providers\device\schedule_provider.dart              | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\data\source\group_remote.dart                         | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\presentation\screens\all_groups_screen.dart           | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\presentation\screens\group_detail_screen.dart         | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\presentation\screens\group_devices_tab_screen.dart    | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\presentation\screens\group_schedule_tab_screen.dart   | Dart     |          2 |          0 |          0 |          2 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\presentation\widgets\add_or_edit_group.dart           | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\providers\all_groups\realtime_groups_provider.dart    | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\groups\providers\group\schedule_provider.dart                | Dart     |          8 |          0 |         -1 |          7 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\data\source\home_remote.dart                            | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\articles_screen.dart               | Dart     |          1 |          0 |          0 |          1 |
+| d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\home_screen.dart                   | Dart     |          6 |          0 |          0 |          6 |
+| Total                                                                                                    |          |        622 |         18 |         31 |        671 |
++----------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

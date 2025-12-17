@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:watering_app/core/constants/stomp_path.dart';
-import 'package:watering_app/core/utils/stomp_service.dart';
+import 'package:watering_app/core/network/stomp_service.dart';
+import 'package:watering_app/core/network/stomp_service_provider.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/devices/data/models/history_sensor_model.dart';
 
 typedef DevicesSensorState = Map<String, HistorySensor>;
@@ -16,20 +18,25 @@ final devicesSensorProvider =
       DevicesSensorState
     >(
       (ref) {
-        return DevicesSensorNotifier();
+        final stompService = ref.watch(stompServiceProvider);
+        if (stompService == null) {
+          printDebug('StompService is null');
+        }
+        return DevicesSensorNotifier(stompService ?? StompService());
       },
     );
 
 class DevicesSensorNotifier extends StateNotifier<DevicesSensorState> {
   StompUnsubscribeTopic? _unsubscribe;
+  StompService stompService;
 
-  DevicesSensorNotifier() : super({}) {
+  DevicesSensorNotifier(this.stompService) : super({}) {
     _subscribe();
   }
 
   void _subscribe() {
     try {
-      _unsubscribe = StompService().subscribe(
+      _unsubscribe = stompService.subscribe(
         StompPath.topic.devicesSensor,
         onMessage: (StompFrame frame) {
           if (frame.body == null) return;
@@ -40,24 +47,25 @@ class DevicesSensorNotifier extends StateNotifier<DevicesSensorState> {
             final HistorySensor sensorData = HistorySensor.fromJson(data);
 
             if (deviceId.isEmpty) return;
+            if (!mounted) return;
 
             state = {
               ...state,
               deviceId: sensorData,
             };
           } catch (e) {
-            print('[DevicesSensorNotifier] Lỗi parse JSON: $e');
+            printDebug('[DevicesSensorNotifier] Lỗi parse JSON: $e');
           }
         },
       );
     } catch (e) {
-      print('DevicesSensorNotifier Lỗi subscribe: $e');
+      printDebug('DevicesSensorNotifier Lỗi subscribe: $e');
     }
   }
 
   @override
   void dispose() {
-    print(
+    printDebug(
       '[DevicesSensorNotifier] Đang hủy. Đang unsubscribe /user/devices/sensor...',
     );
     _unsubscribe!();
@@ -74,19 +82,24 @@ final devicesStatusProvider =
       DevicesStatusState
     >(
       (ref) {
-        return DevicesStatusNotifier();
+        final stompService = ref.watch(stompServiceProvider);
+        if (stompService == null) {
+          printDebug('StompService is null');
+        }
+        return DevicesStatusNotifier(stompService ?? StompService());
       },
     );
 
 class DevicesStatusNotifier extends StateNotifier<DevicesStatusState> {
   StompUnsubscribeTopic? _unsubscribe;
+  StompService stompService;
 
-  DevicesStatusNotifier() : super({}) {
+  DevicesStatusNotifier(this.stompService) : super({}) {
     _subscribe();
   }
 
   void _subscribe() {
-    _unsubscribe = StompService().subscribe(
+    _unsubscribe = stompService.subscribe(
       StompPath.topic.devicesStatus,
       onMessage: (StompFrame frame) {
         if (frame.body == null) return;
@@ -96,13 +109,14 @@ class DevicesStatusNotifier extends StateNotifier<DevicesStatusState> {
           final bool isOnline = data['isOnline'];
 
           if (deviceId.isEmpty) return;
+          if (!mounted) return;
 
           state = {
             ...state,
             deviceId: isOnline,
           };
         } catch (e) {
-          print('[DevicesStatusNotifier] Lỗi parse JSON: $e');
+          printDebug('[DevicesStatusNotifier] Lỗi parse JSON: $e');
         }
       },
     );
@@ -110,7 +124,7 @@ class DevicesStatusNotifier extends StateNotifier<DevicesStatusState> {
 
   @override
   void dispose() {
-    print(
+    printDebug(
       '[DevicesStatusNotifier] Đang hủy. Đang unsubscribe /user/devices/status...',
     );
     _unsubscribe!();
@@ -126,19 +140,24 @@ final devicesWateringProvider =
       DevicesWateringState
     >(
       (ref) {
-        return DevicesWateringNotifier();
+        final stompService = ref.watch(stompServiceProvider);
+        if (stompService == null) {
+          printDebug('StompService is null');
+        }
+        return DevicesWateringNotifier(stompService ?? StompService());
       },
     );
 
 class DevicesWateringNotifier extends StateNotifier<DevicesWateringState> {
   StompUnsubscribeTopic? _unsubscribe;
+  StompService stompService;
 
-  DevicesWateringNotifier() : super({}) {
+  DevicesWateringNotifier(this.stompService) : super({}) {
     _subscribe();
   }
 
   void _subscribe() {
-    _unsubscribe = StompService().subscribe(
+    _unsubscribe = stompService.subscribe(
       StompPath.topic.devicesWatering,
       onMessage: (StompFrame frame) {
         if (frame.body == null) return;
@@ -148,13 +167,14 @@ class DevicesWateringNotifier extends StateNotifier<DevicesWateringState> {
           final bool isWatering = data['isWatering'];
 
           if (deviceId.isEmpty) return;
+          if (!mounted) return;
 
           state = {
             ...state,
             deviceId: isWatering,
           };
         } catch (e) {
-          print('[DevicesWateringNotifier] Lỗi parse JSON: $e');
+          printDebug('[DevicesWateringNotifier] Lỗi parse JSON: $e');
         }
       },
     );
@@ -162,7 +182,7 @@ class DevicesWateringNotifier extends StateNotifier<DevicesWateringState> {
 
   @override
   void dispose() {
-    print(
+    printDebug(
       '[DevicesWateringNotifier] Đang hủy. Đang unsubscribe /user/devices/watering...',
     );
     _unsubscribe!();

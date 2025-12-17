@@ -1,0 +1,13 @@
+"filename", "language", "Dart", "comment", "blank", "total"
+"d:\VSCode\Flutter\watering_app\lib\core\constants\shared_preference_key.dart", "Dart", 2, 0, 0, 2
+"d:\VSCode\Flutter\watering_app\lib\core\network\interceptors\auth_interceptor.dart", "Dart", 6, 2, 0, 8
+"d:\VSCode\Flutter\watering_app\lib\core\network\stomp_service.dart", "Dart", 2, 3, 1, 6
+"d:\VSCode\Flutter\watering_app\lib\core\widgets\text_form_field\password_text_form_field.dart", "Dart", 3, 0, 0, 3
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\data\source\auth_local.dart", "Dart", 32, 6, 5, 43
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\domain\repository\auth_repository.dart", "Dart", 2, 0, 0, 2
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\domain\repository\auth_repository_impl.dart", "Dart", 18, 1, 4, 23
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\account_screen.dart", "Dart", 98, 5, 5, 108
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\login_screen.dart", "Dart", 166, 3, 10, 179
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\providers\auth_provider.dart", "Dart", 4, 0, 1, 5
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\providers\biometric_provider.dart", "Dart", 60, 4, 12, 76
+"Total", "-", 393, 24, 38, 455

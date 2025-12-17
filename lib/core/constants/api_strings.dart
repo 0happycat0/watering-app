@@ -5,6 +5,11 @@ class ApiStrings {
   static const String invalidToken = 'Invalid token';
 
   static const String message = 'message';
+  
+  static const String email = 'email';
+  static const String code = 'code';
+  static const String newPassword = 'newPassword';
+  static const String confirmNewPassword = 'confirmNewPassword';
 
   static const String name = 'name';
   static const String page = 'page';

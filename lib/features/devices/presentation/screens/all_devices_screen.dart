@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_app_bar.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -49,7 +50,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     if (_debounceTimer?.isActive ?? false) {
       _debounceTimer!.cancel();
     }
-    print('DEBUG: query = $query');
+    printDebug('DEBUG: query = $query');
 
     //sử dụng timer để delay gọi api khi gõ liên tục
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
@@ -91,7 +92,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
       }
     });
 
-    print('Sort by: ${sortField.label}, ascending: $_isAscending');
+    printDebug('Sort by: ${sortField.label}, ascending: $_isAscending');
     ref
         .read(devicesProvider.notifier)
         .getAllDevices(
@@ -134,9 +135,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
               devicesNotifier.setLoading();
               await deleteDeviceNotifier.deleteDevice(id: device.id);
               if (mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(CustomSnackBar(text: 'Đã xóa "${device.name}"'));
+                CustomSnackBar.showSnackBar(text: 'Đã xóa "${device.name}"');
                 ref
                     .read(devicesProvider.notifier)
                     .getAllDevices(
@@ -181,12 +180,12 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 isDense: true,
               ),
               SizedBox(height: 10),
-              NormalTextFormField(
-                textController: idController,
-                hintText: '',
-                label: 'Mã thiết bị',
-                isDense: true,
-              ),
+              // NormalTextFormField(
+              //   textController: idController,
+              //   hintText: '',
+              //   label: 'Mã thiết bị',
+              //   isDense: true,
+              // ),
               SizedBox(height: 16),
               Row(
                 children: [
@@ -235,9 +234,9 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
   @override
   void initState() {
     super.initState();
-    if (!mounted) return;
     Future.microtask(() async {
-      ref.read(devicesProvider.notifier).getAllDevices();
+      if (!mounted) return;
+      await ref.read(devicesProvider.notifier).getAllDevices();
     });
   }
 
@@ -259,19 +258,19 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
     ref.watch(deleteDeviceProvider);
 
     ref.watch(devicesSensorProvider);
-    ref.watch(devicesStatusProvider);
-    ref.watch(devicesWateringProvider);
+    // ref.watch(devicesStatusProvider);
+    // ref.watch(devicesWateringProvider);
 
     ref.listen(devicesProvider, (prev, next) {
-      print(
+      printDebug(
         'All devices transition: ${prev.runtimeType} -> ${next.runtimeType}',
       );
-      print(
+      printDebug(
         'isResetSort = ${ref.read(shouldResetSortAndSearchProvider.notifier).state}',
       );
     });
 
-    // print('_currentSort = $_currentSort');
+    // printDebug('_currentSort = $_currentSort');
     if (_currentSort == AllDevicesSortField.defaultSort) {
       _currentSort = null;
       _isAscending = null;
@@ -370,6 +369,7 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                 displacement: 40,
                 edgeOffset: 0,
                 onRefresh: () async {
+                  if (!mounted) return;
                   await ref
                       .read(devicesProvider.notifier)
                       .getAllDevices(
@@ -396,8 +396,8 @@ class _AllDevicesScreenState extends ConsumerState<AllDevicesScreen> {
                       final device = devices[index];
                       return DeviceGridItem(
                         device: device,
-                        onSelectDevice: () {
-                          _onSelectDevice(device);
+                        onSelectDevice: (currentDevice) {
+                          _onSelectDevice(currentDevice);
                         },
                         onSelectDelete: () async {
                           _showAskDeleteDialog(device);

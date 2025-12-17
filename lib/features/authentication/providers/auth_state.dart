@@ -59,3 +59,44 @@ class SignupFailure extends AuthState {
     }
   }
 }
+
+class SendOtpFailure extends AuthState {
+  const SendOtpFailure(this.exception);
+  final DioException exception;
+  String get message {
+    switch (exception.message) {
+      default:
+        return 'Có lỗi xảy ra khi gửi OTP';
+    }
+  }
+}
+
+class VerifyEmailFailure extends AuthState {
+  const VerifyEmailFailure(this.exception);
+  final DioException exception;
+  String get message {
+    switch (exception.message) {
+      case 'OTP has expired':
+        return 'OTP đã hết hạn. Vui lòng gửi lại OTP';
+      case 'OTP is wrong':
+        return 'OTP nhập sai. Vui lòng thử lại';
+      default:
+        return 'Có lỗi xảy ra';
+    }
+  }
+}
+
+class ChangePasswordFailure extends AuthState {
+  const ChangePasswordFailure(this.exception);
+  final DioException exception;
+  String get message {
+    switch (exception.message) {
+      case 'OTP has expired':
+        return 'OTP đã hết hạn. Vui lòng gửi lại OTP';
+      case 'OTP is wrong':
+        return 'OTP nhập sai. Vui lòng thử lại';
+      default:
+        return 'Có lỗi xảy ra';
+    }
+  }
+}

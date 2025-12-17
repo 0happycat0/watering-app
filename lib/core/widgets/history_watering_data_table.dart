@@ -13,6 +13,7 @@ class HistoryWateringDataSource extends DataTableSource {
     final historyWatering = historyWateringList[index];
     final String formattedDate;
     final String formattedTime;
+    final String formattedDuration;
     if (historyWatering.startTime != null) {
       formattedDate = DateFormat(
         'dd/MM/yyyy',
@@ -21,6 +22,12 @@ class HistoryWateringDataSource extends DataTableSource {
     } else {
       formattedDate = 'N/A';
       formattedTime = '';
+    }
+
+    if (historyWatering.duration >= 60) {
+      formattedDuration = (historyWatering.duration ~/ 60).toString();
+    } else {
+      formattedDuration = '0 (${historyWatering.duration}s)';
     }
 
     return DataRow2(
@@ -33,7 +40,7 @@ class HistoryWateringDataSource extends DataTableSource {
                   child: Text(
                     formattedDate,
                     style: TextStyle(
-                      fontSize: 12, 
+                      fontSize: 12,
                     ),
                   ),
                 ),
@@ -50,7 +57,7 @@ class HistoryWateringDataSource extends DataTableSource {
             ),
           ),
         ),
-        DataCell(Center(child: Text(historyWatering.duration.toString()))),
+        DataCell(Center(child: Text(formattedDuration))),
       ],
     );
   }

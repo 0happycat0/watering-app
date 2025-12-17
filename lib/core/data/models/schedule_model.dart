@@ -8,6 +8,7 @@ class Schedule extends Equatable {
   final RepeatType repeatType;
   final bool status;
   final List<DaysOfWeek>? daysOfWeek;
+  final int runAfter;
 
   const Schedule({
     this.id = '',
@@ -16,6 +17,7 @@ class Schedule extends Equatable {
     this.repeatType = RepeatType.ONE_TIME,
     this.status = false,
     this.daysOfWeek,
+    this.runAfter = -1,
   });
 
   factory Schedule.fromJson(Map<String, dynamic> json) {
@@ -36,8 +38,9 @@ class Schedule extends Equatable {
     RepeatType parsedRepeatType = RepeatType.ONE_TIME; // Default
     if (json['repeatType'] != null) {
       try {
-        parsedRepeatType =
-            RepeatType.values.byName(json['repeatType'].toString());
+        parsedRepeatType = RepeatType.values.byName(
+          json['repeatType'].toString(),
+        );
       } catch (e) {
         // Giữ giá trị default nếu string từ API không khớp
       }
@@ -45,10 +48,11 @@ class Schedule extends Equatable {
     return Schedule(
       id: json['id'] ?? '',
       startTime: json['startTime'] ?? '',
-      duration: (json['duration'] ?? 0) ~/ 60,
+      duration: json['duration'] ?? 0,
       repeatType: parsedRepeatType,
       status: json['status'] ?? false,
       daysOfWeek: parsedDays,
+      runAfter: json['runAfter'],
     );
   }
 
@@ -56,11 +60,12 @@ class Schedule extends Equatable {
     return <String, dynamic>{
       'id': id,
       'startTime': startTime,
-      'duration': duration * 60,
+      'duration': duration,
       'repeatType': repeatType.name,
       'status': status,
       if (daysOfWeek != null)
         'daysOfWeek': daysOfWeek!.map((e) => e.name).toList(),
+      'runAfter': runAfter,
     };
   }
 
@@ -79,6 +84,7 @@ class Schedule extends Equatable {
       repeatType: repeatType ?? this.repeatType,
       status: status ?? this.status,
       daysOfWeek: daysOfWeek ?? this.daysOfWeek,
+      runAfter: runAfter,
     );
   }
 
@@ -90,5 +96,6 @@ class Schedule extends Equatable {
     repeatType,
     status,
     daysOfWeek,
+    runAfter,
   ];
 }

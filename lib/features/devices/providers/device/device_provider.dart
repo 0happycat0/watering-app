@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_impl.dart';
 import 'package:watering_app/features/devices/domain/repository/device_repository_provider.dart';
@@ -26,6 +30,7 @@ class CreateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
     final response = await deviceRepository.createDevice(
       device: Device(name: name, deviceId: deviceId),
     );
+    if (!mounted) return;
     state = response.fold(
       (exception) => device_state.Failure(exception),
       (_) => device_state.Success(),
@@ -57,7 +62,7 @@ class UpdateDeviceNotifier extends StateNotifier<device_state.DeviceState> {
     final response = await deviceRepository.updateDevice(
       device: Device(id: id, name: name, deviceId: deviceId),
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return device_state.Failure(exception);
@@ -89,7 +94,7 @@ class DeleteDeviceNotifier extends StateNotifier<device_state.DeviceState> {
     final response = await deviceRepository.deleteDevice(
       device: Device(id: id),
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return device_state.Failure(exception);
@@ -135,5 +140,38 @@ class ToggleDeviceNotifier extends StateNotifier<bool> {
         return true;
       },
     );
+  }
+}
+
+//--------------------------------------------------------------------------------------------------
+//get device id from device hardware
+final getDeviceIdProvider =
+    AsyncNotifierProvider.autoDispose<GetDeviceIdNotifier, String?>(
+      () => GetDeviceIdNotifier(),
+    );
+
+class GetDeviceIdNotifier extends AsyncNotifier<String?> {
+  @override
+  FutureOr<String?> build() async {
+    return null;
+  }
+
+  Future<void> getDeviceIdFromHardware() async {
+    state = const AsyncLoading();
+
+    state = await AsyncValue.guard(() async {
+      final repo = ref.read(deviceRepositoryProvider);
+      final result = await repo.getDeviceIdFromHardware();
+      return result.fold(
+        (error) {
+          printDebug('error = $error');
+          throw error;
+        }, // Ném lỗi để state bắt
+        (devceId) {
+          printDebug('deviceId = $devceId');
+          return devceId;
+        }, // Trả về ID thành công
+      );
+    });
   }
 }

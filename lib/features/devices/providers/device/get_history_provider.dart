@@ -36,7 +36,7 @@ class GetHistorySensorNotifier extends StateNotifier<device_state.DeviceState> {
       sortField: sortField,
       isAscending: isAscending,
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return device_state.Failure(exception);
@@ -74,7 +74,7 @@ class GetHistoryWateringNotifier
     final response = await deviceRepository.getHistoryWatering(
       device: Device(id: id),
     );
-
+    if (!mounted) return;
     state = response.fold(
       (exception) {
         return device_state.Failure(exception);

@@ -1,0 +1,24 @@
+"filename", "language", "Dart", "comment", "blank", "total"
+"d:\VSCode\Flutter\watering_app\lib\core\constants\app_assets.dart", "Dart", 11, 0, 3, 14
+"d:\VSCode\Flutter\watering_app\lib\core\widgets\text_form_field\normal_text_form_field.dart", "Dart", 18, 0, 0, 18
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\data\source\auth_remote.dart", "Dart", 2, 0, 0, 2
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\domain\repository\auth_repository.dart", "Dart", 1, 0, 0, 1
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\domain\repository\auth_repository_impl.dart", "Dart", 2, 0, 0, 2
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\change_password_screen.dart", "Dart", 4, 0, 0, 4
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\forgot_password_screen.dart", "Dart", 273, 4, 27, 304
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\login_screen.dart", "Dart", 8, 0, -1, 7
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\presentation\screens\new_password_screen.dart", "Dart", 10, 0, 0, 10
+"d:\VSCode\Flutter\watering_app\lib\features\authentication\providers\auth_provider.dart", "Dart", 2, 0, 0, 2
+"d:\VSCode\Flutter\watering_app\lib\features\devices\presentation\widgets\device_grid_item.dart", "Dart", 2, 0, 0, 2
+"d:\VSCode\Flutter\watering_app\lib\features\devices\providers\all_devices\realtime_devices_provider.dart", "Dart", 3, 0, 0, 3
+"d:\VSCode\Flutter\watering_app\lib\features\groups\providers\all_groups\realtime_groups_provider.dart", "Dart", 1, 0, 1, 2
+"d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\chat_bot_screen.dart", "Dart", 167, 4, 6, 177
+"d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\home_screen copy.dart", "Dart", -231, -8, -19, -258
+"d:\VSCode\Flutter\watering_app\lib\features\home\presentation\screens\home_screen.dart", "Dart", 30, 0, 0, 30
+"d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\all_devices_popup.dart", "Dart", 193, 5, 16, 214
+"d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\plant_interaction_card.dart", "Dart", 423, 24, 39, 486
+"d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\slider_thumb_shape.dart", "Dart", 47, 3, 9, 59
+"d:\VSCode\Flutter\watering_app\lib\features\home\presentation\widgets\slider_track_shape.dart", "Dart", 49, 5, 8, 62
+"d:\VSCode\Flutter\watering_app\lib\firebase_options.dart", "Dart", 68, 12, 7, 87
+"d:\VSCode\Flutter\watering_app\lib\main.dart", "Dart", 4, 0, 2, 6
+"Total", "-", 1087, 49, 98, 1234

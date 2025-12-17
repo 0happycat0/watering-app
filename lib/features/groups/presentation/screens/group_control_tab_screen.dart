@@ -9,6 +9,7 @@ import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
 import 'package:watering_app/features/groups/data/models/group_model.dart';
+import 'package:watering_app/features/groups/providers/all_groups/realtime_groups_provider.dart';
 import 'package:watering_app/features/groups/providers/group/group_provider.dart';
 import 'package:watering_app/features/groups/providers/group/group_state.dart'
     as group_state;
@@ -39,14 +40,14 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
       if (value != null) {
         if (value > 60) {
           newText = AppStrings.maxPumpDurationValue;
-        } else if (value < 0) {
+        } else if (value < 1) {
           newText = AppStrings.minPumpDurationValue;
         } else {
           // Xóa số 0 đứng đầu
           newText = value.toStringAsFixed(0);
         }
       } else {
-        newText = '0';
+        newText = '1';
       }
 
       if (_durationController.text != newText) {
@@ -66,6 +67,9 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
       _isToggling = true;
     });
 
+    // Trạng thái mong đợi sau khi toggle
+    final expectedWateringState = action == 'START';
+
     // Gọi API
     final success = await ref
         .read(toggleGroupProvider.notifier)
@@ -76,22 +80,34 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
     if (!mounted) return;
 
     if (success) {
-      // API thành công
+      // API thành công, đợi 300ms để nhận realtime
       await Future.delayed(const Duration(milliseconds: 300));
 
       if (!mounted) return;
 
-      // Thành công, nếu là STOP thì refresh history
-      if (action == 'STOP') {
-        await ref
-            .read(getGroupHistoryWateringProvider.notifier)
-            .getHistoryWatering(id: widget.group.id);
+      // Kiểm tra xem realtime có update không
+      final updatedWateringMap = ref.read(groupsWateringProvider);
+      final newWateringState = updatedWateringMap[widget.group.id];
+
+      // Nếu trạng thái không thay đổi theo expected
+      if (newWateringState != expectedWateringState) {
+        // Không nhận được realtime confirmation
+        CustomSnackBar.showSnackBar(
+          text: action == 'START'
+              ? 'Bơm không thành công! Vui lòng thử lại.'
+              : 'Hủy bơm không thành công! Vui lòng thử lại.',
+        );
+      } else {
+        // Thành công, nếu là STOP thì refresh history
+        if (action == 'STOP') {
+          await ref
+              .read(getGroupHistoryWateringProvider.notifier)
+              .getHistoryWatering(id: widget.group.id);
+        }
       }
     } else {
       // API thất bại
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(text: 'Có lỗi xảy ra. Vui lòng thử lại.'),
-      );
+      CustomSnackBar.showSnackBar(text: 'Có lỗi xảy ra. Vui lòng thử lại.');
     }
 
     if (mounted) {
@@ -106,7 +122,7 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
     super.initState();
     // Chạy sau khi initstate hoàn tất
     Future.microtask(() async {
-      if(!mounted) return;
+      if (!mounted) return;
       await ref
           .read(getGroupHistoryWateringProvider.notifier)
           .getHistoryWatering(id: widget.group.id);
@@ -117,11 +133,15 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
   Widget build(BuildContext context) {
     final id = widget.group.id;
 
+    //Lấy trạng thái watering từ realtime hoặc api
+    final wateringMap = ref.watch(groupsWateringProvider);
+    final isWatering = wateringMap[widget.group.id] ?? widget.group.watering;
+
     final historyWateringState = ref.watch(getGroupHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;
 
-    double currentSliderValue = double.tryParse(_durationController.text) ?? 0;
-    double sliderValue = currentSliderValue.clamp(0.0, 60.0);
+    double currentSliderValue = double.tryParse(_durationController.text) ?? 1;
+    double sliderValue = currentSliderValue.clamp(1.0, 60.0);
 
     if (historyWateringState is group_state.Success) {
       historyWateringDataSource = HistoryWateringDataSource(
@@ -156,6 +176,7 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
                               year2023: false,
                               padding: EdgeInsets.all(0),
                               value: sliderValue,
+                              min: 1,
                               max: 60,
                               onChanged: (value) {
                                 setState(() {
@@ -199,33 +220,60 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  SizedBox(
+                    height: 20,
+                    child: isWatering
+                        ? Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 14),
+                            child: Text(
+                              'Đang bơm...',
+                              textAlign: TextAlign.left,
+                            ),
+                          )
+                        : null,
+                  ),
+                  //nút bơm
                   Center(
                     child: SizedBox(
                       width: 150,
-                      child: ElevatedButton(
-                        onPressed: !_isToggling
-                            ? () {
-                                _toggleGroup(
-                                  id,
-                                  'START',
-                                  int.tryParse(
-                                        _durationController.text,
-                                      ) ??
-                                      0,
-                                );
-                              }
-                            : null,
-                        style: AppStyles.elevatedButtonStyle(),
-                        child: _isToggling
-                            ? CustomCircularProgress()
-                            : Text(
-                                'Bơm ngay',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
+                      child: isWatering
+                          ? ElevatedButton(
+                              // Nút Hủy
+                              onPressed: !_isToggling
+                                  ? () {
+                                      _toggleGroup(id, 'STOP', 0);
+                                    }
+                                  : null,
+                              style: AppStyles.elevatedButtonStyle(),
+                              child: _isToggling
+                                  ? CustomCircularProgress()
+                                  : Text('Hủy'),
+                            )
+                          : ElevatedButton(
+                              // Nút Bơm
+                              onPressed: !_isToggling
+                                  ? () {
+                                      _toggleGroup(
+                                        id,
+                                        'START',
+                                        (int.tryParse(
+                                                  _durationController.text,
+                                                ) ??
+                                                0) *
+                                            60,
+                                      );
+                                    }
+                                  : null,
+                              style: AppStyles.elevatedButtonStyle(),
+                              child: _isToggling
+                                  ? CustomCircularProgress()
+                                  : Text(
+                                      'Bơm ngay',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                            ),
                     ),
                   ),
                 ],
@@ -336,4 +384,3 @@ class _GroupControlTabScreenState extends ConsumerState<GroupControlTabScreen> {
     );
   }
 }
-

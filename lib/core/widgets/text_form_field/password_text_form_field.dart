@@ -8,13 +8,17 @@ class PasswordTextFormField extends StatefulWidget {
     required this.textController,
     required this.hintText,
     this.label,
+    this.helperText,
     this.validator,
+    this.keyboardType,
   });
 
   final TextEditingController textController;
   final String hintText;
   final String? label;
+  final String? helperText;
   final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
 
   @override
   State<PasswordTextFormField> createState() {
@@ -41,18 +45,27 @@ class _PasswordTextFormFieldState extends State<PasswordTextFormField> {
       children: [
         if (widget.label != null)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-            child: Text(widget.label!),
+            padding: const EdgeInsets.only(left: 6, bottom: 6),
+            child: Text(
+              widget.label!,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.black.withAlpha(200),
+              ),
+            ),
           ),
         TextFormField(
           controller: widget.textController,
           validator: widget.validator,
+          keyboardType: widget.keyboardType,
           obscureText: _isObscure,
           style: TextStyle(
             color: colorScheme.onSurface,
           ),
           decoration: InputDecoration(
             hintText: widget.hintText,
+            helperText: widget.helperText,
             fillColor: AppColors.divider.withAlpha(150),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),

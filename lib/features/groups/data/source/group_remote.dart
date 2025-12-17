@@ -5,6 +5,7 @@ import 'package:watering_app/core/constants/api_strings.dart';
 import 'package:watering_app/core/data/models/history_watering_model.dart';
 import 'package:watering_app/core/data/models/schedule_model.dart';
 import 'package:watering_app/core/network/dio_network_service.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/features/devices/data/enums/devices_enums.dart';
 import 'package:watering_app/features/devices/data/models/device_model.dart';
 import 'package:watering_app/features/groups/data/models/group_model.dart';
@@ -19,7 +20,7 @@ class GroupRemoteDataSource {
     int? page,
     int? size,
   }) async {
-    print('fetching group data...');
+    printDebug('fetching group data...');
     try {
       final queryParameters = <String, dynamic>{};
       if (name != null) {
@@ -50,7 +51,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getAllGroups) $e');
+      printDebug('Loi khac (getAllGroups) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -60,14 +61,14 @@ class GroupRemoteDataSource {
     }
   }
 
-    Future<Either<DioException, List<Device>>> getFreeDevices({
+  Future<Either<DioException, List<Device>>> getFreeDevices({
     String? name,
     int? page,
     int? size,
     AllDevicesSortField? sortField,
     bool? isAscending,
   }) async {
-    print('fetching free devices...');
+    printDebug('fetching free devices...');
     try {
       final queryParameters = <String, dynamic>{};
       if (name != null) {
@@ -103,7 +104,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getFreeDevices) $e');
+      printDebug('Loi khac (getFreeDevices) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -115,7 +116,7 @@ class GroupRemoteDataSource {
 
   Future<Either<DioException, Response>> createGroup({
     required Group group,
-    required List<String> listIdOfDevices
+    required List<String> listIdOfDevices,
   }) async {
     try {
       final result = await networkService.post(
@@ -134,7 +135,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (createGroup) $e');
+      printDebug('Loi khac (createGroup) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -147,7 +148,7 @@ class GroupRemoteDataSource {
   Future<Either<DioException, Group>> getGroupById({
     required String id,
   }) async {
-    print('fetching group by id...');
+    printDebug('fetching group by id...');
     try {
       final result = await networkService.get(
         endpoint: ApiPath.group.groupById(id),
@@ -162,7 +163,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getGroupById) $e');
+      printDebug('Loi khac (getGroupById) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -188,7 +189,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (deleteGroup) $e');
+      printDebug('Loi khac (deleteGroup) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -219,7 +220,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (updateGroup) $e');
+      printDebug('Loi khac (updateGroup) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -246,7 +247,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (toggleGroup) $e');
+      printDebug('Loi khac (toggleGroup) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -261,7 +262,7 @@ class GroupRemoteDataSource {
     int? page,
     int? size,
   }) async {
-    print('fetching watering history...');
+    printDebug('fetching watering history...');
     try {
       final queryParameters = <String, dynamic>{};
       if (page != null) {
@@ -288,7 +289,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getHistoryWatering) $e');
+      printDebug('Loi khac (getHistoryWatering) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -303,7 +304,7 @@ class GroupRemoteDataSource {
     int? page,
     int? size,
   }) async {
-    print('fetching list schedule...');
+    printDebug('fetching list schedule...');
     try {
       final queryParameters = <String, dynamic>{};
 
@@ -331,7 +332,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (getListSchedule) $e');
+      printDebug('Loi khac (getListSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -359,7 +360,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (createSchedule) $e');
+      printDebug('Loi khac (createSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -387,7 +388,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (updateSchedule) $e');
+      printDebug('Loi khac (updateSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -414,7 +415,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (deleteSchedule) $e');
+      printDebug('Loi khac (deleteSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -431,7 +432,7 @@ class GroupRemoteDataSource {
     try {
       final result = await networkService.post(
         endpoint: ApiPath.group.toggleSchedule(group.id, schedule.id),
-        data: {ApiStrings.status: schedule.status},
+        data: {ApiStrings.status: !schedule.status},
       );
       return result.fold(
         (exception) {
@@ -442,7 +443,7 @@ class GroupRemoteDataSource {
         },
       );
     } catch (e) {
-      print('Loi khac (toggleSchedule) $e');
+      printDebug('Loi khac (toggleSchedule) $e');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
@@ -452,4 +453,3 @@ class GroupRemoteDataSource {
     }
   }
 }
-

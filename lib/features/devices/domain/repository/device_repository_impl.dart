@@ -236,4 +236,17 @@ class DeviceRepositoryImpl extends DeviceRepository {
       },
     );
   }
+
+  @override
+  Future<Either<DioException, String>> getDeviceIdFromHardware() async {
+    final response = await deviceRemoteDataSource.getDeviceIdFromHardware();
+    return response.fold(
+      (exception) {
+        return Left(exception);
+      },
+      (res) {
+        return Right(res);
+      },
+    );
+  }
 }

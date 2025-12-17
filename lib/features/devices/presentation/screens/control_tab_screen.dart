@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_assets.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
 import 'package:watering_app/core/constants/app_strings.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -32,6 +33,9 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   final _durationController = TextEditingController(text: '10');
   bool _isToggling = false;
 
+  late bool _isWatering;
+  late bool _isOnline;
+
   // final _rowPerPage = 5;
 
   void _onDurationTextChanged(String text) {
@@ -42,14 +46,14 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
       if (value != null) {
         if (value > 60) {
           newText = AppStrings.maxPumpDurationValue;
-        } else if (value < 0) {
+        } else if (value < 1) {
           newText = AppStrings.minPumpDurationValue;
         } else {
           //xóa số 0 đứng đầu
           newText = value.toStringAsFixed(0);
         }
       } else {
-        newText = '0';
+        newText = '1';
       }
 
       if (_durationController.text != newText) {
@@ -82,24 +86,23 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
     if (!mounted) return;
 
     if (success) {
+      // Có phụ thuộc realtime
       // API thành công, đợi 300ms để nhận realtime
-      await Future.delayed(const Duration(milliseconds: 300));
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       if (!mounted) return;
 
       // Kiểm tra xem realtime có update không
       final updatedWateringMap = ref.read(devicesWateringProvider);
       final newWateringState = updatedWateringMap[widget.device.deviceId];
-
+      printDebug('newWateringState = $newWateringState');
       // Nếu trạng thái không thay đổi theo expected hoặc giống trạng thái cũ
       if (newWateringState != expectedWateringState) {
         // Không nhận được realtime confirmation
-        ScaffoldMessenger.of(context).showSnackBar(
-          CustomSnackBar(
-            text: action == 'START'
-                ? 'Bơm không thành công! Vui lòng thử lại.'
-                : 'Hủy bơm không thành công! Vui lòng thử lại.',
-          ),
+        CustomSnackBar.showSnackBar(
+          text: action == 'START'
+              ? 'Bơm không thành công! Vui lòng thử lại.'
+              : 'Hủy bơm không thành công! Vui lòng thử lại.',
         );
       } else {
         // Thành công, nếu là STOP thì refresh history
@@ -109,10 +112,22 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
               .getHistoryWatering(id: widget.device.id);
         }
       }
+
+      // // Không phụ thuộc realtime
+      // setState(() {
+      //   _isWatering = expectedWateringState;
+      // });
+      // if (expectedWateringState == false) {
+      //   await ref
+      //       .read(getHistoryWateringProvider.notifier)
+      //       .getHistoryWatering(id: widget.device.id);
+      // }
     } else {
       // API thất bại
-      ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(text: 'Có lỗi xảy ra. Vui lòng thử lại.'),
+      CustomSnackBar.showSnackBar(
+        text: action == 'START'
+            ? 'Bơm không thành công! Vui lòng thử lại.'
+            : 'Hủy bơm không thành công! Vui lòng thử lại.',
       );
     }
 
@@ -126,7 +141,9 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   @override
   void initState() {
     super.initState();
-
+    // Ưu tiên API
+    _isWatering = widget.device.watering;
+    _isOnline = widget.device.online;
     //chạy sau khi initstate hoàn tất
     Future.microtask(() async {
       if (!mounted) return;
@@ -140,20 +157,35 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
   Widget build(BuildContext context) {
     final id = widget.device.id;
 
-    // Lấy trạng thái watering từ realtime hoặc device
-    final wateringMap = ref.watch(devicesWateringProvider);
-    final isWatering =
-        wateringMap[widget.device.deviceId] ?? widget.device.watering;
+    // Trạng thái tưới
+    ref.listen<Map<String, bool>>(devicesWateringProvider, (prev, next) {
+      final newWatering = next[widget.device.deviceId];
+      if (newWatering != null && newWatering != _isWatering) {
+        setState(() {
+          _isWatering = newWatering;
+        });
+      }
+    });
 
-    // Lấy trạng thái online từ realtime hoặc device
-    final statusMap = ref.watch(devicesStatusProvider);
-    final isOnline = statusMap[widget.device.deviceId] ?? widget.device.online;
+    // Trạng thái Online/Offline
+    ref.listen<Map<String, bool>>(devicesStatusProvider, (prev, next) {
+      final newStatus = next[widget.device.deviceId];
+      if (newStatus != null && newStatus != _isOnline) {
+        setState(() {
+          _isOnline = newStatus;
+        });
+      }
+    });
+
+    printDebug(
+      '_isWatering = $_isWatering, widget.device.watering = ${widget.device.watering}',
+    );
 
     final historyWateringState = ref.watch(getHistoryWateringProvider);
     late DataTableSource historyWateringDataSource;
 
-    double currentSliderValue = double.tryParse(_durationController.text) ?? 0;
-    double sliderValue = currentSliderValue.clamp(0.0, 60.0);
+    double currentSliderValue = double.tryParse(_durationController.text) ?? 1;
+    double sliderValue = currentSliderValue.clamp(1.0, 60.0);
 
     if (historyWateringState is device_state.Success) {
       historyWateringDataSource = HistoryWateringDataSource(
@@ -188,6 +220,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                               year2023: false,
                               padding: EdgeInsets.all(0),
                               value: sliderValue,
+                              min: 1,
                               max: 60,
                               onChanged: (value) {
                                 setState(() {
@@ -233,7 +266,7 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                   ),
                   SizedBox(
                     height: 20,
-                    child: isWatering
+                    child: _isWatering
                         ? Padding(
                             padding: EdgeInsets.symmetric(horizontal: 14),
                             child: Text(
@@ -246,38 +279,29 @@ class _ControlTabScreenState extends ConsumerState<ControlTabScreen> {
                   Center(
                     child: SizedBox(
                       width: 150,
-                      child: isWatering
+                      child: _isWatering
                           ? ElevatedButton(
-                              onPressed: (isOnline && !_isToggling)
+                              onPressed: (_isOnline && !_isToggling)
                                   ? () {
                                       _toggleDevice(id, 'STOP', 0);
                                     }
                                   : null,
                               style: AppStyles.elevatedButtonStyle(),
                               child: _isToggling
-                                  ? SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
-                                            ),
-                                      ),
-                                    )
+                                  ? CustomCircularProgress()
                                   : Text('Hủy'),
                             )
                           : ElevatedButton(
-                              onPressed: (isOnline && !_isToggling)
+                              onPressed: (_isOnline && !_isToggling)
                                   ? () {
                                       _toggleDevice(
                                         id,
                                         'START',
-                                        int.tryParse(
-                                              _durationController.text,
-                                            ) ??
-                                            0,
+                                        (int.tryParse(
+                                                  _durationController.text,
+                                                ) ??
+                                                0) *
+                                            60,
                                       );
                                     }
                                   : null,

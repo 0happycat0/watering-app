@@ -3,14 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/bottom_nav_bar.dart';
 import 'package:watering_app/core/widgets/custom_fab.dart';
+import 'package:watering_app/features/authentication/presentation/screens/account_screen.dart';
 import 'package:watering_app/features/authentication/providers/auth_provider.dart';
 import 'package:watering_app/features/authentication/presentation/screens/login_screen.dart';
 import 'package:watering_app/features/devices/presentation/screens/all_devices_screen.dart';
-import 'package:watering_app/features/devices/presentation/widgets/add_new_device.dart';
+import 'package:watering_app/features/devices/presentation/widgets/add_new_device_stepper.dart';
 import 'package:watering_app/features/groups/presentation/screens/all_groups_screen.dart';
 import 'package:watering_app/features/groups/presentation/widgets/add_or_edit_group.dart';
+import 'package:watering_app/features/home/presentation/screens/home_screen.dart';
 import 'package:watering_app/theme/styles.dart';
 
 class MainScaffold extends ConsumerStatefulWidget {
@@ -36,7 +39,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
       barrierColor: AppColors.mainGreen[300]?.withValues(alpha: 0.5),
       clipBehavior: Clip.antiAlias,
       builder: (ctx) {
-        return AddNewDevice();
+        return AddNewDeviceStepper();
       },
     );
   }
@@ -86,9 +89,9 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     ref.listen(requestLogoutProvider, (prev, next) {
-      print('Request logout transition: $prev -> $next');
+      printDebug('Request logout transition: $prev -> $next');
       if (next == true) {
-        ref.read(authProvider.notifier).logout();
+        ref.read(authProvider.notifier).logout(ref);
         //reset
         ref.read(requestLogoutProvider.notifier).state = false;
         _showRequestLogInAgainDialog();
@@ -116,26 +119,10 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
             )
           : null,
       body: <Widget>[
-        Column(
-          children: [
-            //TODO: remove this
-            Spacer(),
-            ElevatedButton(
-              onPressed: () async {
-                await ref.read(authProvider.notifier).logout();
-                if (mounted) {
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => LoginScreen()),
-                  );
-                }
-              },
-              child: Text('logout'),
-            ),
-          ],
-        ),
+        HomeScreen(),
         AllDevicesScreen(),
         AllGroupsScreen(),
-        Text('page3'),
+        AccountScreen(),
       ][_currentPageIndex],
     );
   }

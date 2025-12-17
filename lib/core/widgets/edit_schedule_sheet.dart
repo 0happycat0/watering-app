@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:watering_app/core/constants/app_colors.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 import 'package:watering_app/core/widgets/custom_circular_progress.dart';
 import 'package:watering_app/core/widgets/custom_snack_bar.dart';
 import 'package:watering_app/core/widgets/text_form_field/normal_text_form_field.dart';
@@ -59,7 +60,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     if (_isEditMode) {
       final schedule = widget.schedule!;
       _selectedTime = _parseTime(schedule.startTime);
-      _durationController.text = schedule.duration.toString();
+      _durationController.text = (schedule.duration ~/ 60).toString();
       _selectedDays = schedule.daysOfWeek?.toSet() ?? {};
       _selectedRepeatType = schedule.repeatType;
     } else {
@@ -134,20 +135,20 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     final schedule = widget.schedule;
     final timeStr =
         '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}:00';
-    final duration = int.tryParse(_durationController.text) ?? 0;
+    final duration = (int.tryParse(_durationController.text) ?? 0) * 60;
     final repeatType = _selectedRepeatType;
     final selectedDays = _selectedDays.toList();
 
-    print('--- ĐANG LƯU LỊCH ---');
-    print('Mode: ${_isEditMode ? 'Sửa' : 'Thêm'}');
-    print('Type: ${widget.isGroup ? 'Group' : 'Device'}');
-    print('Time: $timeStr');
-    print('Duration: $duration phút');
-    print('Days: $_selectedDays');
+    printDebug('--- ĐANG LƯU LỊCH ---');
+    printDebug('Mode: ${_isEditMode ? 'Sửa' : 'Thêm'}');
+    printDebug('Type: ${widget.isGroup ? 'Group' : 'Device'}');
+    printDebug('Time: $timeStr');
+    printDebug('Duration: $duration phút');
+    printDebug('Days: $_selectedDays');
     if (widget.isGroup) {
       // Group schedule
       if (_isEditMode) {
-        print('ID (Sửa): ${schedule!.id}');
+        printDebug('ID (Sửa): ${schedule!.id}');
         await ref
             .read(updateGroupScheduleProvider.notifier)
             .updateSchedule(
@@ -173,7 +174,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
     } else {
       // Device schedule
       if (_isEditMode) {
-        print('ID (Sửa): ${schedule!.id}');
+        printDebug('ID (Sửa): ${schedule!.id}');
         await ref
             .read(updateScheduleProvider.notifier)
             .updateSchedule(
@@ -217,46 +218,34 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
         final groupState = ref.watch(updateGroupScheduleProvider);
         isLoading = groupState is group_state.Loading;
         ref.listen(updateGroupScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Update group schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is group_state.Failure) {
             final message = next.message;
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            Navigator.of(context).pop(false);
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is group_state.Success && prev is group_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Cập nhật thành công'),
-            );
-            Navigator.pop(context);
+            CustomSnackBar.showSnackBar(text: 'Cập nhật thành công');
+            Navigator.pop(context, true);
           }
         });
       } else {
         final groupState = ref.watch(createGroupScheduleProvider);
         isLoading = groupState is group_state.Loading;
         ref.listen(createGroupScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Create group schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is group_state.Failure) {
             final message = next.message;
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            Navigator.of(context).pop(false);
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is group_state.Success && prev is group_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Đã thêm lịch'),
-            );
-            Navigator.pop(context);
+            CustomSnackBar.showSnackBar(text: 'Đã thêm lịch');
+            Navigator.pop(context, true);
           }
         });
       }
@@ -266,46 +255,34 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
         final deviceState = ref.watch(updateScheduleProvider);
         isLoading = deviceState is device_state.Loading;
         ref.listen(updateScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Update schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is device_state.Failure) {
             final message = next.message;
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            Navigator.of(context).pop(false);
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is device_state.Success && prev is device_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Cập nhật thành công'),
-            );
-            Navigator.pop(context);
+            CustomSnackBar.showSnackBar(text: 'Cập nhật thành công');
+            Navigator.pop(context, true);
           }
         });
       } else {
         final deviceState = ref.watch(createScheduleProvider);
         isLoading = deviceState is device_state.Loading;
         ref.listen(createScheduleProvider, (prev, next) {
-          print(
+          printDebug(
             'Create schedule transition: ${prev.runtimeType} -> ${next.runtimeType}',
           );
           if (next is device_state.Failure) {
             final message = next.message;
-            Navigator.of(context).pop();
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(CustomSnackBar(text: message));
+            Navigator.of(context).pop(false);
+            CustomSnackBar.showSnackBar(text: message);
           }
           if (next is device_state.Success && prev is device_state.Loading) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(
-              CustomSnackBar(text: 'Đã thêm lịch'),
-            );
-            Navigator.pop(context);
+            CustomSnackBar.showSnackBar(text: 'Đã thêm lịch');
+            Navigator.pop(context, true);
           }
         });
       }
@@ -441,21 +418,19 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
                   child: OutlinedButton.icon(
                     icon: const Icon(Symbols.close),
                     label: const Text('Hủy'),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pop(context, false),
                     style: OutlinedButton.styleFrom(
                       splashFactory: NoSplash.splashFactory,
                       foregroundColor: colorScheme.onSurfaceVariant,
                       side: BorderSide(color: colorScheme.outline),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    icon: isLoading
-                        ? null
-                        : const Icon(Symbols.check),
+                    icon: isLoading ? null : const Icon(Symbols.check),
                     label: isLoading
                         ? CustomCircularProgress()
                         : const Text('Lưu Lịch'),
@@ -463,7 +438,7 @@ class _ScheduleEditSheetState extends ConsumerState<EditScheduleSheet> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.mainGreen[200],
                       foregroundColor: colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                     ),
                   ),
                 ),

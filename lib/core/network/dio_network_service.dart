@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:watering_app/core/utils/debug_print.dart';
 
 //don't use this, instead use provider to inject all dependencies
 // final networkService = DioNetworkService(Dio());
@@ -39,15 +40,16 @@ class DioNetworkService {
         Response(
           requestOptions: res.requestOptions,
           statusCode: res.statusCode,
-          data: res.data['data'],
+          data: res.data['data'] ?? res.data['quantity'],
         ),
       );
     } on DioException catch (e) {
+      printDebug('loi get: ${e}');
       return Left(
         DioException(
           requestOptions: e.requestOptions,
           response: e.response,
-          message: e.response?.data['message'],
+          message: e.response?.data['message'] ?? e.response?.data['error'],
         ),
       );
     }
@@ -60,7 +62,7 @@ class DioNetworkService {
     Response res;
     try {
       res = await _dio.post(endpoint, data: data);
-      // print('post response: ${res.data}');
+      // printDebug('post response: ${res.data}');
 
       return Right(
         Response(
@@ -70,12 +72,12 @@ class DioNetworkService {
         ),
       );
     } on DioException catch (e) {
-      print('loi post: ${e}');
+      printDebug('loi post: ${e}');
       return Left(
         DioException(
           requestOptions: RequestOptions(),
           response: e.response,
-          message: e.response?.data['message'],
+          message: e.response?.data['message'] ?? e.response?.data['error'],
         ),
       );
     }
@@ -103,6 +105,7 @@ class DioNetworkService {
         ),
       );
     } on DioException catch (e) {
+      printDebug('loi put: ${e}');
       return Left(
         DioException(
           requestOptions: e.requestOptions,
@@ -133,11 +136,12 @@ class DioNetworkService {
         ),
       );
     } on DioException catch (e) {
+      printDebug('loi delete: ${e}');
       return Left(
         DioException(
           requestOptions: e.requestOptions,
           response: e.response,
-          message: e.response?.data['message'],
+          message: e.response?.data['message'] ?? e.response?.data['error'],
         ),
       );
     }
