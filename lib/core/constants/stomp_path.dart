@@ -1,6 +1,8 @@
 class StompPath {
   static const String websocketUrl =
-      'https://be-smart-watering-production.up.railway.app/streaming';
+      // 'https://be-smart-watering-production.up.railway.app/streaming';
+      'http://18.179.47.93:8080/streaming';
+      // 'https://18.142.240.186:4443/streaming';
 
   static final topic = _Topic();
 }

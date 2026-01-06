@@ -1,6 +1,8 @@
 class ApiPath {
   static const String baseUrl =
-      'https://be-smart-watering-production.up.railway.app';
+      // 'https://be-smart-watering-production.up.railway.app';
+      'http://18.179.47.93:8080/';
+      // 'https://18.142.240.186:4443/';
   // static const String baseUrl =
   //     'https://unmoaned-dale-nonspherical.ngrok-free.dev';
 
